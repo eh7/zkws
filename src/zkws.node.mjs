@@ -16,7 +16,7 @@ import { multiaddr } from '@multiformats/multiaddr'
 import {
   createFromJSON,
 } from '@libp2p/peer-id-factory'
-import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.js'
+import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
 
 //const relay = multiaddr(process.argv[2]);
 //const relay = process.argv[2];

@@ -14,7 +14,7 @@ import { identifyService } from 'libp2p/identify'
 import {
   createFromJSON,
 } from '@libp2p/peer-id-factory'
-import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.js'
+import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
 
 ;(async () => {
   const peer = await createFromJSON(relayPeer);
