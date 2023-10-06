@@ -1,5 +1,5 @@
-import { createLibp2p } from './libp2p.mjs'
-import { stdinToStream, streamToConsole } from './stream.mjs'
+import { createLibp2p } from './lib/libp2p.mjs'
+import { stdinToStream, streamToConsole } from './lib/stream.mjs'
 
 import {
   createFromJSON,
