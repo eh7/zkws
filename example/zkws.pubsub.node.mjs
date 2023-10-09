@@ -43,7 +43,9 @@ const createNode = async (bootstrappers, _peer) => {
       */
     ],
     services: {
-      dht: kadDHT(),
+      dht: kadDHT({
+        allowQueryWithZeroPeers: true
+      }),
       pubsub: floodsub(),
       identify: identifyService()
     }
@@ -65,14 +67,14 @@ const createNode = async (bootstrappers, _peer) => {
     createNode(relayMultiaddrs, 'peer1')
   ])
 
-console.log(node1.getMultiaddrs())
-console.log(node2.getMultiaddrs())
+//console.log(node1.getMultiaddrs())
+//console.log(node2.getMultiaddrs())
 
-  await node1.peerStore.patch(node2.peerId, {
-    multiaddrs: node2.getMultiaddrs()
-  })
-  await node1.dial(node2.peerId)
-console.log(await node1.peerStore.all());
+//  await node1.peerStore.patch(node2.peerId, {
+//    multiaddrs: node2.getMultiaddrs()
+//  })
+//  await node1.dial(node2.peerId)
+//console.log(await node1.peerStore.all());
 
   //console.log(await node1.peerRouting.findPeer(relayMultiaddrs.peerId))
 //  const peer = await node1.peerRouting.findPeer(node2.peerId)
@@ -89,8 +91,10 @@ console.log(await node1.peerStore.all());
 
   node2.services.pubsub.subscribe(topic)
   node2.services.pubsub.addEventListener('message', (evt) => {
-  //  console.log(`node2 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
-    console.log(`node2 received:`)
+    if (evt.detail.topic === topic) {
+      console.log(`node2 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+    }
+    //console.log(`node2 received:`)
   })
 
   node1.addEventListener('peer:discovery', async (evt) => {
@@ -105,7 +109,10 @@ console.log(await node1.peerStore.all());
   })
 
   setInterval(() => {
-    node2.services.pubsub.publish(topic, uint8ArrayFromString('Bird bird bird, bird is the word!')).catch(err => {
+    node2.services.pubsub.publish(topic, uint8ArrayFromString('PubSub Message from node2: Bird bird bird, bird is the word!')).catch(err => {
+      console.error(err)
+    })
+    node1.services.pubsub.publish(topic, uint8ArrayFromString('PubSub Message from node1')).catch(err => {
       console.error(err)
     })
     console.log('sent news pubsub');

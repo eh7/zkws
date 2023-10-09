@@ -36,7 +36,9 @@ const run = async () => {
       })
     ],
     services: {
-      dht: kadDHT(),
+      dht: kadDHT({
+        allowQueryWithZeroPeers: true
+      }),
       relay: circuitRelayServer(),
       identify: identifyService(),
       pubsub: floodsub()
