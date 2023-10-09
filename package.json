@@ -39,6 +39,7 @@
     "@ethereumjs/util": "^9.0.0",
     "@libp2p/bootstrap": "^9.0.7",
     "@libp2p/floodsub": "^8.0.8",
+    "@libp2p/kad-dht": "^10.0.9",
     "@libp2p/mplex": "^9.0.7",
     "@libp2p/pubsub-peer-discovery": "^9.0.0",
     "@libp2p/tcp": "^8.0.8",

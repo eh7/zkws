@@ -9,6 +9,8 @@ import { createLibp2p } from 'libp2p'
 import { circuitRelayTransport, circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 
+import { kadDHT } from '@libp2p/kad-dht'
+
 import {
   createFromJSON,
 } from '@libp2p/peer-id-factory'
@@ -34,6 +36,7 @@ const run = async () => {
       })
     ],
     services: {
+      dht: kadDHT(),
       relay: circuitRelayServer(),
       identify: identifyService(),
       pubsub: floodsub()
