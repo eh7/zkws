@@ -22,6 +22,7 @@ import {
   createFromJSON,
 } from '@libp2p/peer-id-factory'
 import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
+import { stdinToStream, streamToConsole } from './stream.mjs'
 
 const createNode = async (bootstrappers, _peer) => {
   const thisPeer = (_peer === 'peer1') ? peer1 : peer0
@@ -100,11 +101,35 @@ const createNode = async (bootstrappers, _peer) => {
     console.log(`Peer ${node2.peerId.toString()} discovered: ${peer.id.toString()}`)
     console.log(await node2.peerStore.all());
   })
+
+  // Handle messages for the protocol
+  await node1.handle('/chat/1.0.0', async ({ stream }) => {
+    // Send stdin to the stream
+    stdinToStream(stream)
+    // Read the stream and output to console
+    streamToConsole(stream)
+  })
+  // const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
+
+  // Dial to the remote peer (the "listener")
+  const stream = await node2.dialProtocol(node1.getMultiaddrs(), '/chat/1.0.0')
+  //console.log(node2.getMultiaddrs())
+/*
+  const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${node2.toString()}`)
+  const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
+*/
+  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
+  console.log('Type a message and see what happens')
+  // Send stdin to the stream
+  stdinToStream(stream)
+  // Read the stream and output to console
+  streamToConsole(stream)
   
   //console.log(node1.peerRouting.findPeer);
   //const peer = await node1.peerRouting.findPeer(node2.peerId)
 
 
+/*
   node1.services.pubsub.subscribe(topic)
   node1.services.pubsub.addEventListener('message', (evt) => {
     if (evt.detail.topic === topic) {
@@ -130,5 +155,6 @@ const createNode = async (bootstrappers, _peer) => {
     })
     console.log('sent news pubsub');
   }, 1000)
+*/
 
 })()
