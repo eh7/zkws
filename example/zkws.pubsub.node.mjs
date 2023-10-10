@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+import delay from 'delay'
+
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bootstrap } from '@libp2p/bootstrap'
@@ -80,6 +82,11 @@ const createNode = async (bootstrappers, _peer) => {
 //  const peer = await node1.peerRouting.findPeer(node2.peerId)
 //console.log(peer);
   console.log(Object.keys(node1))
+
+  //await delay(1000)
+
+  //console.log(node1.peerRouting.findPeer);
+  //const peer = await node1.peerRouting.findPeer(node2.peerId)
 
 
   node1.services.pubsub.subscribe(topic)
