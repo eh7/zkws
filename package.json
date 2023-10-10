@@ -37,6 +37,7 @@
     "@ethereumjs/common": "^4.0.0",
     "@ethereumjs/genesis": "^0.1.0",
     "@ethereumjs/util": "^9.0.0",
+    "@ethereumjs/vm": "^7.0.0",
     "@libp2p/bootstrap": "^9.0.7",
     "@libp2p/floodsub": "^8.0.8",
     "@libp2p/kad-dht": "^10.0.9",
