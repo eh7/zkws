@@ -79,6 +79,7 @@ const createNode = async (bootstrappers, _peer) => {
   //console.log(await node1.peerRouting.findPeer(relayMultiaddrs.peerId))
 //  const peer = await node1.peerRouting.findPeer(node2.peerId)
 //console.log(peer);
+  console.log(Object.keys(node1))
 
 
   node1.services.pubsub.subscribe(topic)
