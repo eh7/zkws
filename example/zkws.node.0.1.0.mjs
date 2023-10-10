@@ -124,6 +124,33 @@ const createNode = async (bootstrappers, _peer) => {
   stdinToStream(stream)
   // Read the stream and output to console
   streamToConsole(stream)
+
+
+  node1.services.pubsub.subscribe(topic)
+  node1.services.pubsub.addEventListener('message', (evt) => {
+    if (evt.detail.topic === topic) {
+      console.log(`node1 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+    }
+    //console.log(`node1 received: ${evt.detail.topic}`)
+  })
+
+  node2.services.pubsub.subscribe(topic)
+  node2.services.pubsub.addEventListener('message', (evt) => {
+    if (evt.detail.topic === topic) {
+      console.log(`node2 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+    }
+    //console.log(`node1 received: ${evt.detail.topic}`)
+  })
+
+  setInterval(() => {
+    node2.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node2 **')).catch(err => {
+      console.error(err)
+    })
+    node1.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node1 **')).catch(err => {
+      console.error(err)
+    })
+    console.log('sent news pubsub');
+  }, 1000)
   
   //console.log(node1.peerRouting.findPeer);
   //const peer = await node1.peerRouting.findPeer(node2.peerId)
