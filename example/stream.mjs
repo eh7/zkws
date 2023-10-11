@@ -37,8 +37,8 @@ export function streamToConsole (stream) {
         // Output the data as a utf8 string
         // console.log(msg);
         if (msg === 'exit\n') {
+          console.log('>> node shutting down :: ' + msg.toString().replace('\n', ''))
           process.exit(0);
-          console.log('>> ' + msg.toString().replace('\n', ''))
         } else {
           console.log('> ' + msg.toString().replace('\n', ''))
         }
