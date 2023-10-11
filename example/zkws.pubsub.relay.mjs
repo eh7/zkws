@@ -4,6 +4,7 @@ import { bootstrap } from '@libp2p/bootstrap'
 import { floodsub } from '@libp2p/floodsub'
 import { mplex } from '@libp2p/mplex'
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery'
+import { webSockets } from '@libp2p/websockets'
 import { tcp } from '@libp2p/tcp'
 import { createLibp2p } from 'libp2p'
 import { circuitRelayTransport, circuitRelayServer } from 'libp2p/circuit-relay'
@@ -24,10 +25,12 @@ const run = async () => {
     peerId: peer,
     addresses: {
       listen: [
-        '/ip4/127.0.0.1/tcp/10333'
+        //'/ip4/127.0.0.1/tcp/10333'
+        '/ip4/127.0.0.1/tcp/10333/ws'
       ]
     },
-    transports: [tcp(), circuitRelayTransport()],
+    //transports: [tcp(), circuitRelayTransport()],
+    transports: [webSockets(), circuitRelayTransport()],
     streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
     peerDiscovery: [
