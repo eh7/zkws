@@ -104,6 +104,7 @@ const createNode = async (bootstrappers, _peer) => {
 
   // Handle messages for the protocol
   await node1.handle('/chat/1.0.0', async ({ stream }) => {
+    //console.log(12345, stream.toString());
     // Send stdin to the stream
     stdinToStream(stream)
     // Read the stream and output to console
@@ -150,7 +151,7 @@ const createNode = async (bootstrappers, _peer) => {
       console.error(err)
     })
     console.log('sent news pubsub');
-  }, 1000)
+  }, 5000)
   
   //console.log(node1.peerRouting.findPeer);
   //const peer = await node1.peerRouting.findPeer(node2.peerId)

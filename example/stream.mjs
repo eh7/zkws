@@ -30,11 +30,18 @@ export function streamToConsole (stream) {
     // Turn buffers into strings
     (source) => map(source, (buf) => uint8ArrayToString(buf.subarray())),
     // Sink function
-    async function (source) {
+    //async function (source) {
+    async (source) => {
       // For each chunk of data
       for await (const msg of source) {
         // Output the data as a utf8 string
-        console.log('> ' + msg.toString().replace('\n', ''))
+        // console.log(msg);
+        if (msg === 'exit\n') {
+          process.exit(0);
+          console.log('>> ' + msg.toString().replace('\n', ''))
+        } else {
+          console.log('> ' + msg.toString().replace('\n', ''))
+        }
       }
     }
   )
