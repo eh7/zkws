@@ -6,14 +6,14 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "go-libp2p-server": "cd ../go-libp2p-server && go run ./main.go",
+    "go-libp2p-server": "cd ../go-server && go run ./main.go",
     "test:chrome": "npm run build && playwright test tests",
     "test:firefox": "npm run build && playwright test --browser firefox tests",
     "test": "npm run build && test-browser-example tests"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^13.0.0",
-    "@libp2p/webrtc": "file:../../",
+    "@libp2p/webrtc": "file:../..",
     "@multiformats/multiaddr": "^12.0.0",
     "it-pushable": "^3.2.0",
     "libp2p": "^0.46.0",

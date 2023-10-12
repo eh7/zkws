@@ -34,9 +34,10 @@ func init() {
 		for _, addr := range addrs {
 			// bind to private non-loopback ip
 			if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.IsPrivate() {
+	fmt.Printf("listenerIp: %s\n", listenerIp)
 				if ipnet.IP.To4() != nil {
 					listenerIp = ipnet.IP.To4()
-					return
+	//				return
 				}
 			}
 		}
@@ -79,6 +80,9 @@ func main() {
 }
 
 func createHost() host.Host {
+	fmt.Printf("listenerIp: %s\n", listenerIp)
+        //const name, age = "Kim", 22
+	//fmt.Printf("%s is %d years old.\n", name, age)
 	h, err := libp2p.New(
 		libp2p.Transport(webrtc.New),
 		libp2p.ListenAddrStrings(
