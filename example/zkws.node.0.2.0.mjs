@@ -31,12 +31,12 @@ const createNode = async (bootstrappers, _peer) => {
   const node = await createLibp2p({
     peerId: peer,
     addresses: {
-      listen: ['/ip4/0.0.0.0/tcp/0']
+      listen: ['/ip4/0.0.0.0/tcp/0/ws']
     },
     //transports: [tcp()],
     transports: [
       webSockets(),
-      tcp(),
+      //tcp(),
     ],
     streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
