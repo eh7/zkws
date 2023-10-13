@@ -19,9 +19,9 @@ import (
 )
 
 type PeerData struct {
-	id string
-	privKey string
-	pubKey string
+	Id string
+	Privkey string
+	Pubkey string
 }
 
 var listenerIp = net.IPv4(127, 0, 0, 1)
@@ -87,7 +87,7 @@ func main() {
 	<-ch
 }
 
-func getPeerId() {
+func getPeerId() string {
 	//peerJson, err := os.Open("peerId.json")
 	//fmt.printf("peerID Json: %s", peerJson.privKey)
 	//defer jsonFile.Close();
@@ -102,18 +102,20 @@ func getPeerId() {
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
-	log.Printf("id: %s\n", payload.id)
-	/*
-	*/
+	log.Printf("id: %s\n", payload.Id)
+	log.Printf("privkey: %s\n", payload.Privkey)
+	log.Printf("pubkey: %s\n", payload.Pubkey)
+	return payload.Privkey
 }
 
 func createHost() host.Host {
 	fmt.Printf("listenerIp: %s\n", listenerIp)
         //const name, age = "Kim", 22
 	//fmt.Printf("%s is %d years old.\n", name, age)
-	getPeerId()
+	privkey := getPeerId()
+	//fmt.Printf("privkey: %s\n", privkey)
 	h, err := libp2p.New(
-		// libp2p.Identity(prvKey),
+		//libp2p.Identity(privkey),
 		libp2p.Transport(webrtc.New),
 		libp2p.ListenAddrStrings(
 			fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
