@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"encoding/json"
+	"io/ioutil"
 
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
@@ -15,6 +17,12 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	webrtc "github.com/libp2p/go-libp2p/p2p/transport/webrtc"
 )
+
+type PeerData struct {
+	id string
+	privKey string
+	pubKey string
+}
 
 var listenerIp = net.IPv4(127, 0, 0, 1)
 
@@ -79,11 +87,33 @@ func main() {
 	<-ch
 }
 
+func getPeerId() {
+	//peerJson, err := os.Open("peerId.json")
+	//fmt.printf("peerID Json: %s", peerJson.privKey)
+	//defer jsonFile.Close();
+	fmt.Printf("listenerIp in getPeerId: %s\n", listenerIp)
+
+	content, err := ioutil.ReadFile("./peerId.json")
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+	var payload PeerData
+	err = json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+	log.Printf("id: %s\n", payload.id)
+	/*
+	*/
+}
+
 func createHost() host.Host {
 	fmt.Printf("listenerIp: %s\n", listenerIp)
         //const name, age = "Kim", 22
 	//fmt.Printf("%s is %d years old.\n", name, age)
+	getPeerId()
 	h, err := libp2p.New(
+		// libp2p.Identity(prvKey),
 		libp2p.Transport(webrtc.New),
 		libp2p.ListenAddrStrings(
 			fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
