@@ -15,6 +15,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/libp2p/go-libp2p/core/crypto"
 	webrtc "github.com/libp2p/go-libp2p/p2p/transport/webrtc"
 )
 
@@ -70,6 +71,8 @@ func echoHandler(stream network.Stream) {
 }
 
 func main() {
+	//getPeerId()
+
 	host := createHost()
 	host.SetStreamHandler("/echo/1.0.0", echoHandler)
 	defer host.Close()
@@ -77,6 +80,7 @@ func main() {
 		ID:    host.ID(),
 		Addrs: host.Network().ListenAddresses(),
 	}
+	fmt.Println("p2p remoteInfo: ", remoteInfo)
 
 	remoteAddrs, _ := peer.AddrInfoToP2pAddrs(&remoteInfo)
 	fmt.Println("p2p addr: ", remoteAddrs[0])
@@ -87,11 +91,11 @@ func main() {
 	<-ch
 }
 
-func getPeerId() string {
+func getPeerId() {
 	//peerJson, err := os.Open("peerId.json")
 	//fmt.printf("peerID Json: %s", peerJson.privKey)
 	//defer jsonFile.Close();
-	fmt.Printf("listenerIp in getPeerId: %s\n", listenerIp)
+	//fmt.Printf("listenerIp in getPeerId: %s\n", listenerIp)
 
 	content, err := ioutil.ReadFile("./peerId.json")
 	if err != nil {
@@ -102,26 +106,39 @@ func getPeerId() string {
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
-	log.Printf("id: %s\n", payload.Id)
+	//log.Printf("id: %s\n", payload.Id)
 	log.Printf("privkey: %s\n", payload.Privkey)
-	log.Printf("pubkey: %s\n", payload.Pubkey)
-	return payload.Privkey
+	//log.Printf("pubkey: %s\n", payload.Pubkey)
+	//return payload.Privkey
+
+	//peer.IDFromPrivateKey(payload.Privkey)
 }
 
 func createHost() host.Host {
 	fmt.Printf("listenerIp: %s\n", listenerIp)
         //const name, age = "Kim", 22
 	//fmt.Printf("%s is %d years old.\n", name, age)
-	privkey := getPeerId()
+	//privkey := getPeerId()
 	//fmt.Printf("privkey: %s\n", privkey)
+        privBin, err := ioutil.ReadFile("key/priv-bin")
+        priv, err := crypto.UnmarshalSecp256k1PrivateKey(privBin)
+
+	// testing fixing webrtc multiaddress see libs ~/go/
+	rcmgr := &network.NullResourceManager{}
+	fmt.Printf("rcmgr: %s\n", rcmgr)
+	//	libp2p.Transport(webrtc.New(priv, nil, nil,),
+	//	libp2p.Transport(webrtc.New(priv, nil, nil, rcmgr, opts...),
+
 	h, err := libp2p.New(
 		//libp2p.Identity(privkey),
 		libp2p.Transport(webrtc.New),
+		//libp2p.Transport(webrtc.New(priv, nil, nil)),
 		libp2p.ListenAddrStrings(
 			fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
 		),
 		libp2p.DisableRelay(),
 		libp2p.Ping(true),
+		libp2p.Identity(priv),
 	)
 	if err != nil {
 		panic(err)
