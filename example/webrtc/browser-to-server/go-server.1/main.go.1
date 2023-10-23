@@ -17,6 +17,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	webrtc "github.com/libp2p/go-libp2p/p2p/transport/webrtc"
+	//tcp "github.com/libp2p/go-libp2p/p2p/transport/tcp"
 )
 
 type PeerData struct {
@@ -25,9 +26,12 @@ type PeerData struct {
 	Pubkey string
 }
 
-var listenerIp = net.IPv4(127, 0, 0, 1)
+//var listenerIp = net.IPv4(127, 0, 0, 1)
+var listenerIp = net.IPv4(192, 168, 0, 199)
 
 func init() {
+	return
+
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return
@@ -40,8 +44,12 @@ func init() {
 		if err != nil {
 			return
 		}
+		//fmt.Printf("--> addrs: %T -- %o\n", addrs[0], addrs[0])
 		for _, addr := range addrs {
 			// bind to private non-loopback ip
+			//if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.IsPrivate() {
+			//	fmt.Printf("--> listenerIp: %s\n", listenerIp)
+			//}
 			if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.IsPrivate() {
 	fmt.Printf("listenerIp: %s\n", listenerIp)
 				if ipnet.IP.To4() != nil {
@@ -132,9 +140,11 @@ func createHost() host.Host {
 	h, err := libp2p.New(
 		//libp2p.Identity(privkey),
 		libp2p.Transport(webrtc.New),
+		//libp2p.DefaultTransports,
 		//libp2p.Transport(webrtc.New(priv, nil, nil)),
 		libp2p.ListenAddrStrings(
-			fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
+			//fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
+			fmt.Sprintf("/ip4/%s/udp/10333/webrtc-direct", listenerIp),
 		),
 		libp2p.DisableRelay(),
 		libp2p.Ping(true),

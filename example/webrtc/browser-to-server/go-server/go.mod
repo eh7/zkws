@@ -1,6 +1,6 @@
 module github.com/libp2p/js-libp2p-webrtc/examples/go-libp2p-server
 
-go 1.19
+go 1.18
 
 // TODO: Remove this once webrtc is merged into Go libp2p
 replace github.com/libp2p/go-libp2p => github.com/libp2p/go-libp2p v0.26.1-0.20230404184453-257fbfba50c3
@@ -40,7 +40,6 @@ require (
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
 	github.com/libp2p/go-libp2p-asn-util v0.3.0 // indirect
-	github.com/libp2p/go-libp2p-core v0.20.1 // indirect
 	github.com/libp2p/go-msgio v0.3.0 // indirect
 	github.com/libp2p/go-nat v0.1.0 // indirect
 	github.com/libp2p/go-netroute v0.2.1 // indirect
