@@ -172,6 +172,13 @@ const createNode = async (bootstrappers, _peer) => {
     res.set('Content-Type', 'text/html');
     res.send(Buffer.from('<h2>Web Root</h2>'));
   });
+  app.get("/peerId", (req, res, next) => {
+    res.json({ peerId: node.peerId })
+    //res.json({
+    //  peerId: node.peerId,
+    //  users: ['gav','chris','paul']
+    //});
+  });
   app.get("/test", (req, res, next) => {
     res.json(["Tony","Lisa","Michael","Ginger","Food"]);
   });
