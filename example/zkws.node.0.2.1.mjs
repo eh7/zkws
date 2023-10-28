@@ -25,6 +25,15 @@ import {
 import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
 import { stdinToStream, streamToConsole } from './stream.mjs'
 
+import { default as readline } from 'readline';
+import { default as express } from "express";
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+});
+
 const createNode = async (bootstrappers, _peer) => {
   const thisPeer = (_peer === 'peer1') ? peer1 : peer0
   const peer = await createFromJSON(thisPeer)
@@ -72,8 +81,8 @@ const createNode = async (bootstrappers, _peer) => {
 
   const topic = 'news'
 
-  if (!process.argv[2]) {
-    console.log('USAGE: node ', process.argv[1], ' <peer0|peer2>')
+  if (!process.argv[3]) {
+    console.log('USAGE: node ', process.argv[1], ' <[peer0|peer1]> <port number>')
     process.exit(1)
   }
 
@@ -88,7 +97,7 @@ const createNode = async (bootstrappers, _peer) => {
   node.addEventListener('peer:discovery', async (evt) => {
     const peer = evt.detail
     console.log(`Peer ${node.peerId.toString()} discovered: ${peer.id.toString()}`)
-    console.log(await node.peerStore.all());
+    //console.log(await node.peerStore.all());
   })
 
   // Handle messages for the protocol
@@ -103,9 +112,10 @@ const createNode = async (bootstrappers, _peer) => {
 
   // Dial to the remote peer (the "listener")
   //const stream = await node.dialProtocol(node.getMultiaddrs(), '/chat/1.0.0')
+  //console.log('-----', await node.dialProtocol(node.getMultiaddrs(), '/chat/1.0.0'))
   //console.log(node2.getMultiaddrs())
 
-  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
+  //console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
   console.log('Type a message and see what happens')
 /*
   // Send stdin to the stream
@@ -118,21 +128,56 @@ const createNode = async (bootstrappers, _peer) => {
   node.services.pubsub.subscribe(topic)
   node.services.pubsub.addEventListener('message', (evt) => {
     if (evt.detail.topic === topic) {
-      console.log(`node1 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+      console.log(`>> received: ${uint8ArrayToString(evt.detail.data)} \n\ton topic ${evt.detail.topic} from ${evt.detail.from}`)
     }
     //console.log(`node1 received: ${evt.detail.topic}`)
   })
 
-  setInterval(() => {
-    node.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node2 **')).catch(err => {
-      console.error(err)
-    })
-    console.log('sent news pubsub test');
-  }, 5000)
+//  setInterval(() => {
+//    node.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node2 **')).catch(err => {
+//      console.error(err)
+//    })
+//    console.log('sent news pubsub test');
+//  }, 5000)
   
   //console.log(node1.peerRouting.findPeer);
   //const peer = await node1.peerRouting.findPeer(node2.peerId)
 
   console.log('peerId1: ', node.peerId)
+
+  rl.on('line', (line) => {
+    if (line === 'exit') {
+      console.log('>> node shutting down :: ' + line.toString().replace('\n', ''))
+      process.exit(0);
+    } else {
+      node.services.pubsub.publish(topic, uint8ArrayFromString(line)).catch(err => {
+        console.log(err)
+      })
+    }
+    //console.log('> ', line);
+  });
+
+  rl.once('close', () => {
+    // end of input
+    console.log('rl close');
+  });
+
+  var app = express();
+  app.listen(process.argv[3], () => {
+   console.log(`Server running on port ${process.argv[3]}`);
+  });
+  app.get("/", (req, res, next) => {
+    console.log("web root")
+    //console.log(Object.keys(res))
+    res.set('Content-Type', 'text/html');
+    res.send(Buffer.from('<h2>Web Root</h2>'));
+  });
+  app.get("/test", (req, res, next) => {
+    res.json(["Tony","Lisa","Michael","Ginger","Food"]);
+  });
+  app.get("*", (req, res, next) => {
+    //res.set('Content-Type', 'text/html');
+    res.json([]);
+  });
 
 })()

@@ -41,6 +41,7 @@ export function streamToConsole (stream) {
           process.exit(0);
         } else {
           console.log('> ' + msg.toString().replace('\n', ''))
+//    node.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node2 **')).catch(err => {
         }
       }
     }
