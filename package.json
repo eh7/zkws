@@ -47,6 +47,7 @@
     "@libp2p/webrtc": "^3.2.3",
     "@libp2p/websockets": "^7.0.8",
     "@nodeutils/defaults-deep": "^1.1.0",
-    "libp2p": "^0.46.12"
+    "libp2p": "^0.46.12",
+    "peerjs": "^1.5.1"
   }
 }

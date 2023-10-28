@@ -130,6 +130,7 @@ func createHost() host.Host {
 	//fmt.Printf("privkey: %s\n", privkey)
         privBin, err := ioutil.ReadFile("key/priv-bin")
         priv, err := crypto.UnmarshalSecp256k1PrivateKey(privBin)
+	fmt.Printf("priv: %s\n", priv)
 
 	// testing fixing webrtc multiaddress see libs ~/go/
 	rcmgr := &network.NullResourceManager{}

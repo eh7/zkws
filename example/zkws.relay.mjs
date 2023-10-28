@@ -25,7 +25,7 @@ import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
     peerId: peer,
     addresses: {
       listen: [
-        '/ip4/0.0.0.0/tcp/0'
+        '/ip4/0.0.0.0/tcp/10333'
       ]
     },
     transports: [tcp(), circuitRelayTransport()],

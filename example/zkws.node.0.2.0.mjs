@@ -36,7 +36,7 @@ const createNode = async (bootstrappers, _peer) => {
     //transports: [tcp()],
     transports: [
       webSockets(),
-      //tcp(),
+      tcp(),
     ],
     streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
@@ -66,7 +66,8 @@ const createNode = async (bootstrappers, _peer) => {
 
   const relayMultiaddrs = [
     //'/ip4/127.0.0.1/tcp/10333/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
-    '/ip4/127.0.0.1/tcp/10333/ws/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
+    //'/ip4/127.0.0.1/tcp/10333/ws/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
+    '/ip4/192.168.0.199/tcp/36465/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
   ]
 
   const topic = 'news'
@@ -190,5 +191,8 @@ const createNode = async (bootstrappers, _peer) => {
     console.log('sent news pubsub');
   }, 1000)
 */
+
+  console.log('peerId1: ', node1.peerId)
+  console.log('peerId2: ', node2.peerId)
 
 })()

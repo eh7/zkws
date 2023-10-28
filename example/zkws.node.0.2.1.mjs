@@ -1,0 +1,138 @@
+/* eslint-disable no-console */
+
+import delay from 'delay'
+
+import { noise } from '@chainsafe/libp2p-noise'
+import { yamux } from '@chainsafe/libp2p-yamux'
+import { bootstrap } from '@libp2p/bootstrap'
+import { floodsub } from '@libp2p/floodsub'
+import { mplex } from '@libp2p/mplex'
+import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery'
+import { tcp } from '@libp2p/tcp'
+import { webSockets } from '@libp2p/websockets'
+import { createLibp2p } from 'libp2p'
+import { circuitRelayTransport, circuitRelayServer } from 'libp2p/circuit-relay'
+import { identifyService } from 'libp2p/identify'
+
+import { kadDHT } from '@libp2p/kad-dht'
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+
+import {
+  createFromJSON,
+} from '@libp2p/peer-id-factory'
+import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
+import { stdinToStream, streamToConsole } from './stream.mjs'
+
+const createNode = async (bootstrappers, _peer) => {
+  const thisPeer = (_peer === 'peer1') ? peer1 : peer0
+  const peer = await createFromJSON(thisPeer)
+  const node = await createLibp2p({
+    peerId: peer,
+    addresses: {
+      listen: ['/ip4/0.0.0.0/tcp/0/ws']
+    },
+    //transports: [tcp()],
+    transports: [
+      webSockets(),
+      tcp(),
+    ],
+    streamMuxers: [yamux(), mplex()],
+    connectionEncryption: [noise()],
+    peerDiscovery: [
+      bootstrap({
+        list: bootstrappers
+      }),
+      pubsubPeerDiscovery({
+        interval: 1000
+      })
+      /*
+      */
+    ],
+    services: {
+      dht: kadDHT({
+        allowQueryWithZeroPeers: true
+      }),
+      pubsub: floodsub(),
+      identify: identifyService()
+    }
+  })
+
+  return node
+}
+
+;(async () => {
+
+  const relayMultiaddrs = [
+    //'/ip4/127.0.0.1/tcp/10333/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
+    //'/ip4/127.0.0.1/tcp/10333/ws/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
+    '/ip4/192.168.0.199/tcp/10333/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
+  ]
+
+  const topic = 'news'
+
+  if (!process.argv[2]) {
+    console.log('USAGE: node ', process.argv[1], ' <peer0|peer2>')
+    process.exit(1)
+  }
+
+  const node = await createNode(relayMultiaddrs, process.argv[2])
+
+  //const node = await createNode(relayMultiaddrs, 'peer0')
+
+  await delay(1000)
+
+  //console.log(Object.keys(node))
+
+  node.addEventListener('peer:discovery', async (evt) => {
+    const peer = evt.detail
+    console.log(`Peer ${node.peerId.toString()} discovered: ${peer.id.toString()}`)
+    console.log(await node.peerStore.all());
+  })
+
+  // Handle messages for the protocol
+  await node.handle('/chat/1.0.0', async ({ stream }) => {
+    //console.log(12345, stream.toString());
+    // Send stdin to the stream
+    stdinToStream(stream)
+    // Read the stream and output to console
+    streamToConsole(stream)
+  })
+  // const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
+
+  // Dial to the remote peer (the "listener")
+  //const stream = await node.dialProtocol(node.getMultiaddrs(), '/chat/1.0.0')
+  //console.log(node2.getMultiaddrs())
+
+  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
+  console.log('Type a message and see what happens')
+/*
+  // Send stdin to the stream
+  stdinToStream(stream)
+  // Read the stream and output to console
+  streamToConsole(stream)
+*/
+
+
+  node.services.pubsub.subscribe(topic)
+  node.services.pubsub.addEventListener('message', (evt) => {
+    if (evt.detail.topic === topic) {
+      console.log(`node1 received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+    }
+    //console.log(`node1 received: ${evt.detail.topic}`)
+  })
+
+  setInterval(() => {
+    node.services.pubsub.publish(topic, uint8ArrayFromString('** PubSub Message from node2 **')).catch(err => {
+      console.error(err)
+    })
+    console.log('sent news pubsub test');
+  }, 5000)
+  
+  //console.log(node1.peerRouting.findPeer);
+  //const peer = await node1.peerRouting.findPeer(node2.peerId)
+
+  console.log('peerId1: ', node.peerId)
+
+})()
