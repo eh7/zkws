@@ -25,14 +25,59 @@ import {
 import { relay as relayPeer, peer0, peer1 } from './zkws.peerIds.mjs'
 import { stdinToStream, streamToConsole } from './stream.mjs'
 
-import { default as readline } from 'readline';
-import { default as express } from "express";
+import { default as readline } from 'readline'
+import { default as express } from 'express'
+//import { default as  webpush } from 'web-push'
+import { Server } from "socket.io"
+import { createServer } from 'node:http'
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   terminal: false
 });
+
+const topic = 'news'
+
+const createClientNode = async (bootstrappers) => {
+  const node = await createLibp2p({
+    addresses: {
+      listen: ['/ip4/0.0.0.0/tcp/0/ws']
+    },
+    //transports: [tcp()],
+    transports: [
+      webSockets(),
+    ],
+    streamMuxers: [yamux(), mplex()],
+    connectionEncryption: [noise()],
+    peerDiscovery: [
+      bootstrap({
+        list: bootstrappers
+      }),
+    ],
+    services: {
+      dht: kadDHT({
+        allowQueryWithZeroPeers: true
+      }),
+      pubsub: floodsub(),
+      identify: identifyService()
+    }
+  })
+
+  node.services.pubsub.publish(topic, uint8ArrayFromString("hello from clientNode")).catch(err => {
+    console.log("pubsub.publish error:", err)
+  })
+  node.services.pubsub.subscribe(topic)
+  node.services.pubsub.addEventListener('message', (evt) => {
+    if (evt.detail.topic === topic) {
+      console.log(`>> web client received: ${uint8ArrayToString(evt.detail.data)} \n\ton topic ${evt.detail.topic}\n\tfrom ${evt.detail.from}`)
+      //window.messages.value = "sssss";
+    }
+    //console.log(`node1 received: ${evt.detail.topic}`)
+  })
+
+  return node
+}
 
 const createNode = async (bootstrappers, _peer) => {
   const thisPeer = (_peer === 'peer1') ? peer1 : peer0
@@ -78,8 +123,6 @@ const createNode = async (bootstrappers, _peer) => {
     //'/ip4/127.0.0.1/tcp/10333/ws/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
     '/ip4/192.168.0.199/tcp/10333/p2p/QmYTDmfM9RnQBoqQ6Lrf5r9W958hs221M86sUgszbSw6q9'
   ]
-
-  const topic = 'news'
 
   if (!process.argv[3]) {
     console.log('USAGE: node ', process.argv[1], ' <[peer0|peer1]> <port number>')
@@ -162,15 +205,28 @@ const createNode = async (bootstrappers, _peer) => {
     console.log('rl close');
   });
 
-  var app = express();
+  // express and socket,io setup and deployment
+  const app = express();
+  const server = createServer(app);
+  const io = new Server(server);
+
+  const clientNode = await createClientNode([
+    node.getMultiaddrs()[0]
+  ])
+
+  io.on('connection', (socket) => {
+    console.log('a user connected');
+  });
   app.listen(process.argv[3], () => {
-   console.log(`Server running on port ${process.argv[3]}`);
+    console.log(node.getMultiaddrs())
+    console.log(`Server running on port ${process.argv[3]}`);
   });
   app.get("/", (req, res, next) => {
     console.log("web root")
     //console.log(Object.keys(res))
-    res.set('Content-Type', 'text/html');
-    res.send(Buffer.from('<h2>Web Root</h2>'));
+    //res.set('Content-Type', 'text/html');
+    //res.send(Buffer.from(`<h2>Web Root</h2>peer: ${node.peerId}`));
+    res.sendFile(new URL('../build/test/zkws.node.0.2.1.html', import.meta.url).pathname);
   });
   app.get("/peerId", (req, res, next) => {
     res.json({ peerId: node.peerId })

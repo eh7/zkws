@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>libp2p chat</title>
+    <script src="https://unpkg.com/libp2p/dist/index.min.js"></script>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script>
+
+      const topic = 'news'
+
+      const createClientNode = async (bootstrappers) => {
+        console.log(bootstrappers)
+        console.log(window.Libp2P)
+        const Libp2p = window.Libp2P
+
+/*
+        const node = await Libp2p.createLibp2p({
+          addresses: {
+            listen: ['/ip4/0.0.0.0/tcp/0/ws']
+          },
+          //transports: [tcp()],
+          transports: [
+            Libp2p.webSockets(),
+          ],
+          streamMuxers: [yamux(), mplex()],
+          connectionEncryption: [noise()],
+          peerDiscovery: [
+            bootstrap({
+              list: bootstrappers
+            }),
+          ],
+          services: {
+            dht: kadDHT({
+              allowQueryWithZeroPeers: true
+            }),
+            pubsub: floodsub(),
+            identify: identifyService()
+          }
+        })
+
+        node.services.pubsub.publish(topic, uint8ArrayFromString("hello from clientNode")).catch(err => {
+          console.log("pubsub.publish error:", err)
+        })
+        node.services.pubsub.subscribe(topic)
+        node.services.pubsub.addEventListener('message', (evt) => {
+          if (evt.detail.topic === topic) {
+            console.log(`>> web client received: ${uint8ArrayToString(evt.detail.data)} \n\ton topic ${evt.detail.topic}\n\tfrom ${evt.detail.from}`)
+            //window.messages.value = "sssss";
+          }
+          //console.log(`node1 received: ${evt.detail.topic}`)
+        })
+
+        return node
+      }
+*/
+
+      const node = createClientNode([
+      ])
+
+      alert(321)
+    </script>
+  </body>
+</html>
