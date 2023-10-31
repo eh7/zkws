@@ -1,0 +1,10 @@
+node_modules
+build
+dist
+.docs
+.coverage
+node_modules
+yarn.lock
+.vscode/
+.DS_Store
+go-peer/go-peer
