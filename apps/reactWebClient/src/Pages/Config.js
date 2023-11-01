@@ -15,7 +15,7 @@ import { identifyService } from 'libp2p/identify'
 import { kadDHT } from '@libp2p/kad-dht'
 */
 
-export class Home extends React.Component {
+export class Config extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -26,7 +26,7 @@ export class Home extends React.Component {
 
   render() {
     return (
-      <h1>Pages - Home Page</h1>
+      <h1>Pages - Config Page</h1>
     );
   }
 }
