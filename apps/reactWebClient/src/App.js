@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import Peer from "./Lib/Peer"
+
 import NavBar from "./Components/NavBar"
 
 import { Home } from "./Pages/Home"
@@ -15,6 +17,9 @@ export class App extends React.Component {
   }
 
   render() {
+    const peer = new Peer()
+    console.log('peer object: ', peer);
+    console.log('peer test function: ', peer.test());
     return (
       <div>
         <NavBar />
