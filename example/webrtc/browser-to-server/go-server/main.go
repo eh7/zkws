@@ -19,6 +19,7 @@ import (
 var listenerIp = net.IPv4(127, 0, 0, 1)
 
 func init() {
+	return
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return

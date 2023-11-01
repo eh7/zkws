@@ -1,0 +1,39 @@
+{
+  "moduels": "node16",
+  "_type": "module",
+  "name": "reactwebclient",
+  "version": "1.0.0",
+  "description": "",
+  "mainOLd": "src/index.js",
+  "scripts": {
+    "startSrc": "parcel src/index.html --open",
+    "build": "rm -f dist/* && parcel build src/index.html",
+    "start": "parcel src/index.html --open",
+    "dev": "http-server dist/",
+    "buildOld": "rm -f dist/* && parcel build src/index.html && sed -i 's/ src=\"\\// src=\".\\//g' dist/index.html",
+    "startOld": "npm run build && parcel dist/index.html --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Gavin Francis <gav@eh7.co.uk>",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.10.1",
+    "parcel-bundler": "^1.12.5"
+  },
+  "dependencies": {
+    "@chainsafe/libp2p-noise": "^13.0.2",
+    "@chainsafe/libp2p-yamux": "^5.0.0",
+    "@libp2p/floodsub": "^8.0.10",
+    "@libp2p/kad-dht": "^10.0.11",
+    "@libp2p/mplex": "^9.0.9",
+    "@libp2p/pubsub-peer-discovery": "^9.0.2",
+    "@libp2p/websockets": "^7.0.10",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
+    "http-server": "^14.1.1",
+    "libp2p": "^0.46.16",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
