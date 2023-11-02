@@ -1,5 +1,5 @@
-import { noise } from '@chainsafe/libp2p-noise'
 /*
+import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 //import { bootstrap } from '@libp2p/bootstrap'
 import { floodsub } from '@libp2p/floodsub'
@@ -12,6 +12,8 @@ import { createLibp2p } from 'libp2p'
 import { identifyService } from 'libp2p/identify'
 import { kadDHT } from '@libp2p/kad-dht'
 */
+
+//import { createLibp2p } from 'libp2p'
 
 export class Peer {
   constructor (props) {
