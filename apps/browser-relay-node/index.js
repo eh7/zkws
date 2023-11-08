@@ -128,13 +128,13 @@ DOM.subscribeTopicButton().onclick = async () => {
   const topic = DOM.subscribeTopicInput().value
   appendOutput(`Subscribing to '${clean(topic)}'`)
 
-  console.log(
-   libp2p.services.pubsub.subscribe,
-  )
+  //console.log(
+  // libp2p.services.pubsub.subscribe,
+  //)
   await libp2p.services.pubsub.subscribe(topic)
 
-  const peerList = libp2p.services.pubsub.getSubscribers(topic)
-  console.log('peerList', peerList)
+  //const peerList = libp2p.services.pubsub.getSubscribers(topic)
+  //console.log('peerList', peerList)
 
   DOM.sendTopicMessageInput().disabled = undefined
   DOM.sendTopicMessageButton().disabled = undefined
@@ -166,7 +166,9 @@ setInterval(() => {
 libp2p.services.pubsub.addEventListener('message', event => {
   const topic = event.detail.topic
   const message = toString(event.detail.data)
+  const peerId = event.detail.from.toString()
+  console.log('event.detail: ', event.detail)
 
-  appendOutput(`Message received on topic '${topic}'`)
+  appendOutput(`Message received on topic '${topic}' from '${peerId}'`)
   appendOutput(message)
 })

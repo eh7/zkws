@@ -1,3 +1,7 @@
+> User libp2p pubsub in browsers with repaly and access to data node
+
+the rest is default readme from jslibp2p-examples
+
 # @libp2p/example-browser-pubsub <!-- omit in toc -->
 
 [![libp2p.io](https://img.shields.io/badge/project-libp2p-yellow.svg?style=flat-square)](http://libp2p.io/)
