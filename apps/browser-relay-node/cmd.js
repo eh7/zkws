@@ -13,6 +13,9 @@ import { floodsub } from '@libp2p/floodsub'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { multiaddr } from '@multiformats/multiaddr'
 
+import { fromString } from 'uint8arrays/from-string'
+import { toString } from 'uint8arrays/to-string'
+
 if (!process.argv[2]) {
   console.log("UASAGE: node ", process.argv[1], " [path]")
   //process.exit(1);
@@ -53,6 +56,10 @@ node.addEventListener('peer:connect', (event) => {
   console.log('peer(s): ', node.getPeers().map((ma) => ma.toString()))
 })
 
+node.services.pubsub.addEventListener('message', (evt) => {
+  console.log('--- pubsub message: ', evt)
+})
+
 if (process.argv[2]) {
   const val = process.argv[2]
   const ma = multiaddr(val)
@@ -60,13 +67,11 @@ if (process.argv[2]) {
   await node.dial(ma)
 
   const topic = 'testing'
+  const message = 'this is a test message'
   console.log(
-    node.services.pubsub.subscribe(topic)
+    await node.services.pubsub.subscribe(topic)
   )
-  node.services.pubsub.addEventListener('message', (evt) => {
-    console.log('pubsub message: ', evt)
-  })
-  //await node.services.pubsub.publish(topic, fromString(message))
+  await node.services.pubsub.publish(topic, fromString(message))
 }
 
 /*
