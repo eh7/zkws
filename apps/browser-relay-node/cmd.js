@@ -15,6 +15,7 @@ import { multiaddr } from '@multiformats/multiaddr'
 
 import { fromString } from 'uint8arrays/from-string'
 import { toString } from 'uint8arrays/to-string'
+import { stdinToStream, streamToConsole } from './stream.js'
 
 if (!process.argv[2]) {
   console.log("UASAGE: node ", process.argv[1], " [path]")
@@ -57,7 +58,14 @@ node.addEventListener('peer:connect', (event) => {
 })
 
 node.services.pubsub.addEventListener('message', (evt) => {
-  console.log('--- pubsub message: ', evt)
+  console.log('---> pubsub message: ', evt)
+})
+
+await node.handle('/chat/1.0.0', async ({ stream }) => {
+  // Send stdin to the stream
+  stdinToStream(stream)
+  // Read the stream and output to console
+  streamToConsole(stream)
 })
 
 if (process.argv[2]) {
@@ -72,6 +80,15 @@ if (process.argv[2]) {
     await node.services.pubsub.subscribe(topic)
   )
   await node.services.pubsub.publish(topic, fromString(message))
+
+  /*
+  const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${idListener.toString()}`)
+  const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
+  */
+
+  const stream = await node.dialProtocol(ma, '/chat/1.0.0')
+  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
+  console.log('Type a message and see what happens')
 }
 
 /*
