@@ -12,6 +12,8 @@ import { fromString, toString } from 'uint8arrays'
 
 import { stdinToStream, streamToConsole } from './stream.js'
 
+//localStorage.setItem('debug', 'libp2p:*')
+
 const DOM = {
   peerId: () => document.getElementById('peer-id'),
 

@@ -81,6 +81,20 @@ export async function startLibp2p() {
     }
   })
 
+  libp2p.addEventListener('peer:connect', (evt) => {
+    const peerId = evt.detail
+    console.log('Connection established to:', peerId.toString()) // Emitted when a peer has been found
+    //const peer = await libp2p.peerRouting.findPeer(node3.peerId)
+    console.log("ZZZZZZZZZZZZZZZZZ: ", libp2p.peerRouting.findPeer)
+
+  })
+
+  libp2p.addEventListener('peer:discovery', (evt) => {
+    const peerInfo = evt.detail
+
+    console.log('Discovered:', peerInfo.id.toString())
+  })
+
   libp2p.services.pubsub.subscribe(CHAT_TOPIC)
   libp2p.services.pubsub.subscribe(CHAT_FILE_TOPIC)
 

@@ -10,6 +10,8 @@ import { createLibp2p } from 'libp2p'
 import { circuitRelayTransport, circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 
+import { pull } from 'pull-stream'
+
 import { kadDHT } from '@libp2p/kad-dht'
 
 import {
@@ -56,6 +58,17 @@ const run = async () => {
   relay.addEventListener('peer:discovery', (evt) => {
     const peer = evt.detail
     console.log(`Relay Peer ${relay.peerId.toString()} discovered: ${peer.id.toString()}`)
+
+    /*
+    const pull = require('pull-stream')
+    */
+    libp2p.handle('/my/protocol/name/1.0.0', (protocolName, connection) => {
+      pull(connection, pull.collect((err, data) => {
+        console.log("received:", data.toString())
+      }))
+    })
+    console.log(`Relay Peer ${relay.peerId.toString()} discovered: ${peer.id.toString()}`)
+
   })
 
   /*

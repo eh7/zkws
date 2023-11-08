@@ -5,7 +5,7 @@ go 1.18
 // TODO: Remove this once webrtc is merged into Go libp2p
 replace github.com/libp2p/go-libp2p => github.com/libp2p/go-libp2p v0.26.1-0.20230404184453-257fbfba50c3
 
-require github.com/libp2p/go-libp2p v0.26.3
+require github.com/libp2p/go-libp2p v0.32.0
 
 require (
 	github.com/benbjohnson/clock v1.3.0 // indirect

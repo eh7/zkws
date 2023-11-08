@@ -14,8 +14,8 @@ import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { multiaddr } from '@multiformats/multiaddr'
 
 if (!process.argv[2]) {
-  console.log("UASAGE: node ", process.argv[1])
-  process.exit(1);
+  console.log("UASAGE: node ", process.argv[1], " [path]")
+  //process.exit(1);
 }
 
 const node = await createLibp2p({
@@ -32,7 +32,9 @@ const node = await createLibp2p({
   services: {
     identify: identifyService(),
     //pubsub: gossipsub(),
-    pubsub: floodsub(),
+    pubsub: floodsub({
+      emitSelf: true
+    }),
     relay: circuitRelayServer()
   }
 })
@@ -41,6 +43,33 @@ await node.start()
 
 console.log('Relay listening on multiaddr(s): ', node.getMultiaddrs().map((ma) => ma.toString()))
 
+node.addEventListener('peer:connect', (event) => {
+  const peerList = node.getPeers()
+  console.log(
+    'peer:connect:',
+    event,
+    //peerList
+  )
+  console.log('peer(s): ', node.getPeers().map((ma) => ma.toString()))
+})
+
+if (process.argv[2]) {
+  const val = process.argv[2]
+  const ma = multiaddr(val)
+  console.log(ma)
+  await node.dial(ma)
+
+  const topic = 'testing'
+  console.log(
+    node.services.pubsub.subscribe(topic)
+  )
+  node.services.pubsub.addEventListener('message', (evt) => {
+    console.log('pubsub message: ', evt)
+  })
+  //await node.services.pubsub.publish(topic, fromString(message))
+}
+
+/*
 node.services.pubsub.subscribe('fruit')
 node.services.pubsub.addEventListener('message', (evt) => {
   console.log(evt)
@@ -49,7 +78,7 @@ node.services.pubsub.addEventListener('message', (evt) => {
 node.services.pubsub.publish('fruit', new TextEncoder().encode('banana'))
 
 console.log(node.services.pubsub)
-
+*/
 
 /*
 const dial = async () => {

@@ -13,6 +13,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
+	//`"github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/relay"
 	webrtc "github.com/libp2p/go-libp2p/p2p/transport/webrtc"
 )
 
@@ -72,7 +73,8 @@ func main() {
 	}
 
 	remoteAddrs, _ := peer.AddrInfoToP2pAddrs(&remoteInfo)
-	fmt.Println("p2p addr: ", remoteAddrs[0])
+	//fmt.Println("p2p addr: ", remoteAddrs[0])
+	fmt.Println("p2p addr: ", remoteAddrs)
 
 	fmt.Println("press Ctrl+C to quit")
 	ch := make(chan os.Signal, 1)
@@ -86,7 +88,7 @@ func createHost() host.Host {
 		libp2p.ListenAddrStrings(
 			fmt.Sprintf("/ip4/%s/udp/0/webrtc-direct", listenerIp),
 		),
-		libp2p.DisableRelay(),
+		//libp2p.DisableRelay(),
 		libp2p.Ping(true),
 	)
 	if err != nil {
