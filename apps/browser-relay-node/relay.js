@@ -10,7 +10,10 @@ import { identifyService } from 'libp2p/identify'
 
 const server = await createLibp2p({
   addresses: {
-    listen: ['/ip4/127.0.0.1/tcp/0/ws']
+    listen: [
+      '/ip4/0.0.0.0/tcp/0/ws'
+      //'/ip4/127.0.0.1/tcp/0/ws'
+    ]
   },
   transports: [
     webSockets({
@@ -25,4 +28,38 @@ const server = await createLibp2p({
   }
 })
 
+server.addEventListener('peer:connect', (event) => {
+  const peerList = server.getPeers()
+  console.log(
+    'peer:connect:',
+    event,
+  )
+  /*
+  const connections = server.getConnections()
+  console.log(
+    'peer:connect:',
+    event,
+    peerList,
+    Object.keys(connections),
+    connections[0],
+    connections[0].remoteAddr.toString(),
+  )
+  */
+})
+
+server.addEventListener('peer:disconnect', (event) => {
+  const peerList = server.getPeers()
+  console.log('peer:disconnect:', event, peerList)
+  /*
+  const connections = server.getConnections()
+  console.log('peer:disconnect:', event, peerList, connections)
+  */
+})
+
+server.addEventListener('self:peer:update', () => {
+  console.log('self:peer:update')
+  console.log('Relay listening on multiaddr(s): ', server.getMultiaddrs().map((ma) => ma.toString()))
+})
+
 console.log('Relay listening on multiaddr(s): ', server.getMultiaddrs().map((ma) => ma.toString()))
+console.log(server.addEventListener)

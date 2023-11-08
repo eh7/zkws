@@ -10,6 +10,8 @@ import { circuitRelayTransport } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 import { fromString, toString } from 'uint8arrays'
 
+import { stdinToStream, streamToConsole } from './stream.js'
+
 const DOM = {
   peerId: () => document.getElementById('peer-id'),
 
@@ -81,7 +83,7 @@ const libp2p = await createLibp2p({
   }
 })
 
-libp2p.start()
+await libp2p.start()
 
 DOM.peerId().innerText = libp2p.peerId.toString()
 
@@ -113,6 +115,11 @@ libp2p.addEventListener('self:peer:update', () => {
       return el
     })
   DOM.listeningAddressesList().replaceChildren(...multiaddrs)
+
+  console.log('Dialer ready, listening on:', libp2p.getMultiaddrs())
+  libp2p.getMultiaddrs().forEach((ma) => {
+    console.log(ma.toString())
+  })
 })
 
 // dial remote peer
@@ -167,8 +174,43 @@ libp2p.services.pubsub.addEventListener('message', event => {
   const topic = event.detail.topic
   const message = toString(event.detail.data)
   const peerId = event.detail.from.toString()
-  console.log('event.detail: ', event.detail)
+
+  //console.log('event.detail: ', event.detail)
 
   appendOutput(`Message received on topic '${topic}' from '${peerId}'`)
   appendOutput(message)
 })
+
+  // Log a message when a remote peer connects to us
+libp2p.addEventListener('peer:connect', (evt) => {
+  const remotePeer = evt.detail
+  console.log('connected to: ', remotePeer.toString())
+})
+
+// Handle messages for the protocol
+await libp2p.handle('/chat/1.0.0', async ({ stream }) => {
+  // Send stdin to the stream
+  stdinToStream(stream)
+  // Read the stream and output to console
+  streamToConsole(stream)
+})
+
+/*
+  // Output this node's address
+  console.log('Dialer ready, listening on:', libp2p.getMultiaddrs())
+  libp2p.getMultiaddrs().forEach((ma) => {
+    console.log(ma.toString())
+  })
+
+  // Dial to the remote peer (the "listener")
+  const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10334/p2p/${idListener.toString()}`)
+  const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
+
+  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
+  console.log('Type a message and see what happens')
+
+  // Send stdin to the stream
+  stdinToStream(stream)
+  // Read the stream and output to console
+  streamToConsole(stream)
+*/
