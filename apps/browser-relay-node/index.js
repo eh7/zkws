@@ -126,10 +126,18 @@ libp2p.addEventListener('self:peer:update', () => {
 
 // dial remote peer
 DOM.dialMultiaddrButton().onclick = async () => {
-  const ma = multiaddr(DOM.dialMultiaddrInput().value)
-  appendOutput(`Dialing '${ma}'`)
-  await libp2p.dial(ma)
-  appendOutput(`Connected to '${ma}'`)
+  try{ 
+    const ma = multiaddr(DOM.dialMultiaddrInput().value)
+    appendOutput(`Dialing '${ma}'`)
+    console.log('swarm')
+    await libp2p.dial(ma)
+    appendOutput(`Connected to '${ma}'`)
+
+    console.log('swarm', libp2p.getPeers())
+  }
+  catch (e) {
+    console.log('dialMultiaddrButton err:', e)
+  }
 }
 
 // subscribe to pubsub topic
@@ -157,6 +165,13 @@ DOM.sendTopicMessageButton().onclick = async () => {
 
   await libp2p.services.pubsub.publish(topic, fromString(message))
 }
+
+/*
+setInterval(() => {
+  const message = 'testing 123 testing....'
+  await libp2p.services.pubsub.publish(topic, fromString(message))
+}, 5000)
+*/
 
 // update topic peers
 setInterval(() => {
