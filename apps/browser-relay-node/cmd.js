@@ -24,8 +24,11 @@ if (!process.argv[2]) {
 
 let connectedPeeers = []
 
+const listen = (process.argv[2]) ? '/ip4/127.0.0.1/tcp/13455/ws' : '/ip4/127.0.0.1/tcp/13456/ws';
+
 const node = await createLibp2p({
   addresses: {
+    //listen: listen
     listen: ['/ip4/127.0.0.1/tcp/0/ws']
   },
   transports: [
@@ -39,7 +42,7 @@ const node = await createLibp2p({
     identify: identifyService(),
     //pubsub: gossipsub(),
     pubsub: floodsub({
-      emitSelf: true
+      emitSelf: false
     }),
     relay: circuitRelayServer()
   }
@@ -114,10 +117,6 @@ node.addEventListener('peer:connect', async (event) => {
   //const stream = await nodeDialer.dialProtocol(listenerMa, '/chat/1.0.0')
 })
 
-node.services.pubsub.addEventListener('message', (evt) => {
-  console.log('---> pubsub message: ', evt)
-})
-
 await node.handle('/chat/1.0.0', async ({ stream }) => {
   try {
     // Send stdin to the stream
@@ -130,18 +129,21 @@ await node.handle('/chat/1.0.0', async ({ stream }) => {
   }
 })
 
+const topic = 'testing'
+const message = 'this is a test message'
+
 if (process.argv[2]) {
   const val = process.argv[2]
   const ma = multiaddr(val)
   console.log(ma)
   await node.dial(ma)
 
-  const topic = 'testing'
-  const message = 'this is a test message'
-  console.log(
-    await node.services.pubsub.subscribe(topic)
-  )
-  await node.services.pubsub.publish(topic, fromString(message))
+//  const topic = 'testing'
+//  const message = 'this is a test message'
+//  console.log(
+//    await node.services.pubsub.subscribe(topic)
+//  )
+//  await node.services.pubsub.publish(topic, fromString(message))
 
   /*
   const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${idListener.toString()}`)
@@ -190,3 +192,23 @@ const run = async () => {
 
 run()
 */
+
+
+//await node.peerStore.patch(node2.peerId, {
+//  multiaddrs: node2.getMultiaddrs()
+//})
+//await node.dial(node2.peerId)
+//
+
+await node.services.pubsub.subscribe(topic)
+node.services.pubsub.addEventListener('message', (evt) => {
+  //console.log(`node ${node.peerId.toString()} received: ${uint8ArrayToString(evt.detail.data)} on topic ${evt.detail.topic}`)
+  console.log(`node ${node.peerId.toString()} received: ${toString(evt.detail.data)} on topic ${evt.detail.topic}`)
+})
+//await node.services.pubsub.publish(topic, fromString(message))
+setInterval(() => {
+  node.services.pubsub.publish(topic, fromString('Bird bird bird, bird is the word!')).catch(err => {
+    console.error(err)
+  })
+}, 1000)
+
