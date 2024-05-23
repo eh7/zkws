@@ -61,13 +61,13 @@ const run = async () => {
 
     /*
     const pull = require('pull-stream')
-    */
-    libp2p.handle('/my/protocol/name/1.0.0', (protocolName, connection) => {
+    relay.handle('/my/protocol/name/1.0.0', (protocolName, connection) => {
       pull(connection, pull.collect((err, data) => {
         console.log("received:", data.toString())
       }))
     })
     console.log(`Relay Peer ${relay.peerId.toString()} discovered: ${peer.id.toString()}`)
+    */
 
   })
 

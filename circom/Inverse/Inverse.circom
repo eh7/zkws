@@ -1,13 +1,15 @@
+pragma circom 2.0.0;
+
 template Inverse() {
   signal input in;
   signal output out;
   signal inv;
-  signal iszero;
- 
-  inv <- in!=0 ? 1/in : 0;
-  iszero <== -in*inv + 1;
-  in*iszero === 0;
-  out <== (1 - iszero)*inv;
+
+  inv <-- in!=0 ? 1/in : 0;
+  out <== -in*inv +1;
+  log(in); 
+  log(inv); 
+  //out <== inv;
 }
  
 component main = Inverse();

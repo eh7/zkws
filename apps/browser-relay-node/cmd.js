@@ -102,6 +102,7 @@ node.addEventListener('peer:disconnect', async (event) => {
   console.log('hangUp peers:', connectedPeeers,
     connectedPeeers.map((ma) => ma.toString())
   )
+  //process.exit(0)
 })
 
 node.addEventListener('peer:connect', async (event) => {

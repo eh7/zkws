@@ -8,6 +8,22 @@ import { createLibp2p } from 'libp2p'
 import { circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 
+import express from 'express'
+const app = express()
+const port = 3999
+
+app.get('/', (req, res) => {
+  res.send('no pubkey specified')
+})
+
+app.get('/pubkey/*', (req, res) => {
+  res.send('Hello World! for pubkey :: ', req.baseUrl)
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
 const server = await createLibp2p({
   addresses: {
     listen: [

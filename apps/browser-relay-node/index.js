@@ -12,6 +12,9 @@ import { fromString, toString } from 'uint8arrays'
 
 import { stdinToStream, streamToConsole } from './stream.js'
 
+//import express from 'express'
+//const app = express()
+
 //localStorage.setItem('debug', 'libp2p:*')
 
 const DOM = {

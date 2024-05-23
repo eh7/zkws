@@ -10,3 +10,5 @@ snarkjs zkey contribute test_0000.zkey test_0001.zkey --name="1st Contributor Na
 snarkjs zkey export verificationkey test_0001.zkey verification_key.json
 
 snarkjs groth16 prove test_0001.zkey witness.wtns proof.json public.json
+
+snarkjs groth16 verify verification_key.json public.json proof.json
