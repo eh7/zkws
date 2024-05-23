@@ -15,6 +15,8 @@ export default function Home() {
   const { peerStats, setPeerStats } = usePeerContext()
   const { listenAddresses, setListenAddresses } = useListenAddressesContext()
   const [maddr, setMultiaddr] = useState('')
+  const [peerId, setPeerId] = useState('')
+  //const [message, setMessage] = useState('')
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -75,6 +77,41 @@ export default function Home() {
       protocols,
     }))
   }
+
+  const handleSendPeerMessage = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!peerId) {
+        return
+      }
+
+      try {
+        alert('handleSendPeerMessage: ' + peerId)
+        //const connection = await connectToMultiaddr(libp2p)(multiaddr(maddr))
+        //console.log('connection: ', connection)
+
+        //return connection
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    [libp2p, peerId],
+  )
+
+  /*
+  const handleMessageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMessage(e.target.value)
+    },
+    [message],
+  )
+  */
+
+  const handlePeerIdChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPeerId(e.target.value)
+    },
+    [setPeerId],
+  )
 
   const handleConnectToMultiaddr = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -167,6 +204,34 @@ export default function Home() {
                   onClick={handleConnectToMultiaddr}
                 >
                   Connect to multiaddr
+                </button>
+              </div>
+
+              <div className="my-6 w-1/2">
+                <label
+                  htmlFor="peer-id"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  send peer Id message
+                </label>
+                <div className="mt-2">
+                  <input
+                    value={peerId}
+                    type="text"
+                    name="peer-id-message"
+                    id="peer-idi-message"
+                    className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    placeholder="12D3Koo..."
+                    aria-describedby="multiaddr-id-description"
+                    onChange={handlePeerIdChange}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="rounded-md bg-indigo-600 my-2 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={handleSendPeerMessage}
+                >
+                  Send Peer Message
                 </button>
               </div>
 
