@@ -1,0 +1,2 @@
+https://www.scottbrady91.com/openssl/creating-rsa-keys-using-openssl
+https://medium.com/@bn121rajesh/rsa-sign-and-verify-using-openssl-behind-the-scene-bf3cac0aade2
