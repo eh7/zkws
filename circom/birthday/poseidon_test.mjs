@@ -1,4 +1,7 @@
 import { newMemEmptyTrie, buildEddsa, buildPoseidon, buildBabyjub } from 'circomlibjs'
+
+import { ethers } from "ethers"
+
 import { BigNumber } from '@ethersproject/bignumber'
 
 import { wasm as wasm_tester } from "circom_tester";
@@ -23,6 +26,24 @@ const areUnit8ArraysEqual = (a, b) => {
     }
   }
   return true;
+}
+
+function bnToBuf(bn) {
+  var hex = BigInt(bn).toString(16);
+  if (hex.length % 2) { hex = '0' + hex; }
+
+  var len = hex.length / 2;
+  var u8 = new Uint8Array(len);
+
+  var i = 0;
+  var j = 0;
+  while (i < len) {
+    u8[i] = parseInt(hex.slice(j, j+2), 16);
+    i += 1;
+    j += 2;
+  }
+
+  return u8;
 }
 
 const hashPoseidon = async () => {
@@ -58,7 +79,15 @@ const hashPoseidon = async () => {
     "1"
   ])
 
-  console.log(birthdayHash);
+  console.log(
+    'birthdayHash',
+     birthdayHash,
+     ethers.hexlify(
+       birthdayHash
+     ),
+     "\n"
+  );
+
   console.log(
     F.e("17192875363359537871702202739956153645448798961056702518827795889156046289498"),
     F.e(birthdayHash),
@@ -71,6 +100,16 @@ const hashPoseidon = async () => {
     )
   );
 
+
+  // more example to create and mapipulate posiedon hashes
+  const bnValue = BigInt("17192875363359537871702202739956153645448798961056702518827795889156046289498");
+  console.log(
+    bnValue
+  );
+  console.log(bnValue);
+  console.log("F.e", F.e(bnValue));
+  console.log("17192875363359537871702202739956153645448798961056702518827795889156046289498");
+//  console.log(BigInt);
 
  
   /*
