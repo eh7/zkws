@@ -15,6 +15,7 @@
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "eccrypto": "^1.1.6",
+    "elliptic": "^6.5.5",
     "ethers": "^6.12.1"
   }
 }
