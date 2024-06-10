@@ -2,6 +2,12 @@
 import { newMemEmptyTrie, buildEddsa, buildPoseidon, buildBabyjub } from 'circomlibjs'
 import { ethers } from "ethers"
 
+import { wasm as wasm_tester } from "circom_tester";
+
+import path from "path";
+
+const __dirname = path.resolve();
+
 const poseidon = await buildPoseidon()
 
 const F = poseidon.F;
@@ -11,6 +17,7 @@ const bnValue = BigInt("17192875363359537871702202739956153645448798961056702518
 console.log(
   F.e(bnValue)
 );
+console.log(bnValue);
 
 function poseidonArray(_numberString) {
   const bnValue = BigInt(_numberString);
@@ -24,7 +31,24 @@ function poseidonArray(_numberString) {
     //),
   );
 }
+console.log(
+  poseidon(Array.from("18091971"))
+);
 
-console.log(bnValue);
 
+poseidonArray("2")
 poseidonArray("1")
+
+const poseidonHash = poseidon([
+  "1",
+]);
+console.log(poseidonHash)
+
+const circuitBirthday = await wasm_tester(path.join(__dirname, "BirthdayPoseidon1.circom"))
+
+const w = await circuitBirthday.calculateWitness({
+  date: [
+    "1",
+  ]
+}, true);
+console.log(w[1].toString())
