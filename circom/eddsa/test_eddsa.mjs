@@ -35,6 +35,7 @@ const prvKeyOther = Buffer.from("00010203040506070809000102030405060708090001020
 //const prvKey = Buffer.from("00000000000000000000000000000000000000000000000000000000000000ff", "hex");
 const prvKey = Buffer.from("0000000000000000000000008eb6b18618707b3bc4ab802419ef8bb25c128ac3", "hex");
 //console.log(prvKey.toString('hex'));
+//console.log(prvKey);
 
 const pubKey = eddsa.prv2pub(prvKey);
 
