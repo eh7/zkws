@@ -8,6 +8,10 @@ import { createLibp2p } from 'libp2p'
 import { circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 
+import { createFromProtobuf } from '@libp2p/peer-id-factory'
+
+import peers from "./peers.json" assert { type: "json"  }
+
 import express from 'express'
 const app = express()
 const port = 3999
@@ -25,6 +29,7 @@ app.listen(port, () => {
 })
 
 const server = await createLibp2p({
+  //peer: peer[0],
   addresses: {
     listen: [
       '/ip4/0.0.0.0/tcp/0/ws'
