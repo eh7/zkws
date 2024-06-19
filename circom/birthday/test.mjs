@@ -10,6 +10,7 @@ const __dirname = path.resolve();
 
 const poseidon = await buildPoseidon()
 
+/*
 const F = poseidon.F;
 
 const bnValue = BigInt("17192875363359537871702202739956153645448798961056702518827795889156046289498");
@@ -52,3 +53,4 @@ const w = await circuitBirthday.calculateWitness({
   ]
 }, true);
 console.log(w[1].toString())
+*/

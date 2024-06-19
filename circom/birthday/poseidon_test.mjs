@@ -89,6 +89,7 @@ const hashPoseidon = async () => {
   );
 
   console.log(
+    'xxxxxx',
     F.e("17192875363359537871702202739956153645448798961056702518827795889156046289498"),
     F.e(birthdayHash),
     F.e(

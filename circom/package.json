@@ -11,10 +11,14 @@
   "dependencies": {
     "@noble/curves": "^1.4.0",
     "@noble/hashes": "^1.4.0",
+    "chai": "^5.1.1",
     "circom_tester": "^0.0.20",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
+    "dotenv": "^16.4.5",
     "eccrypto": "^1.1.6",
-    "ethers": "^6.12.1"
+    "elliptic": "^6.5.5",
+    "ethers": "^6.12.1",
+    "mocha": "^10.4.0"
   }
 }
