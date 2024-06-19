@@ -18,7 +18,8 @@ const peerIdRSA = await createRSAPeerId()
 
 let peers = []
 for(let i=0; i<6; i++) {
-  const buf = exportToProtobuf(peerId)
+  const _peerId = await createEd25519PeerId()
+  const buf = exportToProtobuf(_peerId)
   peers.push(Buffer.from(buf).toString('hex'))
 }
 
