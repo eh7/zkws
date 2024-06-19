@@ -7,14 +7,22 @@ import * as filters from '@libp2p/websockets/filters'
 import { createLibp2p } from 'libp2p'
 import { circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
+import { kadDHT } from '@libp2p/kad-dht'
 
 import { createFromProtobuf } from '@libp2p/peer-id-factory'
 
-import peers from "./peers.json" assert { type: "json"  }
+//import peers from "./peers.json" assert { type: "json"  }
+import peers from "./peers.js"
 
 import express from 'express'
 const app = express()
 const port = 3999
+
+const peerId = await createFromProtobuf(
+  Buffer.from(peers[0], 'hex')
+)
+//console.log(peerId)
+//process.exit()
 
 app.get('/', (req, res) => {
   res.send('no pubkey specified')
@@ -29,7 +37,7 @@ app.listen(port, () => {
 })
 
 const server = await createLibp2p({
-  //peer: peer[0],
+  peerId,
   addresses: {
     listen: [
       '/ip4/0.0.0.0/tcp/0/ws'
@@ -44,6 +52,7 @@ const server = await createLibp2p({
   connectionEncryption: [noise()],
   streamMuxers: [yamux()],
   services: {
+    kadDHT: kadDHT(),
     identify: identifyService(),
     relay: circuitRelayServer()
   }
