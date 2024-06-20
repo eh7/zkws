@@ -24,7 +24,8 @@ import {
 } from '@libp2p/peer-id-factory'
 
 //const relayAddress = "/ip4/192.168.0.142/tcp/37237/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
-const relayAddress = "/ip4/127.0.0.1/tcp/43489/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
+//const relayAddress = "/ip4/127.0.0.1/tcp/43489/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
+const relayAddress = "/ip4/127.0.0.1/tcp/35053/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
 
 const createNode = async (_peerId, _bootstrappers) => {
   const node = await createLibp2p({
@@ -36,16 +37,16 @@ const createNode = async (_peerId, _bootstrappers) => {
     streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
     peerDiscovery: [
+      pubsubPeerDiscovery({
+        interval: 1000
+      }),
       bootstrap({
         list: _bootstrappers
       }),
-      pubsubPeerDiscovery({
-        interval: 1000
-      })
     ], 
     dht: kadDHT(),
     services: {
-      kadDHT: kadDHT(),
+      //kadDHT: kadDHT(),
       pubsub: floodsub(),
       identify: identifyService()
     }
@@ -89,6 +90,11 @@ const createNode = async (_peerId, _bootstrappers) => {
   node1.addEventListener('peer:discovery', (evt) => {
     const peer = evt.detail
     console.log(`Peer1 ${node1.peerId.toString()} discovered: ${peer.id.toString()}`)
+  })
+
+  node1.addEventListener('peer:connect', (evt) => {
+    const peerId = evt.detail
+    console.log('Connection established to:', peerId.toString())
   })
 
   await node1.start()
