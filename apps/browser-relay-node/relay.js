@@ -8,6 +8,8 @@ import { createLibp2p } from 'libp2p'
 import { circuitRelayServer } from 'libp2p/circuit-relay'
 import { identifyService } from 'libp2p/identify'
 import { kadDHT } from '@libp2p/kad-dht'
+import { floodsub } from '@libp2p/floodsub'
+import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery'
 
 import { createFromProtobuf } from '@libp2p/peer-id-factory'
 
@@ -51,8 +53,15 @@ const server = await createLibp2p({
   ],
   connectionEncryption: [noise()],
   streamMuxers: [yamux()],
+  pubsub: floodsub(),
+  peerDiscovery: [
+    pubsubPeerDiscovery({
+      interval: 1000
+    }),
+  ],
   dht: kadDHT(),
   services: {
+    pubsub: floodsub(),
     kadDHT: kadDHT(),
     identify: identifyService(),
     relay: circuitRelayServer()

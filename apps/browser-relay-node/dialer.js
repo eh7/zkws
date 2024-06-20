@@ -29,7 +29,8 @@ import {
 } from '@libp2p/peer-id'
 
 //const relayAddress = "/ip4/192.168.0.142/tcp/37237/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
-const relayAddress = "/ip4/127.0.0.1/tcp/43489/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
+//const relayAddress = "/ip4/127.0.0.1/tcp/43489/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
+const relayAddress = "/ip4/127.0.0.1/tcp/35053/ws/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A"
 
 const createNode = async (_peerId, _bootstrappers) => {
   //const peerUsed = (process.argv[2] === 'peer1') ? peer1 : peer[1];
@@ -43,16 +44,16 @@ const createNode = async (_peerId, _bootstrappers) => {
     streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
     peerDiscovery: [
+      pubsubPeerDiscovery({
+        interval: 1000
+      }),
       bootstrap({
         list: _bootstrappers
       }),
-      pubsubPeerDiscovery({
-        interval: 1000
-      })
     ],
     //dht: kadDHT(),
     services: {
-      kadDHT: kadDHT(),
+      //kadDHT: kadDHT(),
       pubsub: floodsub(),
       identify: identifyService()
     }
@@ -88,7 +89,7 @@ const createNode = async (_peerId, _bootstrappers) => {
 
   const peerId = peerIdFromString('12D3KooWKVqoR8juibd4QHq6D3ud2wA7CohDkQgEWqHqDvGEZrT3')
   console.log(node1)
-  console.log(Object.keys(node1.services.kadDHT))
+  //console.log(Object.keys(node1.services.kadDHT))
 //  console.log(await node1.services.kadDHT.findPeer(peerId))
   //console.log(await node1.peerRouting.findPeer(peerId))
   //for await (const event of node1.dht.findPeer(peerId)) {
@@ -125,7 +126,7 @@ console.log(peerId)
   console.log('libp2p node1 has started')
   console.log(`STARTED - ${node1.peerId.toString()}`)
   //node1.getMultiaddrs().forEach((ma) => console.log('peer1: ', ma.toString()))
-
+  //
   //const peer = peers[1];
 //  const node2Ma = multiaddr("/ip4/192.168.0.142/tcp/40335/p2p/12D3KooWKVqoR8juibd4QHq6D3ud2wA7CohDkQgEWqHqDvGEZrT3")
   const node2Ma = multiaddr("/ip4/127.0.0.1/tcp/40335/p2p/12D3KooWKVqoR8juibd4QHq6D3ud2wA7CohDkQgEWqHqDvGEZrT3")
