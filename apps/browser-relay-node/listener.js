@@ -42,7 +42,8 @@ const createNode = async (_peerId, _bootstrappers) => {
       pubsubPeerDiscovery({
         interval: 1000
       })
-    ],
+    ], 
+    dht: kadDHT(),
     services: {
       kadDHT: kadDHT(),
       pubsub: floodsub(),
@@ -72,7 +73,17 @@ const createNode = async (_peerId, _bootstrappers) => {
     const peer = evt.detail
     console.log(`connection:close: ${peer}`)
     //console.log(await peer.close())
-    console.log(Object.keys(peer._close))
+    //console.log(Object.keys(peer._close))
+    //console.log(peer.abort())
+    console.log(peer.streams)
+    console.log(peer.status)
+    console.log(peer.direction)
+  })
+
+  node1.addEventListener('peer:disconnect', (evt) => {
+    const peer = evt.detail
+    console.log(`peer:disconnect: ${peer}`)
+    console.log(peer)
   })
 
   node1.addEventListener('peer:discovery', (evt) => {

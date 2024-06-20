@@ -48,6 +48,7 @@ const createNode = async (_peerId, _bootstrappers) => {
         interval: 1000
       })
     ],
+    dht: kadDHT(),
     services: {
       kadDHT: kadDHT(),
       pubsub: floodsub(),
@@ -82,6 +83,16 @@ const createNode = async (_peerId, _bootstrappers) => {
 
   await node1.start()
 
+
+  const peerId = peerIdFromString('12D3KooWKVqoR8juibd4QHq6D3ud2wA7CohDkQgEWqHqDvGEZrT3')
+  console.log(node1)
+  //for await (const event of node1.dht.findPeer(peerId)) {
+  //  console.info(event)
+  //}
+
+  //const peerId = peerIdFromString('12D3KooWKVqoR8juibd4QHq6D3ud2wA7CohDkQgEWqHqDvGEZrT3')
+  //const peerInfo = await node1.peerRouting.findPeer(peerId)
+
   node1.addEventListener('peer:discovery', async (evt) => {
     const peer = evt.detail
     console.log(`Peer1 ${node1.peerId.toString()} discovered: ${peer.id.toString()}`)
@@ -103,7 +114,7 @@ console.log(peerId)
   node1.addEventListener('connection:close', async (evt) => {
     const peer = evt.detail
     console.log(`connection:close: ${peer}`)
-    //console.log(await peer.close())
+    //sconsole.loR(await peer.close())
   })
 
   console.log('libp2p node1 has started')
