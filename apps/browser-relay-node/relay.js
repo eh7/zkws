@@ -51,6 +51,7 @@ const server = await createLibp2p({
   ],
   connectionEncryption: [noise()],
   streamMuxers: [yamux()],
+  dht: kadDHT(),
   services: {
     kadDHT: kadDHT(),
     identify: identifyService(),
