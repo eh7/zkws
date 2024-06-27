@@ -3,7 +3,7 @@
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bootstrap } from '@libp2p/bootstrap'
-//import { identify } from '@libp2p/identify'
+import { identify } from '@libp2p/identify'
 import { identifyService } from 'libp2p/identify'
 import { kadDHT } from '@libp2p/kad-dht'
 import { mplex } from '@libp2p/mplex'
@@ -40,14 +40,10 @@ const node = await createLibp2p({
   streamMuxers: [yamux(), mplex()],
   connectionEncryption: [noise()],
   peerDiscovery,
-//  peerDiscovery: [
-//    bootstrap({
-//      list: bootstrappers
-//    })
-//  ],
   services: {
     kadDHT: kadDHT(),
     identify: identifyService()
+    //identify: identify()
   }
 })
 
