@@ -26,7 +26,7 @@ const run = async () => {
   const node = await createLibp2p({
     peerId,
     addresses: {
-      listen: ['/ip4/0.0.0.0/tcp/0']
+      listen: ['/ip4/0.0.0.0/tcp/16671']
     },
     transports: [tcp()],
     streamMuxers: [yamux(), mplex()],
