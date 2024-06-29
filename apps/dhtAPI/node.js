@@ -11,12 +11,12 @@ import { tcp } from '@libp2p/tcp'
 import { createLibp2p } from 'libp2p'
 //import { floodsub } from '@libp2p/floodsub'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
-import bootstrappers from './bootstrappers.1.js'
+import bootstrappers from './dht/bootstrappers.1.js'
 
 import { fromString, toString } from 'uint8arrays'
 
 import { createFromProtobuf } from '@libp2p/peer-id-factory'
-import peers from "../peers.js"
+import peers from "./peers.js"
 
 if (process.argv[2] !== '') {
   bootstrappers.push(process.argv[2])
@@ -122,18 +122,11 @@ node.services.pubsub.publish(topic, new TextEncoder().encode('banana test messag
 
   process.stdin.on('data', data => { 
     console.log(`You typed ${data.toString()}`); 
-//console.log('ccccccccccccccc typeof data ::', data)
-//console.log('ccccccccccccccc typeof data ::', data.toString('utf8'))
     const peerListSubscribers = node.services.pubsub.getSubscribers(topic)
     console.log('peerListSubscribers (', topic, ') :: ', peerListSubscribers)
-    //const randomNumber = Math.floor(Math.random() * 1000000);
-    //const message = "message txt here " + randomNumber + "\n" + data;
-    console.log('xxxxxxxxxxxxxxxxxxxxx', Object.keys(peerListSubscribers).length)
     if(Object.keys(peerListSubscribers).length > 0) {
       const message = data.toString('utf8');
-//console.log('typeof data ::', typeof data)
       node.services.pubsub.publish(topic, fromString(message))
-      //process.exit(); 
     } else {
       console.log('no other peers')
     }
