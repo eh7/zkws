@@ -128,15 +128,10 @@ node.services.pubsub.publish(topic, new TextEncoder().encode('banana test messag
     console.log('peerListSubscribers (', topic, ') :: ', peerListSubscribers)
     //const randomNumber = Math.floor(Math.random() * 1000000);
     //const message = "message txt here " + randomNumber + "\n" + data;
-    console.log('xxxxxxxxxxxxxxxxxxxxx', Object.keys(peerListSubscribers).length)
-    if(Object.keys(peerListSubscribers).length > 0) {
-      const message = data.toString('utf8');
+    const message = data.toString('utf8');
 //console.log('typeof data ::', typeof data)
-      node.services.pubsub.publish(topic, fromString(message))
-      //process.exit(); 
-    } else {
-      console.log('no other peers')
-    }
+    node.services.pubsub.publish(topic, fromString(message))
+    //process.exit(); 
   });
 }
 
