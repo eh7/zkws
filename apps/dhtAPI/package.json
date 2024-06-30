@@ -4,6 +4,7 @@
   "description": "dht p2p network communitation service",
   "type": "module",
   "scripts": {
+    "syncTest": "(cd sync/ && node sync.js)",
     "start": "vite",
     "build": "vite build",
     "relay": "node relay.js",
@@ -23,6 +24,8 @@
     "express": "^4.19.2",
     "kubo-rpc-client": "^3.0.1",
     "libp2p": "^0.46.16",
+    "md5": "^2.3.0",
+    "sync-directory": "^6.0.5",
     "vite": "^4.2.1"
   },
   "devDependencies": {
