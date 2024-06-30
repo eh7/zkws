@@ -11,7 +11,8 @@ import { tcp } from '@libp2p/tcp'
 import { createLibp2p } from 'libp2p'
 //import { floodsub } from '@libp2p/floodsub'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
-import bootstrappers from './dht/bootstrappers.1.js'
+//import bootstrappers from './dht/bootstrappers.1.js'
+import bootstrappers from './bootstrappers.js'
 
 import { fromString, toString } from 'uint8arrays'
 
