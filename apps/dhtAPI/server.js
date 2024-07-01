@@ -13,9 +13,23 @@ const __dirname = dirname(__filename);
 
 let count = 0
 
-//const node = runNode()
+const filename = "/tmp/source/message.json"
+
 const libp2pNode = new Libp2pNode()
+
 const pubsubMessages = []
+
+try {
+ fs.statSync(filename)
+  JSON.parse(fs.readFileSync(filename).toString()).map((item) => {
+    pubsubMessages.push(item)
+  })
+} catch (e) {
+  console.log(e.message, e.errno)
+}
+
+if (fs.statSync(filename)) {
+}
 
 const app = express();
 
@@ -37,6 +51,26 @@ libp2pNode.eventEmitter.on('node:p2p:message', (event, messageEvent) => {
     topic,
     timestamp: event.timeStamp,
   })
+
+  // JSON.stringify(newData, 0, 4) );
+  const data = toObject(pubsubMessages)
+  fs.writeFile(
+    filename,
+    JSON.stringify(
+      data,
+      0,
+      4,
+    ),
+    (err) => {
+    if (err)
+      console.log(err);
+    else {
+      console.log("File written successfully\n");
+      console.log("The written has the following contents:");
+      console.log(fs.readFileSync(filename, "utf8"));
+    }
+  });
+
   //console.log('pubsubMessages :: ', pubsubMessages)
 /*
   console.log('mebug', Object.keys(messageEvent.detail))
