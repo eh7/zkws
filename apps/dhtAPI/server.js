@@ -1,4 +1,5 @@
 import express from 'express'
+import bodyParser from 'body-parser'
 import * as fs from 'fs';
 
 //import runNode from './node.js'
@@ -8,11 +9,14 @@ import { fromString, toString } from 'uint8arrays'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
+import multer from 'multer'
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let count = 0
 
+const myDirname = "/var/tmp/source/"
 const filename = "/tmp/source/message.json"
 
 const libp2pNode = new Libp2pNode()
@@ -32,6 +36,12 @@ if (fs.statSync(filename)) {
 }
 
 const app = express();
+//const jsonParser = bodyParser.json()
+//const urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.use(express.json());
+app.use(express.urlencoded());
+//const upload = multer({ destination: myDirname });
+const upload = multer({ destination: './' });
 
 libp2pNode.eventEmitter.on('node:p2p:message', (event, messageEvent) => {
   console.log("in  server main node:p2p:message event")
@@ -129,6 +139,25 @@ app.get('/:id', function (req, res) {
   console.log(req.params.id) 
   res.end( JSON.stringify({id:req.params.id}, 0, 4) );
 })
+
+app.post('/file/save/data', function (req, res) {
+  //fs.readFileSync(myDirname + "/test.txt", "utf8")
+  console.log('receiving data /file/save');
+  console.log('body is ', req.body);
+  res.send(req.body);
+})
+
+app.post('/file/save', upload.single('weg'), (req, res, next) => {
+  console.log('here');
+  console.log(req.file);
+  console.log(req.body);
+  if (!req.file) {
+    res.json({ error: 'not working' });
+    return;
+  }
+  res.json({ error: 'test' });
+  return;
+});
 
 const server = app.listen(5000, function () {
    console.log("Express App running at http://127.0.0.1:5000/");
