@@ -25,6 +25,7 @@
     "kubo-rpc-client": "^3.0.1",
     "libp2p": "^0.46.16",
     "md5": "^2.3.0",
+    "multer": "^1.4.5-lts.1",
     "sync-directory": "^6.0.5",
     "vite": "^4.2.1"
   },
