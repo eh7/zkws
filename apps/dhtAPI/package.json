@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "syncTest": "(cd sync/ && node sync.js)",
+    "startServer": "node src/server.js",
     "start": "vite",
     "build": "vite build",
     "relay": "node relay.js",
