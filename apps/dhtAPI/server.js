@@ -7,7 +7,7 @@ import Libp2pNode from './node.js'
 import { fromString, toString } from 'uint8arrays'
 
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import path, { dirname } from 'path'
 
 import multer from 'multer'
 
@@ -40,8 +40,15 @@ const app = express();
 //const urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use(express.json());
 app.use(express.urlencoded());
-//const upload = multer({ destination: myDirname });
-const upload = multer({ destination: './' });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(myDirname));
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 libp2pNode.eventEmitter.on('node:p2p:message', (event, messageEvent) => {
   console.log("in  server main node:p2p:message event")
@@ -147,15 +154,41 @@ app.post('/file/save/data', function (req, res) {
   res.send(req.body);
 })
 
-app.post('/file/save', upload.single('weg'), (req, res, next) => {
-  console.log('here');
+app.post(
+  '/file/save/multi',
+  upload.array('files', 12),
+  (req, res, next) => {
+  console.log(req.files)
+  //res.send('Files uploaded successfully!')
+  if (!req.files) {
+    res.json({ error: 'not working' });
+    return;
+  }
+  //const files = []
+  const files = req.files.map((item) => {
+    const path = item.destination + item.filename
+    return path
+  })
+  res.json({
+    status: 'files Uploaded Okay',
+    files,
+  });
+  return;
+});
+
+app.post(
+  '/file/save',
+  upload.single('fileUpload'),
+  (req, res, next) => {
   console.log(req.file);
-  console.log(req.body);
   if (!req.file) {
     res.json({ error: 'not working' });
     return;
   }
-  res.json({ error: 'test' });
+  res.json({
+    status: 'fileUpload',
+    path: req.file.destination + req.file.filename,
+  });
   return;
 });
 
