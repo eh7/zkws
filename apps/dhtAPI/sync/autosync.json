@@ -1,8 +1,8 @@
 {
-  "source": "/tmp/source",
-  "destination": "/tmp/dest",
+  "source": "/var/tmp/source",
+  "destination": "/var/tmp/dest",
   "patterns": [
     ".txt$", 
-    ".md$"
+    "$"
   ] 
 }
