@@ -1,3 +1,7 @@
+import {
+toObject,
+} from './utils/index.js'
+
 import express from 'express'
 import bodyParser from 'body-parser'
 import * as fs from 'fs';
@@ -96,14 +100,6 @@ libp2pNode.eventEmitter.on('node:p2p:message', (event, messageEvent) => {
   console.log(from + '\nmessage :: (text) :: ', message)
 */
 });
-
-const toObject = (_data) => {
-  return JSON.parse(JSON.stringify(_data, (key, value) =>
-    typeof value === 'bigint'
-      ? value.toString()
-      : value // return everything else unchanged
-  ))
-}
 
 app.get('/', function (req, res) {
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
