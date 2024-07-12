@@ -42,6 +42,7 @@ if (fs.statSync(filename)) {
 const app = express();
 //const jsonParser = bodyParser.json()
 //const urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.use(express.static('test'))
 app.use(express.json());
 app.use(express.urlencoded());
 const storage = multer.diskStorage({
@@ -102,16 +103,17 @@ libp2pNode.eventEmitter.on('node:p2p:message', (event, messageEvent) => {
 });
 
 app.get('/', function (req, res) {
-   fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
-      count++
-      let newData = JSON.parse(data)
+  //console.log(__dirname + "/" + "users.json")
+  fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
+    count++
+    let newData = JSON.parse(data)
 
-      newData.count = count
+    newData.count = count
 
-      console.log(newData)
+    console.log(newData)
 
-      res.end( JSON.stringify(newData, 0, 4) );
-   });
+    res.end( JSON.stringify(newData, 0, 4) );
+  });
 })
 
 app.get('/messages', async function (req, res) {
@@ -172,10 +174,53 @@ app.post(
   return;
 });
 
+app.get("/file/uploadForm", (req, res) => {
+  res.json({
+    page: 'uploadForm',
+  });
+})
+ 
+
 app.post(
   '/file/save',
-  upload.single('fileUpload'),
+//  upload.single('fileUpload'),
+  // () => { upload.single('fileUpload') },
   (req, res, next) => {
+
+//  const upload_single = (_filename) => {
+//    upload.single(_filename)
+//    //multer({ storage })
+//  }
+
+  //var upload_single = multer({ storage : storage}).single('fileUpload');
+  var upload_single = upload.single('fileUpload');
+//console.log(upload_single)
+  upload_single(req, res, (err) => {
+    //console.log("in function upload_single")
+    //console.log(res)
+    console.log(req.file)
+    if(err) {
+      return res.end("Error uploading file.");
+    }
+    if (!req.file) {
+      res.json({ error: 'not working' });
+      return;
+    }
+    //console.log("File is uploaded");
+    //return res.end("File is uploaded");
+    return res.json({
+      status: 'fileUpload',
+      path: req.file.destination + req.file.filename,
+    });
+  })
+//console.log(upload_single)
+
+  //const process_upload = multer({ storage : storage }).single('fileUpload');
+  //process_upload(),
+
+  //console.log(Object.keys(req.params));
+  //console.log(req.params);
+/*
   console.log(req.file);
   if (!req.file) {
     res.json({ error: 'not working' });
@@ -185,6 +230,7 @@ app.post(
     status: 'fileUpload',
     path: req.file.destination + req.file.filename,
   });
+*/
   return;
 });
 

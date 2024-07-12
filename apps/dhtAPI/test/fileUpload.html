@@ -1,0 +1,52 @@
+<html>
+	<header>
+		<meta name="Access-Control-Allow-Origin" value"*"/>
+	</header>
+<body>
+    <div class="container">
+        <h1>File Upload</h1>
+        <form id='form'
+	      enctype="multipart/form-data"
+	      method="post"
+
+	>
+            <div class="input-group">
+                <label for='name'>Your name</label>
+                <input name='name' id='name' placeholder="Enter your name" />
+            </div>
+            <div class="input-group">
+                <label for='file'>Select file</label>
+                <input name"fileUpload" id='fileUpload' type="file">
+            </div>
+            <button class="submit-btn" type='submit'>Upload</button>
+        </form>
+    </div>
+    <script>
+      const form = document.getElementById("form");
+
+      form.addEventListener("submit", submitForm);
+
+      function submitForm(e) {
+          e.preventDefault();
+          const name = document.getElementById("name");
+          const file = document.getElementById("fileUpload");
+          const formData = new FormData();
+          formData.append("name", name.value);
+          formData.append("files", file);
+          //for(let i =0; i < files.files.length; i++) {
+          //        formData.append("files", files.files[i]);
+          //}
+          fetch("http://127.0.0.1:5000/file/save", {
+              method: 'POST',
+              body: formData,
+              headers: {
+                //"Content-Type": "multipart/form-data"
+              },
+              mode: 'cors'
+          })
+          .then((res) => console.log(res))
+           .catch((err) => ("Error occured", err));
+      }
+    </script>
+</body>
+</html>
