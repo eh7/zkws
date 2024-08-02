@@ -1,0 +1,23 @@
+swagger: "2.0"
+info:
+  description: zkws API
+  version: "0.0.1"
+  title: popex API
+basePath: "/api/v1"
+schemes:
+  - "http"
+  - "https"
+paths:
+
+  /test:
+    get:
+      tags:
+        - "root"
+      summary: "Test endpoint"
+      operationId: "test"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "success"
+
