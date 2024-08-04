@@ -11,6 +11,9 @@ import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import api from './api/index.js'
 
+import swaggerUI from 'swagger-ui-express'
+//import swaggerSpec from './swagger'
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -30,10 +33,13 @@ const jsonErrorHandler = async (err, req, res, next) => {
 
 const makeApp = async () => {
   const parser = new SwaggerParser();
+//  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api-3.yaml'));
   const apiDescription = await parser.validate(path.join(__dirname, './zkws-api.yaml'));
   const connect = connector(api, apiDescription);
 
   const app = express();
+console.log(apiDescription)
+//  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 //  app.set('trust proxy', 'loopback, 87.224.39.210');
 
