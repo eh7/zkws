@@ -33,8 +33,8 @@ const jsonErrorHandler = async (err, req, res, next) => {
 
 const makeApp = async () => {
   const parser = new SwaggerParser();
-//  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api-3.yaml'));
-  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api.yaml'));
+  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api-3.1.yaml'));
+//  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api.yaml'));
   const connect = connector(api, apiDescription);
 
   const app = express();
