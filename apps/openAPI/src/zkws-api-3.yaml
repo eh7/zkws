@@ -1,14 +1,13 @@
-swagger: '2.0'
+openapi: "3.0.0"
 info:
-  description: zkws API
-  version: "0.0.1"
+  version: 0.1.0
   title: wallet open API
-basePath: "/api/v1"
-schemes:
-  - "http"
-  - "https"
+  description: zkws API
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:3000/v1
 paths:
-
   /test:
     get:
       tags:
@@ -43,7 +42,8 @@ paths:
         - in: path
           name: basketId
           required: true
-          type: string
+          schema:
+            type: string
           description: basket id to retrieve
       produces:
       - "application/json"
