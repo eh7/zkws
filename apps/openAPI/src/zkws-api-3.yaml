@@ -1,24 +1,35 @@
 openapi: "3.0.0"
 info:
-  version: 0.1.0
   title: wallet open API
-  description: zkws API
+  version: 0.1.0
+  description: zkws opan API
   license:
     name: MIT
 servers:
+  - url: http://localhost:3000
   - url: http://localhost:3000/v1
 paths:
   /test:
     get:
+      operationId: "test"
+      summary: "Test endpoint"
       tags:
         - "root"
-      summary: "Test endpoint"
-      operationId: "test"
-      produces:
-      - "application/json"
       responses:
         200:
-          description: "success"
+          description: A test request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    status:
+                      type: number 
+                      example: 200
+                    salary:
+                      type: string
+                      example: "default message string"
 
   /basket/link:
     get:
@@ -26,11 +37,21 @@ paths:
         - "root"
       summary: "BasketLink endpoint"
       operationId: "basketLink"
-      produces:
-      - "application/json"
       responses:
         200:
           description: "success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    status:
+                      type: number 
+                      example: 200
+                    salary:
+                      type: string
+                      example: "default message string"
 
   /basket/view/{basketId}:
     get:
@@ -45,9 +66,19 @@ paths:
           schema:
             type: string
           description: basket id to retrieve
-      produces:
-      - "application/json"
       responses:
         200:
           description: "success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    status:
+                      type: number 
+                      example: 200
+                    salary:
+                      type: string
+                      example: "default message string"
 

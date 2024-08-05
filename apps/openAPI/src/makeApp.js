@@ -33,12 +33,16 @@ const jsonErrorHandler = async (err, req, res, next) => {
 
 const makeApp = async () => {
   const parser = new SwaggerParser();
-  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api-3.1.yaml'));
+  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api-3.yaml'));
 //  const apiDescription = await parser.validate(path.join(__dirname, './zkws-api.yaml'));
   const connect = connector(api, apiDescription);
 
   const app = express();
-console.log(apiDescription)
+  console.log(apiDescription)
+
+//  const swaggerSpec = swaggerJSDoc(apiDescription);
+//  const swaggerSpec = swaggerJSDoc(options);
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(apiDescription));
 //  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 //  app.set('trust proxy', 'loopback, 87.224.39.210');
