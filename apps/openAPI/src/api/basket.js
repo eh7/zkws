@@ -2,7 +2,7 @@ const basket = async (req, res) => {
  
   const basketId = req.params.basketId
 
-  console.log("tttttttttttttt - ", basketId)
+  console.log("basketId : ", basketId)
 
   return res.status(200).json({
     body: req.body,
