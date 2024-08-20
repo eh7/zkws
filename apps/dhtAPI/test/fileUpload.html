@@ -6,8 +6,9 @@
     <div class="container">
         <h1>File Upload</h1>
         <form id='form'
-	      enctype="multipart/form-data"
-	      method="post"
+	      enctype= "multipart/form-data"
+	      action = "/file/save"
+	      method = "post"
 
 	>
             <div class="input-group">
@@ -22,6 +23,7 @@
         </form>
     </div>
     <script>
+/*
       const form = document.getElementById("form");
 
       form.addEventListener("submit", submitForm);
@@ -47,6 +49,7 @@
           .then((res) => console.log(res))
            .catch((err) => ("Error occured", err));
       }
+*/
     </script>
 </body>
 </html>
