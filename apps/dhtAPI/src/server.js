@@ -3,6 +3,7 @@ toObject,
 } from './utils/index.js'
 
 import express from 'express'
+import cors from 'cors';
 import bodyParser from 'body-parser'
 import * as fs from 'fs';
 
@@ -42,6 +43,7 @@ if (fs.statSync(filename)) {
 const app = express();
 //const jsonParser = bodyParser.json()
 //const urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.use(cors())
 app.use(express.static('test'))
 app.use(express.json());
 app.use(express.urlencoded());
@@ -199,6 +201,7 @@ app.post(
     //console.log("in function upload_single")
     //console.log(res)
     console.log(req.file)
+    console.log(err)
     if(err) {
       return res.end("Error uploading file.");
     }
