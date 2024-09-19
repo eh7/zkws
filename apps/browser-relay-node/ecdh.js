@@ -8,7 +8,6 @@ const args = process.argv.slice(3);
 let type='secp256k1';
 console.log("Type:\t",type);
 
-
 // Generate Alice's keys...
 const alice = crypto.createECDH(type);
 const aliceKey = alice.generateKeys();
@@ -16,6 +15,17 @@ const aliceKey = alice.generateKeys();
 // Generate Bob's keys...
 const bob = crypto.createECDH(type);
 const bobKey = bob.generateKeys();
+
+const aliceFromPK = crypto.createECDH(type);
+console.log(aliceFromPK)
+//aliceFromPK.setPrivateKey('068137ad5d6fb190a7cc5a4f8eb6b18618707b3bc4ab802419ef8bb25c128ac3')
+
+console.log('068137ad5d6fb190a7cc5a4f8eb6b18618707b3bc4ab802419ef8bb25c128ac3')
+console.log(alice.getPrivateKey().toString('hex'))
+const aliceKeyNew = Buffer.from('068137ad5d6fb190a7cc5a4f8eb6b18618707b3bc4ab802419ef8bb25c128ac3', 'hex')
+console.log(alice.getPrivateKey())
+console.log(aliceKeyNew)
+//console.log(alice.getPrivateKey().toString('hex'));
 
 console.log("\nAlice private key:\t",alice.getPrivateKey().toString('hex'));
 console.log("Alice public key:\t",aliceKey.toString('hex'))
