@@ -4,6 +4,7 @@
   "description": "How to use libp2p pubsub in browsers",
   "type": "module",
   "scripts": {
+    "startNode": "DEBUG=libp2p:gossipsub node dht/node.js /ip4/87.224.39.212/tcp/14536/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A",
     "start": "vite",
     "build": "vite build",
     "relay": "node relay.js",
