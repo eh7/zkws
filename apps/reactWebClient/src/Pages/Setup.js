@@ -13,48 +13,82 @@ export class Setup extends React.Component {
     this.state = {
       errors: {},
       input: {},
+      keyOptions: [
+        {
+          id: "privateKey",
+          label: "Private Key",
+          controlId: "formPrivateKeyCheckbox"
+        },
+        {
+          id: "phrase",
+          label: "Phrase",
+          controlId: "formPhraseCheckbox"
+        },
+        {
+          id: "keyStore",
+          label: "Key Store",
+          controlId: "formKeyStoreCheckbox"
+        },
+      ]
     };
   }
 
   render() {
+    const passwordInputs = (
+      <>
+password inputs
+            <Form.Group>
+              <Form.Label htmlFor="exampleEmail">Username</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                id="exampleEmail"
+                placeholder="example@example.com"
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="examplePassword">Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                id="examplePassword"
+                placeholder="********"
+              />
+            </Form.Group>
+            <Button>Submit</Button>
+      </>
+    )
     return (
       <>
         <Form className="form">
           <h1>Pages - Setup Page</h1>
 
-          <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check type="checkbox" label="Check me out" />
-          </Form.Group>
+          { this.state.keyOptions.map((option) => {
+            return (
+            <Form.Group className="mb-3" controlId={option.controlId}>
+              <Form.Check
+                id={option.id}
+                type="checkbox"
+                label={option.label}
+                onClick={(e) => {
+                  //console.log(e.target.checked)
+                  //alert(e.target.id)
+                  if (e.target.checked) {
+                    this.state.keyOptions.map((option) => {
+                      if (e.target.id !== option.id) {
+                        //console.log(option.id)
+                        document.getElementById(option.id).checked = false 
+                      }
+                    })
+                  }
+                }}
+              />
+            </Form.Group>
+            )
+          })}
 
-          <Form.Group className="mb-3" controlId="formPrivateKeyCheckbox">
-            <Form.Check type="checkbox" label="Private Key" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formPhraseCheckbox">
-            <Form.Check type="checkbox" label="Phrase" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formKeyStorebox">
-            <Form.Check type="checkbox" label="Key Store" />
-          </Form.Group>
+          { (this.state?.setPassword) && passwordInputs }
 
-          <Form.Group>
-            <Form.Label htmlFor="exampleEmail">Username</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              id="exampleEmail"
-              placeholder="example@example.com"
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="examplePassword">Password</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              id="examplePassword"
-              placeholder="********"
-            />
-          </Form.Group>
-          <Button>Submit</Button>
         </Form>
       </>
     )
