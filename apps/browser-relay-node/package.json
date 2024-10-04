@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "startNode": "DEBUG=libp2p:gossipsub node dht/node.js /ip4/87.224.39.212/tcp/14536/p2p/12D3KooWJFFzTUybGYeusoPT8Ku5Qpkfe8fCHHM8gfEXnpRDx19A",
+    "startRelay": "node dht/relay.js",
+    "relay": "node relay.js",
     "start": "vite",
     "build": "vite build",
-    "relay": "node relay.js",
     "test:firefox": "npm run build && playwright test --browser=firefox test",
     "test:chrome": "npm run build && playwright test test",
     "test": "npm run build && test-browser-example test"
