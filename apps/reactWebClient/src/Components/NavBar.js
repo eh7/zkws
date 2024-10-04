@@ -6,8 +6,20 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 function NavBar() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
-      <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+      <Container as="main" className="py-4 px-3 mx-auto">
+        <Nav variant="tabs" className="w-100" defaultActiveKey="/">
+          <Nav.Item>
+            <Nav.Link href="/">Home</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link href="/config">Config</Nav.Link>
+          </Nav.Item>
+        </Nav>
+      </Container>
+    </Navbar>
+  )
+
+/*
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
@@ -28,7 +40,7 @@ function NavBar() {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  );
+*/
 }
 
 export default NavBar;
