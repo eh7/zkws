@@ -4,6 +4,11 @@ import {
   Button,
   Form,
   FormGroup,
+  Card,
+  Row,
+  Col,
+  Container,
+  FloatingLabel,
 } from 'react-bootstrap';
 //import '../App.css';
 
@@ -12,6 +17,7 @@ export class Setup extends React.Component {
     super(props);
     this.state = {
       errors: {},
+      formInputShow: null,
       input: {},
       keyOptions: [
         {
@@ -34,28 +40,81 @@ export class Setup extends React.Component {
   }
 
   render() {
+    const formInputs = []
+    formInputs['privateKey'] = (
+      <>
+        <b>Private Key Form</b>
+        <Form.Group className="mb-3" controlId="privateKeyInputs">
+          <Form.Check
+            id='id'
+            type="input"
+            label=""
+            key="id"
+            placeholder="your private key"
+          />
+          <Button onClick={() => {
+             alert('import')
+          }}>import</Button>
+        </Form.Group>
+      </>
+    )
+
+    formInputs['phrase'] = (
+      <>
+        <b>phrase form</b>
+        <Form.Group className="mb-3" controlId="privateKeyInputs">
+          <Form.Check
+            id='phrase'
+            type="input"
+            label=""
+            key="id"
+            placeholder="enter your phrase here"
+          />
+          <Button>new</Button>
+        </Form.Group>
+      </>
+    )
+
+    formInputs['keyStore'] = (
+      <>
+        <b>Key Store Form</b>
+
+        <FloatingLabel
+          controlId="floatingTextarea"
+          label=""
+          className="mb-3"
+        >
+          <Form.Control as="textarea" placeholder="Past keystore here" />
+        </FloatingLabel>
+
+      </>
+    )
+    //this.setState({ formInputs })
+
     const passwordInputs = (
       <>
-password inputs
-            <Form.Group>
-              <Form.Label htmlFor="exampleEmail">Username</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                id="exampleEmail"
-                placeholder="example@example.com"
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label htmlFor="examplePassword">Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                id="examplePassword"
-                placeholder="********"
-              />
-            </Form.Group>
-            <Button>Submit</Button>
+        <Card border="primary" border-width="3px">
+          <Card.Title className="h3 bold-tex">Password Inputs</Card.Title>
+          <Form.Group>
+            <Form.Label htmlFor="Password"> Password </Form.Label>
+            <Form.Control
+              type="password"
+              name="password"
+              id="password"
+              placeholder="*******"
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="examplePassword"> Password Check </Form.Label>
+            <Form.Control
+              type="password"
+              name="passwordCheck"
+              id="passwordCheck"
+              placeholder="********"
+            />
+          </Form.Group>
+          <Button>Submit</Button>
+        </Card>
       </>
     )
     return (
@@ -63,78 +122,44 @@ password inputs
         <Form className="form">
           <h1>Pages - Setup Page</h1>
 
-          { this.state.keyOptions.map((option) => {
+          { this.state.keyOptions.map((option, index) => {
             return (
-            <Form.Group className="mb-3" controlId={option.controlId}>
-              <Form.Check
-                id={option.id}
-                type="checkbox"
-                label={option.label}
-                onClick={(e) => {
-                  //console.log(e.target.checked)
-                  //alert(e.target.id)
-                  if (e.target.checked) {
-                    this.state.keyOptions.map((option) => {
-                      if (e.target.id !== option.id) {
-                        //console.log(option.id)
-                        document.getElementById(option.id).checked = false 
-                      }
-                    })
-                  }
-                }}
-              />
-            </Form.Group>
+              <>
+              <Form.Group className="mb-3" controlId={option.controlId}>
+                <Form.Check
+                  id={option.id}
+                  type="checkbox"
+                  label={option.label}
+                  key={index}
+                  onClick={(e) => {
+                    //console.log(e.target.checked)
+                    //alert(e.target.id)
+                    if (e.target.checked) {
+                      console.log(e)
+                      this.state.keyOptions.map((option) => {
+                        if (e.target.id !== option.id) {
+                          //console.log(option.id)
+                          document.getElementById(option.id).checked = false 
+                        } else {
+                        }
+                      })
+                      this.setState({ formInputShow: e.target.id })
+                      this.setState({ setPassword: true })
+                    }
+                  }}
+                />
+              </Form.Group>
+              </>
             )
           })}
 
+          { (this.state.formInputShow) && formInputs[this.state.formInputShow] }
           { (this.state?.setPassword) && passwordInputs }
 
         </Form>
       </>
     )
-/*
-        <Form className="form">
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
-            <Form.Text className="text-muted">
-              We'll never share your email with anyone else.
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check type="checkbox" label="Check me out" />
-          </Form.Group>
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-
-          <FormGroup>
-            <Form.Label for="exampleEmail">Username</Form.Label>
-            <Form.Input
-              type="email"
-              name="email"
-              id="exampleEmail"
-              placeholder="example@example.com"
-            />
-          </FormGroup>
-          <FormGroup>
-            <Form.Label for="examplePassword">Password</Form.Label>
-            <Form.Input
-              type="password"
-              name="password"
-              id="examplePassword"
-              placeholder="********"
-            />
-          </FormGroup>
-          <Button>Submit</Button>
-        </Form>
-      </>
-    )
-*/
   }
 }
+              //{ (this.state?.formInputs[option.id]) && formInputs[option.id] }
+          //<h5>{ this.state.formInputShow && this.state.formInputs[this.state.formInputShow] }</h5>
