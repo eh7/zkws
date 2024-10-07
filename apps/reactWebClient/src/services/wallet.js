@@ -368,7 +368,7 @@ console.log('iv', iv.toString('hex'))
   setupNewWallet = async () => {
     if (!localStorage.getItem("keyset")) {
       // setup wallet data
-      alert('setup wallet data as not wallet daa provided')
+      alert('setup wallet data as no wallet data provided')
       localStorage.setItem("keyset", this.data.mnemonic);
       this.setupWallet(this.data.mnemonic);
       //const phrase = await bip39.generateMnemonic();
