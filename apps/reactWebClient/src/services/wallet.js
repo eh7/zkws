@@ -658,30 +658,32 @@ console.log('iv', iv.toString('hex'))
     }
   }
 
-  getNewPhrase = async () => {
-    const phrase = await bip39.generateMnemonic();
-    const seedHex = bip39.mnemonicToSeedHex(phrase);
-    /*
-    localStorage.setItem(
-      "phrase",
-      JSON.stringify(
-        this.encrypt(
-          phrase
+  getNewPhrase = async (_reset) => {
+    if (!localStorage.getItem('keyset') || _reset) {
+      const phrase = await bip39.generateMnemonic();
+      const seedHex = bip39.mnemonicToSeedHex(phrase);
+      /*
+      localStorage.setItem(
+        "phrase",
+        JSON.stringify(
+          this.encrypt(
+            phrase
+          )
+        )
+      );
+      */
+      localStorage.setItem(
+        "seedHex",
+        JSON.stringify(
+          this.encrypt(seedHex)
         )
       )
-    );
-    */
-    localStorage.setItem(
-      "seedHex",
-      JSON.stringify(
-        this.encrypt(seedHex)
-      )
-    )
-    localStorage.setItem(
-      "keyset",
-      true,
-    );
-    return phrase;
+      localStorage.setItem(
+        "keyset",
+        true,
+      );
+      return phrase;
+    }
   }
 
   checkWalletSetup = (message) => {
