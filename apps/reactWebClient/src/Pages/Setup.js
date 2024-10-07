@@ -43,8 +43,11 @@ export class Setup extends React.Component {
 
   componentDidMount = async () => {
     try {
-      //this.wallet = new Wallet();
-      //this.wallet.setupNewWallet()
+      this.wallet = new Wallet()
+      this.wallet.getNewPhrase(false)
+      this.address = await this.wallet.getAddress()
+      this.privateKey = await this.wallet.getPrivateKey()
+      this.setState({ address: this.address })
     } catch (e) {
       console.error('ERROR :: Setup :: componentDidMount :: ', e)
     }
