@@ -12,6 +12,8 @@ import {
 } from 'react-bootstrap';
 //import '../App.css';
 
+import Wallet from '../services/wallet'
+
 export class Setup extends React.Component {
   constructor (props) {
     super(props);
@@ -37,6 +39,15 @@ export class Setup extends React.Component {
         },
       ]
     };
+  }
+
+  componentDidMount = async () => {
+    try {
+      //this.wallet = new Wallet();
+      //this.wallet.setupNewWallet()
+    } catch (e) {
+      console.error('ERROR :: Setup :: componentDidMount :: ', e)
+    }
   }
 
   render() {
@@ -119,43 +130,43 @@ export class Setup extends React.Component {
     )
     return (
       <>
-        <Form className="form">
+        <Form className="form" key="SetupForm">
           <h1>Pages - Setup Page</h1>
 
           { this.state.keyOptions.map((option, index) => {
             return (
-              <>
-              <Form.Group className="mb-3" controlId={option.controlId}>
-                <Form.Check
-                  id={option.id}
-                  type="checkbox"
-                  label={option.label}
-                  key={index}
-                  onClick={(e) => {
-                    //console.log(e.target.checked)
-                    //alert(e.target.id)
-                    if (e.target.checked) {
-                      console.log(e)
-                      this.state.keyOptions.map((option) => {
-                        if (e.target.id !== option.id) {
-                          //console.log(option.id)
-                          document.getElementById(option.id).checked = false 
-                        } else {
-                        }
-                      })
-                      this.setState({ formInputShow: e.target.id })
-                      this.setState({ setPassword: true })
-                    }
-                  }}
-                />
-              </Form.Group>
-              </>
+              <div key={index}>
+                <Form.Group className="mb-3" controlId={option.controlId} key={option.id + '-' + index}>
+                  <Form.Check
+                    id={option.id}
+                    type="checkbox"
+                    label={option.label}
+                    key={index}
+                    onClick={(e) => {
+                      if (e.target.checked) {
+                        console.log(e)
+                        this.state.keyOptions.map((option) => {
+                          if (e.target.id !== option.id) {
+                            //console.log(option.id)
+                            document.getElementById(option.id).checked = false 
+                          } else {
+                          }
+                        })
+                        this.setState({ formInputShow: e.target.id })
+                        this.setState({ setPassword: true })
+                      } else {
+                        this.setState({ formInputShow: null })
+                        this.setState({ setPassword: false })
+                      }
+                    }}
+                  />
+                </Form.Group>
+              </div>
             )
           })}
 
           { (this.state.formInputShow) && formInputs[this.state.formInputShow] }
           { (this.state?.setPassword) && passwordInputs }
-
         </Form>
       </>
     )
