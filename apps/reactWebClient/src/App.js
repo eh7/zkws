@@ -17,28 +17,61 @@ export class App extends React.Component {
     this.state = {
       authed: false,
       setup: true,
+      address: null,
     };
   }
+
+  componentDidMount = async () => {
+    //alert('componentDidMount :: ' + this.state.address)
+  }
+
+  componentDidUpdate = async () => {
+    console.log(this.state)
+    //alert('componentDidUpdate :: ' + this.state.address)
+  }
+
+  handleUpdateAddress = (_address) => {
+    this.setState({ address: _address })
+  } 
 
   render() {
     const peer = new Peer()
     console.log('peer object: ', peer);
     console.log('peer test function: ', peer.test());
 
-    if (this.state.setup) {
+/*
       return (
         <div className="App">
-          <Setup />
+          { (!this.state.address) ?
+            <Setup handleUpdateAddress={ this.handleUpdateAddress }/> : (
+            <NavBar />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+              <Route path="/config" element={<Config />} />
+              </Routes>
+            </BrowserRouter>
+          )}
+        </div>
+      )
+*/
+
+    //if (this.state.setup) {
+    if (!this.state.address) {
+      return (
+        <div className="App">
+          <Setup handleUpdateAddress={ this.handleUpdateAddress }/>
         </div>
       )
     } else {
       return (
         <div className="App">
+          <p>Address :: {this.state.address}</p>
           <NavBar />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
-            <Route path="/config" element={<Config />} />
+              <Route path="/config" element={<Setup action="reset" handleUpdateAddress={ this.handleUpdateAddress } />} />
             </Routes>
           </BrowserRouter>
         </div>
