@@ -21,8 +21,13 @@ export class Setup extends React.Component {
       errors: {},
       formInputShow: null,
       errors: [],
-      form: {},
+      form: {
+        address: null,
+        phrase: null,
+      },
       input: {},
+      address: null,
+      syncPhrase: null,
       keyOptions: [
         {
           id: "privateKeyCheckbox",
@@ -64,7 +69,6 @@ export class Setup extends React.Component {
   componentDidMount = async () => {
     try {
       this.wallet = new Wallet()
-      /*
       this.wallet.getNewPhrase(false)
       this.address = await this.wallet.getAddress()
       this.privateKey = await this.wallet.getPrivateKey()
@@ -72,7 +76,9 @@ export class Setup extends React.Component {
       if (this.address) {
         this.props.handleUpdateAddress(this.address)
       }
-      */
+      //this.syncPhrase = await this.wallet.getNewPhraseData()
+      this.syncPhrase = await this.wallet.getPhraseData()
+      this.setState({ syncPhrase: this.syncPhrase })
     } catch (e) {
       console.error('ERROR :: Setup :: componentDidMount :: ', e)
     }
@@ -82,14 +88,15 @@ export class Setup extends React.Component {
     const formInputs = []
     formInputs['privateKeyCheckbox'] = (
       <>
-        <b>Private Key Form</b>
+        <b>Private Key</b>
         <Form.Group className="mb-3" controlId="privateKeyInputs">
-          <Form.Check
+          <Form.Control
             id='privateKey'
             type="input"
+            as="textarea"
             label=""
             key="id"
-            placeholder="your private key"
+            placeholder="enter your private key"
             onChange={this.handleInputChange}
           />
           <Button onClick={() => {
@@ -101,35 +108,46 @@ export class Setup extends React.Component {
 
     formInputs['phraseCheckbox'] = (
       <>
-        <b>phrase form</b>
+        <b>Phrase</b>
         <Form.Group className="mb-3" controlId="privateKeyInputs">
-          <Form.Check
+          <Form.Control
             id='phrase'
             type="input"
+            as="textarea"
+            row="3"
             label=""
             key="id"
             placeholder="enter your phrase here"
             onChange={this.handleInputChange}
+            value={this.state.form['phrase']}
           />
-          <Button>new</Button>
+          <Button onClick={async (e) => {
+            const randomPhrase = await this.wallet.getRandomPhraseData()
+            this.state.form['phrase'] = randomPhrase 
+            document.getElementById('phrase').value = randomPhrase 
+            //alert('new phrase onclick :: '+ randomPhrase)
+          }}>new</Button>
         </Form.Group>
       </>
     )
 
     formInputs['keyStoreCheckbox'] = (
       <>
-        <b>Key Store Form</b>
+        <b>Key Store JSON</b>
+        <Form.Group className="mb-3" controlId="privateKeyInputs">
+          <Form.Control
+            as="textarea"
+            placeholder="paste your keystore json here"
+            onChange={this.handleInputChange}
+            readOnly={false}
+          />
+        </Form.Group>
 
         <FloatingLabel
           controlId="keyStorefloatingTextarea"
           label=""
           className="mb-3"
         >
-          <Form.Control
-            as="textarea"
-            placeholder="Past keystore here"
-            onChange={this.handleInputChange}
-          />
         </FloatingLabel>
 
       </>
@@ -164,23 +182,47 @@ export class Setup extends React.Component {
     )
     return (
       <Container>
+        
         { (this.state.errors) && (<Row><Col><h4>{this.state.errors}</h4></Col></Row>) }
         <Form className="form" key="SetupForm" onSubmit={this.handleFormSubmit}>
           <Row>
             <Col>
-              <h1>Pages - Setup Page</h1>
+              <h1>SYNC Network Settings</h1>
             </Col>
           </Row>
-              { (this.state.address) &&
-                <Row>
-                  <Col>
-                    <p>address: {this.state.address}</p>
-                  </Col>
-                </Row>
-              }
-          <Row>
+            { (this.state.address) &&
+              <Row>
+                <Col>
+                  <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="syncAddress"
+                    aria-describedby="syncAddressBlock"
+                    value={this.state.address}
+                  />
+                </Col>
+              </Row>
+            }
+            { (this.state.syncPhrase) && 
+              <Row>
+                <Col>
+                  <Form.Label htmlFor="syncPhrase">Current syncPhrase</Form.Label>
+                  <Form.Control
+                    type="text"
+                    as="textarea"
+                    rows={3}
+                    id="syncPhrase"
+                    aria-describedby="syncPhraseBlock"
+                    value={this.state.syncPhrase}
+                  />
+                </Col>
+              </Row>
+            }
+          <Row className="py-10">
             <Col>
-
+              <div className="p-3 border bg-light">
+              <h2>Import Your Own Key</h2>
+              <h5>select a data type to import</h5>
               { this.state.keyOptions.map((option, index) => {
                 //const thisOptionId = 'checkbox-' + option.id
                 const thisOptionId = option.id
@@ -217,6 +259,7 @@ export class Setup extends React.Component {
                   </div>
                 )
               })}
+              </div>
             </Col>
           </Row>
               { (this.state.formInputShow) && 

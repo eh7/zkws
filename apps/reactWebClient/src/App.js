@@ -7,6 +7,7 @@ import Peer from "./Lib/Peer"
 import NavBar from "./Components/NavBar"
 
 import { Home } from "./Pages/Home"
+import { Files } from "./Pages/Files"
 import { Config } from "./Pages/Config"
 import { Setup } from "./Pages/Setup"
 
@@ -56,21 +57,37 @@ export class App extends React.Component {
       )
 */
 
+    return (
+      <div className="App">
+        <NavBar />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/files" element={<Files />} />
+            <Route path="/config" element={<Setup action="reset" handleUpdateAddress={ this.handleUpdateAddress } />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    )
+
     //if (this.state.setup) {
     if (!this.state.address) {
       return (
         <div className="App">
+          {/*
           <Setup handleUpdateAddress={ this.handleUpdateAddress }/>
+          */}
+          Loading...
         </div>
       )
     } else {
       return (
         <div className="App">
-          <p>Address :: {this.state.address}</p>
           <NavBar />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/files" element={<Files />} />
               <Route path="/config" element={<Setup action="reset" handleUpdateAddress={ this.handleUpdateAddress } />} />
             </Routes>
           </BrowserRouter>

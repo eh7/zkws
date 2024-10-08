@@ -67,8 +67,12 @@ export default class Wallet {
     this.provider = {};
     this.networkProvider = {};
 
-    this.key = Buffer.from(process.env.KEY, 'hex');
-    this.iv = Buffer.from(process.env.IV, 'hex');
+    try {
+      this.key = Buffer.from(process.env.KEY, 'hex');
+      this.iv = Buffer.from(process.env.IV, 'hex');
+    } catch (err) {
+      console.error('Error no .env setup see readme')
+    }
 
     this.setupProvider();
     console.log('this.provider:', this.provider);
@@ -102,7 +106,8 @@ export default class Wallet {
   }
 
   recoverAddressFromMessage = async (_message, _signature) => {
-    const network = JSON.parse(localStorage.getItem("network"))
+    //const network = JSON.parse(localStorage.getItem("network"))
+    const network = { chainId: 9911999 }
     const provider = this.networkProvider[network.chainId]
     const privateKeyString = await this.getPrivateKey()
     const signer = new EthersWallet(privateKeyString, provider)
@@ -114,7 +119,8 @@ export default class Wallet {
   }
 
   signMessage = async (_message) => {
-    const network = JSON.parse(localStorage.getItem("network"))
+    //const network = JSON.parse(localStorage.getItem("network"))
+    const network = { chainId: 9911999 }
     const provider = this.networkProvider[network.chainId]
     const privateKeyString = await this.getPrivateKey()
     const signer = new EthersWallet(privateKeyString, provider)
@@ -254,6 +260,11 @@ console.log('xxxxxx', typeof _encryptedData.encryptedData)
     return JSON.parse(
       decrypted.toString('utf8')
     );
+  }
+
+  getDataWalletAddress = async (_phrase) => {
+    const wallet = await this.getWalletFilesData(_phrase, 0)
+    return wallet.address;
   }
 
   getDataWalletPhrase = async (_phrase) => {
@@ -520,13 +531,18 @@ console.log('iv', iv.toString('hex'))
       } else {
         dataPhrase = this.getNewPhraseData()
       }
-      //console.log('hhhhhhhhhhhhhhhhhhhhhh dataPhrase ::::::::: ', dataPhrase);
     
       return dataPhrase
     } catch (err) {
       console.error("ERROR servcie::wallet::getPhraseData:", err)
       return "" 
     }
+  }
+
+  getRandomPhraseData = async () => {
+    const myRandomBytes = randomBytes(32);
+    const mnemonic = Mnemonic.fromEntropy(myRandomBytes)
+    return mnemonic.phrase;
   }
 
   getNewPhraseData = async () => {
@@ -550,6 +566,9 @@ console.log('iv', iv.toString('hex'))
         )
       )
     }
+  }
+
+  getDataAddress = async () => {
   }
 
   syncPhraseData = async () => {
