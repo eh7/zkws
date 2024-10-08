@@ -8,9 +8,9 @@ import Table from 'react-bootstrap/Table'
 import {openDB} from 'idb'
 import * as indexedDB from 'idb'
 
-import Wallet from '../../services/wallet'
+import Wallet from '../services/wallet'
 
-const dbVersion = 2
+const dbVersion = 1
 const apiHost = (process.env.PROD === 'true') ? "www.zkws.org" : "localhost"
 
 class FileUpload extends React.Component {
