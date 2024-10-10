@@ -1,5 +1,16 @@
 import * as React from 'react'
 
+import {
+  Button,
+  Form,
+  FormGroup,
+  Card,
+  Row,
+  Col,
+  Container,
+  FloatingLabel,
+} from 'react-bootstrap';
+
 import Wallet from '../services/wallet'
 
 import FileUpload from "../Components/FileUpload"
@@ -37,21 +48,53 @@ export class Home extends React.Component {
 
   render() {
     return (
-      <>
+      <Container>
         <h1>Home Page</h1>
         { (this.state.address) &&
-          <p>address: {this.state.address}</p>
+          <Row>
+            <Col>
+              <Form.Label htmlFor="syncAddress">Your current address</Form.Label>
+              <Form.Control
+                type="text"
+                id="syncAddress"
+                aria-describedby="syncAddressBlock"
+                value={this.state.address}
+              />
+            </Col>
+          </Row>
         }
         { (this.state.syncPhrase) && 
-          <p>syncPhrase: {this.state.syncPhrase}</p>
+          <Row>
+            <Col>
+              <Form.Label htmlFor="syncPhrase">Current syncPhrase</Form.Label>
+              <Form.Control
+                type="text"
+                as="textarea"
+                rows={3}
+                id="syncPhrase"
+                aria-describedby="syncPhraseBlock"
+                value={this.state.syncPhrase}
+              />
+            </Col>
+          </Row>
         }
-        { (this.state.syncAddress) && 
-          <p>syncAddress: {this.state.syncAddress}</p>
+        { (this.state.syncPhrase) && 
+          <Row>
+            <Col>
+              <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
+              <Form.Control
+                type="text"
+                id="syncAddress"
+                aria-describedby="syncAddressBlock"
+                value={this.state.syncAddress}
+              />
+            </Col>
+          </Row>
         }
         {/*
         <FileUpload />
         */}
-      </>
+      </Container>
     )
   }
 }
