@@ -18,7 +18,6 @@ export class Setup extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      //errors: {},
       formInputShow: null,
       errors: [],
       form: {
@@ -28,6 +27,7 @@ export class Setup extends React.Component {
       input: {},
       address: null,
       syncPhrase: null,
+      syncAddress: null,
       keyOptions: [
         {
           id: "privateKeyCheckbox",
@@ -78,7 +78,11 @@ export class Setup extends React.Component {
       }
       //this.syncPhrase = await this.wallet.getNewPhraseData()
       this.syncPhrase = await this.wallet.getPhraseData()
-      this.setState({ syncPhrase: this.syncPhrase })
+      this.dataAddress = await this.wallet.getDataWalletAddress(this.syncPhrase)
+      this.setState({
+        syncPhrase: this.syncPhrase,
+        syncAddress: this.dataAddress,
+      })
     } catch (e) {
       console.error('ERROR :: Setup :: componentDidMount :: ', e)
     }
@@ -182,7 +186,6 @@ export class Setup extends React.Component {
     )
     return (
       <Container>
-        
         { (this.state.errors) && (<Row><Col><h4>{this.state.errors}</h4></Col></Row>) }
         <Form className="form" key="SetupForm" onSubmit={this.handleFormSubmit}>
           <Row>
@@ -193,7 +196,7 @@ export class Setup extends React.Component {
             { (this.state.address) &&
               <Row>
                 <Col>
-                  <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
+                  <Form.Label htmlFor="syncAddress">Your current address</Form.Label>
                   <Form.Control
                     type="text"
                     id="syncAddress"
@@ -214,6 +217,19 @@ export class Setup extends React.Component {
                     id="syncPhrase"
                     aria-describedby="syncPhraseBlock"
                     value={this.state.syncPhrase}
+                  />
+                </Col>
+              </Row>
+            }
+            { (this.state.syncPhrase) && 
+              <Row>
+                <Col>
+                  <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="syncAddress"
+                    aria-describedby="syncAddressBlock"
+                    value={this.state.syncAddress}
                   />
                 </Col>
               </Row>
