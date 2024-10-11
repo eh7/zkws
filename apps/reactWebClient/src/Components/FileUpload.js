@@ -22,6 +22,7 @@ class FileUpload extends React.Component {
       files: [],
       form: {phrase:''},
       pharse: '',
+      syncAddress: null,
       dbStatus: false,
       listening: false,
       dbName: 'filesystem-database',
@@ -143,6 +144,7 @@ class FileUpload extends React.Component {
 
   handleLatestClick = async (event) => {
     const newFiles = []
+    let files = ''
     try {
       const addressUser = await this.wallet.getAddress()
       const addressData = await this.wallet.getDataWalletPhrase(this.state.phrase)
@@ -175,7 +177,6 @@ class FileUpload extends React.Component {
  //     if (response.status === 200) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder('utf8');
-        let files = ''
         for await (const chunk of this.readChunks(reader)) {
           console.log(`received chunk of size ${chunk.length}`);
           //console.log(decoder.decode(chunk))
@@ -201,6 +202,9 @@ class FileUpload extends React.Component {
 //      }
     } catch (err) {
       console.error('ERROR :: handleLatestClick ::', err)
+      if (files.message === 'Error streaming file') {
+        alert("Error streaming file - Has the sync been run since you published your files?")
+      }
     }
   }
 
@@ -512,8 +516,11 @@ console.log('dataInDb', ob)
       this.wallet = new Wallet();
       this.createStoreInDB();
       //this.createStoreInDBNew();
-      this.setState({ phrase: await this.wallet.getPhraseData() });
+      this.syncPhrase = await this.wallet.getPhraseData()
+      this.setState({ phrase: this.syncPhrase });
+      //this.setState({ phrase: await this.wallet.getPhraseData() });
       this.setState({ address: await this.wallet.getAddress() })
+      this.setState({ syncAddress: await this.wallet.getDataWalletAddress(this.syncPhrase) });
       this.setupDBState();
     } catch (e) {
       console.error('ERROR :: FileUpload :: componentDidMount :: ', e)
@@ -539,6 +546,9 @@ console.log('dataInDb', ob)
             <Card.Body>
               <Card.Title>Data Sync Controls</Card.Title>
 
+              <p>
+                Sync Address: <b>{ this.state.syncAddress }</b>
+              </p>
               <p>
                 Sync Phrase: <b>{ this.state.phrase }</b>
               </p>
