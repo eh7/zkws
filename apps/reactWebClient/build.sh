@@ -2,6 +2,8 @@
 #--format=cjs --platform=node \
 #--loader:.js=jsx
 
-npx esbuild test.js  --bundle --outfile=tmp/build.test.cjs \
+npx esbuild src/server.js  --bundle --outfile=tmp/build.server.cjs \
 --format=cjs --platform=node \
 --loader:.js=jsx
+
+npx pkg tmp/build.server.cjs --targets latest -o tmp/build.server
