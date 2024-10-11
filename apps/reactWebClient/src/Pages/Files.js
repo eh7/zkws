@@ -1,5 +1,16 @@
 import * as React from 'react'
 
+import {
+  Button,
+  Form,
+  FormGroup,
+  Card,
+  Row,
+  Col,
+  Container,
+  FloatingLabel,
+} from 'react-bootstrap';
+
 import Wallet from '../services/wallet'
 
 import FileUpload from "../Components/FileUpload"
@@ -37,10 +48,10 @@ export class Files extends React.Component {
 
   render() {
     return (
-      <>
+      <Container>
         <h1>Files</h1>
         <FileUpload />
-      </>
+      </Container>
     )
   }
 }

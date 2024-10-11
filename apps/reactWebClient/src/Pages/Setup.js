@@ -18,7 +18,6 @@ export class Setup extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      errors: {},
       formInputShow: null,
       errors: [],
       form: {
@@ -28,6 +27,7 @@ export class Setup extends React.Component {
       input: {},
       address: null,
       syncPhrase: null,
+      syncAddress: null,
       keyOptions: [
         {
           id: "privateKeyCheckbox",
@@ -186,7 +186,6 @@ export class Setup extends React.Component {
     )
     return (
       <Container>
-        
         { (this.state.errors) && (<Row><Col><h4>{this.state.errors}</h4></Col></Row>) }
         <Form className="form" key="SetupForm" onSubmit={this.handleFormSubmit}>
           <Row>
@@ -197,7 +196,7 @@ export class Setup extends React.Component {
             { (this.state.address) &&
               <Row>
                 <Col>
-                  <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
+                  <Form.Label htmlFor="syncAddress">Your current address</Form.Label>
                   <Form.Control
                     type="text"
                     id="myAddress"
