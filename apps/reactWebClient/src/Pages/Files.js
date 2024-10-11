@@ -49,8 +49,10 @@ export class Files extends React.Component {
   render() {
     return (
       <Container>
-        <h1>Files</h1>
-        <FileUpload />
+        <Card>
+          <Card.Header>Files</Card.Header>
+          <FileUpload className="mt-3"/>
+        </Card>
       </Container>
     )
   }
