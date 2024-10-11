@@ -1,14 +1,23 @@
 import React from 'react'
-import Card from 'react-bootstrap/Card'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Table from 'react-bootstrap/Table'
+
+import {
+  Button,
+  Form,
+  FormGroup,
+  Card,
+  Row,
+  Col,
+  Container,
+  FloatingLabel,
+  Table,
+} from 'react-bootstrap';
 
 import {openDB} from 'idb'
 import * as indexedDB from 'idb'
 
 import Wallet from '../services/wallet'
+
+import SyncDataSettings from "../Components/SyncDataSetting"
 
 const dbVersion = 1
 const apiHost = (process.env.PROD === 'true') ? "www.zkws.org" : "localhost"
@@ -22,7 +31,9 @@ class FileUpload extends React.Component {
       files: [],
       form: {phrase:''},
       pharse: '',
+      address: null,
       syncAddress: null,
+      syncPhrase: null,
       dbStatus: false,
       listening: false,
       dbName: 'filesystem-database',
@@ -90,7 +101,7 @@ class FileUpload extends React.Component {
 
     try {
       this.setState({ phrase: await this.wallet.getNewPhraseData() });
-      console.log("phrase:", this.state.phrase);
+      console.log("phrase:", this.state.syncPhrase);
       const dbName = 'filesystem-database'
       const storeName = 'files'
       const db = await openDB(dbName, dbVersion)
@@ -147,7 +158,7 @@ class FileUpload extends React.Component {
     let files = ''
     try {
       const addressUser = await this.wallet.getAddress()
-      const addressData = await this.wallet.getDataWalletPhrase(this.state.phrase)
+      const addressData = await this.wallet.getDataWalletPhrase(this.state.syncPhrase)
 
       const now = new Date()
       const seconds = String(Math.round(now.getTime() / 1000));
@@ -194,7 +205,7 @@ class FileUpload extends React.Component {
         })
         */
         files.map((file) => {
-          newFiles.push(this.wallet.decryptFilesData(file, this.state.phrase))
+          newFiles.push(this.wallet.decryptFilesData(file, this.state.syncPhrase))
         })
         //WIP
         console.log('decryptFilesData :: decrypted :: ', newFiles)
@@ -233,7 +244,7 @@ class FileUpload extends React.Component {
 
     const encryptedFilesData = await this.wallet.encryptFilesData(
       this.state.files,
-      this.state.phrase,
+      this.state.syncPhrase,
       address
     )
     console.log('encryptedFilesData', encryptedFilesData);
@@ -243,14 +254,14 @@ class FileUpload extends React.Component {
     // Example showing decryption of file and files data
     const decryptedFilesData = this.wallet.decryptFilesData(
       encryptedFilesData,
-      this.state.phrase,
+      this.state.syncPhrase,
     )
     console.log('decryptedFilesData', decryptedFilesData);
 
     encryptedFilesData.encryptedFiles.map((file, index) => {
       const decryptedFilesData = this.wallet.decryptFilesData(
         file,
-        this.state.phrase,
+        this.state.syncPhrase,
       )
       console.log('decryptedFilesData array index=' + index, decryptedFilesData);
     })
@@ -359,6 +370,7 @@ class FileUpload extends React.Component {
   }
 
   renderTextFile = async (_name, _index) => {
+    try {
     const ob = this.state.files[_index]
     const db = await openDB(this.state.dbName, dbVersion)
     const trans = db.transaction([this.state.storeName], 'readonly');
@@ -378,6 +390,9 @@ class FileUpload extends React.Component {
 
     document.querySelector("#image").style = 'border: 0px solid black';
     document.querySelector("#image").src = '';
+    } catch (err) {
+      console.error('ERROR :: renderTextFile ::', err.message)
+    }
   }
 
   saveImageFile = async (_name, _index) => {
@@ -433,6 +448,7 @@ console.log(
   }
 
   showImageFile = async (_name, _index) => {
+    try {
     const ob = this.state.files[_index]
     const db = await openDB(this.state.dbName, dbVersion)
     const trans = db.transaction([this.state.storeName], 'readonly');
@@ -441,6 +457,9 @@ console.log('dataInDb', ob)
     document.querySelector("#image").style = 'border: 1px solid black';
     document.querySelector("#image").src = dataInDb.data;
     this.setState({ utf8FileText: '' })
+    } catch (err) {
+      console.error('ERROR :: showImageFile ::', err)
+    }
   }
 
   updateFiles = async (_files) => {
@@ -501,9 +520,10 @@ console.log('dataInDb', ob)
           phrase: '',
         }
       }))
-      console.log('this.state.form.phrase', this.state.form.phrase)
+      //console.log('this.state.form.phrase', this.state.form.phrase)
       console.log('updated sync Phrase')//, this.state.phrase)
-      alert('WIP setPhrase()')
+      window.location = "/files"
+      //alert('WIP setPhrase()')
     }
   }
 
@@ -517,7 +537,7 @@ console.log('dataInDb', ob)
       this.createStoreInDB();
       //this.createStoreInDBNew();
       this.syncPhrase = await this.wallet.getPhraseData()
-      this.setState({ phrase: this.syncPhrase });
+      this.setState({ syncPhrase: this.syncPhrase });
       //this.setState({ phrase: await this.wallet.getPhraseData() });
       this.setState({ address: await this.wallet.getAddress() })
       this.setState({ syncAddress: await this.wallet.getDataWalletAddress(this.syncPhrase) });
@@ -542,24 +562,16 @@ console.log('dataInDb', ob)
     if(this.indexedDBStuff()) {
       return (
         <>
-          <Card>
+          <Card className="m-3">
+            <Card.Header>Your Data Sync Settings</Card.Header>
             <Card.Body>
-              <Card.Title>Data Sync Controls</Card.Title>
-
-              <p>
-                Sync Address: <b>{ this.state.syncAddress }</b>
-              </p>
-              <p>
-                Sync Phrase: <b>{ this.state.phrase }</b>
-              </p>
-              <p>
-                <button type="submit" onClick={() => this.setPhrase()}>update</button>
-                <input required type="text" ref={this.state.form.phrase} onChange={(event) => {
-                  this.state.form.phrase = event.target.value
-                  console.log('phrase input onClick event.target.value:', event.target.value, this.state.form.phrase)
-                }} />
-              </p>
-              <h4>Sync</h4>
+              <SyncDataSettings />
+            </Card.Body>
+          </Card>
+          <Card className="m-3">
+            <Card.Header>Data Sync Controls</Card.Header>
+            <Card.Title>Your Files Data</Card.Title>
+            <Card.Body>
               <p>Listen: 
                 <b>{ this.state.listening }</b>
                 <input type="button" id="listenSwitch" value="off" onClick={this.handleListenClick}/>
@@ -583,15 +595,15 @@ console.log('dataInDb', ob)
                       <th>-</th>
                       <th>-</th>
                       <th>-</th>
-                      <th>delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.state.keys.map((name, index) => {
-                      return (
-                        <tr>
-                          <td>
-                            <button onClick={() => this.showImageFile(name, index)}>show {name}</button>
+                     <th>delete</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   {this.state.keys.map((name, index) => {
+                     return (
+                       <tr>
+                         <td>
+                           <button onClick={() => this.showImageFile(name, index)}>show {name}</button>
                           </td>
                           <td>
                             <button onClick={() => this.saveImageFile(name, index)}> save </button>
@@ -608,17 +620,40 @@ console.log('dataInDb', ob)
                   </tbody>
                 </Table>
               </Container>
-
-              <Card bg="Success" border="warning" style={{ width: '18rem' }}>
-                <Card.Title>File Output</Card.Title>
+              <Card bg="Success" border="warning">
+                <Card.Header>File Output ({ (this.state.utf8FileText) ? <>text</> : <>image</> })</Card.Header>
                 <Card.Body>
-                   <Card.Text>
-                     <p><img id="image"/></p>
-                     {this.state?.utf8FileText}
-                   </Card.Text>
+                  { (this.state.utf8FileText) &&
+                    <Card.Text className='text-left'>
+                      {this.state?.utf8FileText}
+                    </Card.Text>
+                  }
+                  <Card.Text className='text-center'>
+                    <img id="image"/>
+                  </Card.Text>
                 </Card.Body>
               </Card>
-
+              <Card className="mt-3">
+                <Card.Header>Update Your Sync Phrase</Card.Header>
+                <Card.Body>
+                  <p>
+                    <Form.Group className="mb-3" controlId="phraseInputs">
+                      <Form.Control
+                        id='phrase'
+                        type="input"
+                        as="textarea"
+                        label="Enter New Sync Phrase"
+                        placeholder="enter your new phrase"
+                        onChange={(event) => {
+                          this.state.form.phrase = event.target.value
+                        }}
+                        ref={this.state.form.phrase}
+                      />
+                      <Button type="submit" onClick={() => this.setPhrase()}>update sync phrase</Button>
+                    </Form.Group>
+                  </p>
+                </Card.Body>
+              </Card>
             </Card.Body>
           </Card>
         </>

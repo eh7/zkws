@@ -13,10 +13,7 @@ import {
 
 import Wallet from '../services/wallet'
 
-//import FileUpload from "../Components/FileUpload"
-import SyncDataSettings from "../Components/SyncDataSetting"
-
-export class Home extends React.Component {
+export default class SyncDataSettings extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -31,16 +28,12 @@ export class Home extends React.Component {
       this.wallet.getNewPhrase(false)
       this.address = await this.wallet.getAddress()
       this.privateKey = await this.wallet.getPrivateKey()
-      //if (this.address) {
-      //  this.props.handleUpdateAddress(this.address)
-      //}
-      //this.syncPhrase = await this.wallet.getNewPhraseData()
       this.syncPhrase = await this.wallet.getPhraseData()
       this.dataAddress = await this.wallet.getDataWalletAddress(this.syncPhrase)
       this.setState({
-        syncPhrase: this.syncPhrase, 
         address: this.address,
         syncAddress: this.dataAddress,
+        syncPhrase: this.syncPhrase, 
       })
     } catch (e) {
       console.error('ERROR :: Setup :: componentDidMount :: ', e)
@@ -49,18 +42,11 @@ export class Home extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Card>
-          <Card.Header>Home</Card.Header>
-          <Card.Body>
-            <SyncDataSettings />
-          </Card.Body>
-        </Card>
-        {/*
+      <Container className="mb-3">
         { (this.state.address) &&
           <Row>
             <Col>
-              <Form.Label htmlFor="address">Your current address</Form.Label>
+              <Form.Label htmlFor="address">Personal address</Form.Label>
               <Form.Control
                 type="text"
                 id="address"
@@ -73,7 +59,20 @@ export class Home extends React.Component {
         { (this.state.syncPhrase) && 
           <Row>
             <Col>
-              <Form.Label htmlFor="syncPhrase">Current syncPhrase</Form.Label>
+              <Form.Label htmlFor="syncAddress">Data syncAddress</Form.Label>
+              <Form.Control
+                type="text"
+                id="syncAddress"
+                aria-describedby="syncAddressBlock"
+                value={this.state.syncAddress}
+              />
+            </Col>
+          </Row>
+        }
+        { (this.state.syncPhrase) && 
+          <Row>
+            <Col>
+              <Form.Label htmlFor="syncPhrase">Data syncPhrase</Form.Label>
               <Form.Control
                 type="text"
                 as="textarea"
@@ -85,20 +84,6 @@ export class Home extends React.Component {
             </Col>
           </Row>
         }
-        { (this.state.syncPhrase) && 
-          <Row>
-            <Col>
-              <Form.Label htmlFor="syncAddress">Current syncAddress</Form.Label>
-              <Form.Control
-                type="text"
-                id="syncAddress"
-                aria-describedby="syncAddressBlock"
-                value={this.state.syncAddress}
-              />
-            </Col>
-          </Row>
-        }
-        */}
       </Container>
     )
   }
