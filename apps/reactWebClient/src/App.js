@@ -5,6 +5,7 @@ import './App.css';
 import Peer from "./Lib/Peer"
 
 import NavBar from "./Components/NavBar"
+import InitialSettup from "./Components/InitialSettup"
 
 import { Home } from "./Pages/Home"
 import { Files } from "./Pages/Files"
@@ -59,6 +60,7 @@ export class App extends React.Component {
 
     return (
       <div className="App">
+        <InitialSettup />
         <NavBar />
         <BrowserRouter>
           <Routes>
@@ -82,7 +84,10 @@ export class App extends React.Component {
       )
     } else {
       return (
-        <div className="App">
+        <div className="App modal show"
+          style={{ display: 'block', position: 'initial' }}
+        >
+          <InitialSettup />
           <NavBar />
           <BrowserRouter>
             <Routes>
