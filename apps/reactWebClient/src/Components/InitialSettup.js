@@ -39,7 +39,8 @@ export default class InitialSettup extends React.Component {
       this.setState({
         address: this.address,
       })
-      this.setState({ showInitialSetup: false })
+      //this.setState({ showInitialSetup: false })
+      this.setState({ showInitialSetup: true })
     } catch (e) {
       console.error('ERROR :: InitialSetup :: componentDidMount :: ', e)
     }

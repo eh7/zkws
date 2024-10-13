@@ -23,10 +23,7 @@ console.log(wallet)
 const pkeyV3 = async (_pkey, _password) => {
   try {
     const key = Buffer.from(_pkey, 'hex');
-const ethjsWallet = new EthjsWallet.hdkey()
-console.log(ethjsWallet.fromPrivateKey)
-process.exit()
-    const wallet = EthjsWallet.fromPrivateKey(key);
+    const wallet = EthjsWallet.default.fromPrivateKey(key);
     const v3Options = {
       kdf: 'scrypt',
       dklen: 32,
