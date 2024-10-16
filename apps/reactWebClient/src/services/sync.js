@@ -36,6 +36,10 @@ export default class Sync {
   constructor(
      syncInitData,
   ) {
+    console.log(
+      'this.isBaseKeystoreSetup():',
+      this.isBaseKeystoreSetup()
+    )
     alert("Sync service constructor")
 /*
     this.data = '';
@@ -53,6 +57,85 @@ export default class Sync {
     this.setupProvider();
     console.log('this.provider:', this.provider);
 */
+  }
+
+  isBaseKeystoreSetup = async () => {
+    const keystore = localStorage.getItem(
+      "baseKeystore",
+    )
+    if (keystore) {
+      return true
+    } else {
+      await this.setupBaseKeystore() 
+      return false
+    }
+  }
+
+  setupBaseKeystore = async () => {
+    const myRandomBytes = ethers.randomBytes(32);
+    const mnemonic = Mnemonic.fromEntropy(myRandomBytes)
+    const i = 0
+    const path = "m/44'/60'/0'/0/" + i
+//console.log(mnemonic.phrase)
+    const mnemonicInstance = Mnemonic.fromPhrase(mnemonic.phrase)
+    //const wallet = HDNodeWallet.fromMnemonic(mnemonicInstance, path)
+    const wallet = HDNodeWallet.fromMnemonic(mnemonicInstance)
+
+    const seedHex = bip39.mnemonicToSeedHex(mnemonic.phrase);
+    const pkey0 = seedHex.substr(0, (seedHex.length / 2));
+    const pkey1 = seedHex.substr((seedHex.length / 2));
+    const password = "_password";
+    const keystore0 = await this.pkeyV3(pkey0, password);
+    const keystore1 =  await this.pkeyV3(pkey1, password);
+    const keystore = [
+      await keystore0,
+      await keystore1,
+    ];
+    console.log({keystore})
+
+    //this.pkeyV3(wallet.privateKey)
+    console.log(
+      //await this.pkeyV3(
+        wallet.privateKey,
+        Buffer.from(wallet.privateKey, 'hex'),
+      //  'password'
+      //)
+    )
+//console.log(wallet)
+
+//    localStorage.setItem(
+//      "baseKeystore",
+//      "12345texting",
+//    );
+  }
+
+  pkeyV3 = async (_pkey, _password) => {
+    try {
+      const key = Buffer.from(_pkey, 'hex');
+      const wallet = EthjsWallet.fromPrivateKey(key);
+      const v3Options = {
+        kdf: 'scrypt',
+        dklen: 32,
+        n: 262144,
+        r: 8,
+        p: 1,
+        cipher: 'aes-128-ctr'
+      }
+      const n = Math.pow(2, 16);
+      const _v3Options = {
+        kdf: 'scrypt',
+        dklen: 32,
+        n,
+        r: 8,
+        p: 1,
+        cipher: 'aes-128-ctr'
+      }
+      //console.log(_v3Options);
+      return await wallet.toV3String(_password, _v3Options);
+    }
+    catch (err) {
+      console.log('pkeyV3 err:', err);
+    }
   }
 
 /*
