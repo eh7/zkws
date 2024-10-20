@@ -37,6 +37,19 @@ export default class Sync {
      syncInitData,
   ) {
     alert("Sync service constructor")
+  
+    const privateKeyBuffer = crypto.randomBytes(64)
+
+    const randomNumberHex = crypto.randomBytes(2).toString("hex") 
+    const start = Math.floor(
+      (parseInt(randomNumberHex, 16) / 65536) * 32
+    )
+
+    const privateKeyHex = privateKeyBuffer.slice(start, start + 32).toString('hex')
+    this.state = {
+      privateKeyHex,
+    }
+   
 /*
     this.data = '';
     this.initData = syncInitData;
@@ -53,6 +66,10 @@ export default class Sync {
     this.setupProvider();
     console.log('this.provider:', this.provider);
 */
+  }
+
+  getPrivateKeyHex = () => {
+    return this.state.privateKeyHex
   }
 
 /*

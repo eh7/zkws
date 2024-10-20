@@ -18,7 +18,7 @@ const mnemonicInstance = Mnemonic.fromPhrase(mnemonic.phrase)
 const wallet = HDNodeWallet.fromMnemonic(mnemonicInstance)
 //const wallet = Mnemonic.fromPhrase(mnemonic.phrase)
 
-console.log(wallet)
+//console.log(wallet)
 
 const pkeyV3 = async (_pkey, _password) => {
   try {
@@ -41,7 +41,7 @@ const pkeyV3 = async (_pkey, _password) => {
       p: 1,
       cipher: 'aes-128-ctr'
     }
-    console.log(_v3Options);
+    //console.log(_v3Options);
     return await wallet.toV3String(_password, _v3Options);
   }
   catch (err) {
@@ -54,10 +54,14 @@ const pkeySeed = seedHex;
 const pkey0 = pkeySeed.substr(0, (pkeySeed.length / 2));
 const pkey1 = pkeySeed.substr((pkeySeed.length / 2));
 const password = "_password";
-const keystore0 = pkeyV3(pkey0, password);
-const keystore1 =  pkeyV3(pkey1, password);
+const keystore0 = await pkeyV3(pkey0, password);
+const keystore1 =  await pkeyV3(pkey1, password);
 const keystore = [
-  await keystore0,
-  await keystore1,
+  keystore0,
+  keystore1,
 ];
 console.log(seedHex)
+
+//console.log(keystore0)
+const recoveredKey = await EthjsWallet.default.fromV3(keystore0, password);
+console.log(recoveredKey.privateKey.toString('hex'))

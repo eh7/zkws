@@ -41,6 +41,7 @@ export default class InitialSettup extends React.Component {
       })
       //this.setState({ showInitialSetup: false })
       this.setState({ showInitialSetup: true })
+      alert(this.sync.getPrivateKeyHex())
     } catch (e) {
       console.error('ERROR :: InitialSetup :: componentDidMount :: ', e)
     }
