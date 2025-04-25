@@ -1,3 +1,5 @@
 # ZKWS - zero knowledge wallet services
 
-WIP
+## zkws - APPS
+
+ws-email-service  ws-relay-service  ws-smart-contracts
