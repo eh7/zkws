@@ -1,5 +1,26 @@
 import Pop3Command from 'node-pop3'
+import emlformat from 'eml-format'
+
+import DKIMSignature from 'dkim-signature'
+import DKIM from 'dkim'
+
+import dns from 'node:dns';
+
+import child_process from 'child_process'
+import fs from 'node:fs'
+
 import 'dotenv/config'
+
+const app = {}
+
+//dns.resolveTxt('dkim99._domainkey.dmail0.zkws.org', (err, data, family) => {
+dns.resolveTxt(
+  process.env.SELECTOR + '._domainkey.' + process.env.DOMAIN,
+  (err, data) => {
+    app.key =  data
+    console.log(`dkim selector/domain pubkey data: \n${data}`)
+  }
+)
 
 const pop3 = new Pop3Command({
   user: process.env.BOT_USER,
@@ -12,8 +33,8 @@ console.log(
   await pop3.STAT(),
 )
 
-const list = await pop3.UIDL();
-const uidl = await pop3.UIDL();
+const list = await pop3.UIDL()
+const uidl = await pop3.UIDL()
 
 console.log(
   //pop3
@@ -22,21 +43,60 @@ console.log(
   uidl,
 )
 
-const message = await pop3.UIDL(1);
+const message = await pop3.UIDL(1)
 console.log('1:', message)
 
-const messageData = await pop3.RETR(1);
+const messageData = await pop3.RETR(6)
 console.log(messageData)
+console.log('xx---------------------------------xx')
+console.log(app)
+
+//process.exit()
+ 
+/*
+console.log(
+  DKIM.verify(
+    Buffer.from(
+      messageData
+    ),
+    (out) => {
+      console.log('out', out)
+    }
+  )
+)
+
+emlformat.read(messageData, (error, data) => {
+  if (error) return console.log(error)
+  console.log(data)
+  console.log(data.headers['DKIM-Signature'])
+  //const signature = DKIMSignature.parse(data.headers['DKIM-Signature'])
+  const signature = DKIMSignature.parse(
+    "v=1; a=rsa-sha256; c=relaxed/relaxed; d=dmail0.zkws.org; s=dkim99; x=1747145697; h=Received-SPF: Message-ID:From:Subject:To:User-Agent:Date; bh=x9eXaS9JWd9JtdaxYMTGl8PUA81wbUrHHQEQG9iJJPw=; b=xPHEB+ZyjgtxviUM8ak6CIIEswT/SsQClObhkI7D50FRl0BOYFVdvBh3ZcjJj/1f+AmNTbILGd5CpvLRgp3qzukwJdGwcmJTvI9ooJ+pu/hP9zBRmzmhvEX7M+5MP4me95SGRY24fIRVcil7HZ7TWK1WXwEtSiHfDGQ2gLCk2fSCcofvn1ksUaEG1sXn0NSt0XvxelzzpNinINjL+vOhed0SY9Tcvew8IepyM/pdhi+C191SLi+23rkFcJmiP+i3xXxX3sh9Mvt9TFGU5HLe7ixSuySSyrXsbxGsujMiqE7WU0nLGDCs/SGbv8b7PhkFFZwnLHJ/wZEO/uKNMiupGQ=="
+  )
+  console.log(
+    DKIM.verify(
+      Buffer.from(
+        data.headers['DKIM-Signature']
+      ),
+      (out) => {
+        console.log(out)
+      }
+    )
+  )
+})
+*/
+
 
 pop3.command('QUIT')
 
-//const str = await pop3.command('LIST');
 
-//console.log(str)
-
-//const msgNum = 1;
-
-
-//const str = await pop3.RETR(msgNum);
-//// deal with mail string
-//await pop3.QUIT();
+//
+//  dkimverify system call with messageData
+const exec = child_process.exec;
+const tmpFile = '/tmp/data.txt'
+fs.writeFile(tmpFile, messageData, "utf8", (err) => {
+  console.log("data.txt File saved! -> ", tmpFile);
+  exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
+    console.log(error, stdout, stderr)
+  })
+});
