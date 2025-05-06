@@ -12,6 +12,7 @@ import fs from 'node:fs'
 import 'dotenv/config'
 
 const app = {}
+const exec = child_process.exec;
 
 //dns.resolveTxt('dkim99._domainkey.dmail0.zkws.org', (err, data, family) => {
 dns.resolveTxt(
@@ -47,9 +48,17 @@ const message = await pop3.UIDL(1)
 console.log('1:', message)
 
 const messageData = await pop3.RETR(6)
-console.log(messageData)
-console.log('xx---------------------------------xx')
-console.log(app)
+//console.log(messageData)
+//console.log('xx---------------------------------xx')
+//console.log(app)
+
+for(let i = 1; i <= list.length; i++) {
+  const messageData = await pop3.RETR(i)
+  //console.log(list[i])
+  await verify(messageData)
+}
+
+
 
 //process.exit()
  
@@ -92,11 +101,44 @@ pop3.command('QUIT')
 
 //
 //  dkimverify system call with messageData
-const exec = child_process.exec;
-const tmpFile = '/tmp/data.txt'
-fs.writeFile(tmpFile, messageData, "utf8", (err) => {
-  console.log("data.txt File saved! -> ", tmpFile);
-  exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
-    console.log(error, stdout, stderr)
+//
+/*
+function verifyEmail() {
+  return new Promise((resolve, reject) => {
+    callbackFn(...args, (err, result) => {
+    if (err) {
+      return reject(err);
+    }
+    resolve(result);
+  });
+}
+*/
+
+function verify(_messageData) {
+  return new Promise((resolve, reject) => {
+    const tmpFile = '/tmp/data.txt'
+    console.log('dkim veirfy: ', _messageData) 
+    fs.writeFile(tmpFile, _messageData, "utf8", (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        console.log("File created -> ", tmpFile. _id)
+        exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          } else {
+            //console.log(error, stdout, stderr)
+            fs.unlink(tmpFile, (err) => {
+              if (err) {
+                reject(err)
+              } else {
+                console.log("File removed -> ", tmpFile. _id)
+                resolve('done')
+              }
+            })
+          }
+        })
+      }
+    });
   })
-});
+}
