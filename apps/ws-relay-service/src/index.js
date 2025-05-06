@@ -7,14 +7,26 @@ const pop3 = new Pop3Command({
   host: process.env.BOT_HOST,
 })
 //await pop3.connect(),
+//
+console.log(
+  await pop3.STAT(),
+)
 
 const list = await pop3.UIDL();
+const uidl = await pop3.UIDL();
 
 console.log(
   //pop3
   //await pop3.command('STAT')
-  list
+  list,
+  uidl,
 )
+
+const message = await pop3.UIDL(1);
+console.log('1:', message)
+
+const messageData = await pop3.RETR(1);
+console.log(messageData)
 
 pop3.command('QUIT')
 
