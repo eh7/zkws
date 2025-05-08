@@ -1,0 +1,12 @@
+{
+  "name": "ws-web-client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gavin Francis <gav@eh7.co.uk>",
+  "license": "ISC",
+  "description": ""
+}
