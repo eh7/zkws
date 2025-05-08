@@ -1,3 +1,5 @@
+# ZKWS - zero knowledge wallet services
+
 # zkws
 
 Data File Sync Service
@@ -39,3 +41,8 @@ Data structures client browser;
 * ???
 
 Network communication will use post request between client and files API servcie. The files API will run as a service and revenue will be able to be generated through provsiom of sync data strage and distrabution. I initial version this will with standard http ost request over tcp. In future we could givethe option for people/organisations to host to host their own files API saving them the strage transfer costs. The files API can also be extended to use a p2p network setup but this will be part of the next stage of development.
+
+
+## zkws - APPS
+
+ws-email-service  ws-relay-service  ws-smart-contracts

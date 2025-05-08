@@ -1,0 +1,20 @@
+{
+  "name": "ws-relay-service",
+  "version": "0.0.1",
+  "description": "zkws.org replay service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gavin Francis <gav@eh7.co.uk>",
+  "license": "ISC",
+  "dependencies": {
+    "dkim": "^0.8.0",
+    "dkim-signature": "^3.0.1",
+    "dotenv": "^16.5.0",
+    "eml-format": "^0.6.1",
+    "node-pop3": "^0.9.1"
+  }
+}
