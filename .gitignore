@@ -47,3 +47,8 @@ yarn.lock
 
 **/dist/**/*
 **/.parcel-cache/**/*
+circom/cryptography/rsa/private-key-512.pem
+circom/cryptography/rsa/private-key.pem
+circom/cryptography/rsa/private-key-EC.pem
+apps/reactWebClient/key.pem
+apps/reactWebClient/cert.pem
