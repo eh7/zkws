@@ -3,6 +3,7 @@ import emlformat from 'eml-format'
 
 import DKIMSignature from 'dkim-signature'
 import DKIM from 'dkim'
+import { dkimVerify } from 'dkimpy'
 
 import dns from 'node:dns';
 
@@ -131,19 +132,24 @@ function verify(_messageData) {
   return new Promise((resolve, reject) => {
     const tmpFile = '/tmp/data.txt'
     //console.log('dkim veirfy: ', _messageData) 
-    fs.writeFile(tmpFile, _messageData, "utf8", (err) => {
+    fs.writeFile(tmpFile, _messageData, "utf8", async (err) => {
       if (err) {
         //console.log(_messageData)
         //reject(err)
         //resolve(err)
       } else {
+        console.log("#### ---> File created -> ", tmpFile)
+        const dkim_verify_result = await dkimVerify(message.toString())
+        console.log("dkim_verify_result:  ", dkim_verify_result)
 //        console.log("File created -> ", tmpFile._id)
 //process.exit()
+/*
         exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
           if (error) {
             console.log(error.message)
           }
         })
+*/
         resolve('done')
 /*
         exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
