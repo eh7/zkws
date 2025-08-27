@@ -55,10 +55,23 @@ const messageData = await pop3.RETR(6)
 for(let i = 1; i <= list.length; i++) {
   const messageData = await pop3.RETR(i)
   //console.log(list[i])
+  console.log(" :::::::::::::::::::::::::::::::::::::::::::::::::::")
+  console.log(i)
+  console.log(messageData)
+
   await verify(messageData)
+
+/*
+  DKIM.verify(
+    Buffer.from(
+      messageData
+    ),
+    (out) => {
+      console.log('out', out)
+    }
+  )
+*/
 }
-
-
 
 //process.exit()
  
@@ -117,27 +130,45 @@ function verifyEmail() {
 function verify(_messageData) {
   return new Promise((resolve, reject) => {
     const tmpFile = '/tmp/data.txt'
-    console.log('dkim veirfy: ', _messageData) 
+    //console.log('dkim veirfy: ', _messageData) 
     fs.writeFile(tmpFile, _messageData, "utf8", (err) => {
       if (err) {
-        reject(err)
+        //console.log(_messageData)
+        //reject(err)
+        //resolve(err)
       } else {
-        console.log("File created -> ", tmpFile. _id)
+//        console.log("File created -> ", tmpFile._id)
+//process.exit()
         exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
           if (error) {
-            reject(error)
+            console.log(error.message)
+          }
+        })
+        resolve('done')
+/*
+        exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
+          if (error) {
+            if (stdout === "signature verification failed") {
+              console.log('stdout :: ',stdout)
+              resolve('done')
+            } else {
+              //reject(error)
+              console.log(error.message)
+              resolve(error)
+            }
           } else {
             //console.log(error, stdout, stderr)
             fs.unlink(tmpFile, (err) => {
               if (err) {
                 reject(err)
               } else {
-                console.log("File removed -> ", tmpFile. _id)
+                console.log("File removed -> ", tmpFile)
                 resolve('done')
               }
             })
           }
         })
+*/
       }
     });
   })
