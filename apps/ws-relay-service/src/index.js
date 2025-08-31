@@ -10,6 +10,10 @@ import dns from 'node:dns';
 import child_process from 'child_process'
 import fs from 'node:fs'
 
+import {
+ethers,
+} from "ethers"
+
 import 'dotenv/config'
 
 const app = {}
@@ -36,6 +40,8 @@ console.log(
 )
 
 const list = await pop3.UIDL()
+
+/*
 const uidl = await pop3.UIDL()
 
 console.log(
@@ -52,13 +58,14 @@ const messageData = await pop3.RETR(6)
 //console.log(messageData)
 //console.log('xx---------------------------------xx')
 //console.log(app)
+*/
 
 for(let i = 1; i <= list.length; i++) {
   const messageData = await pop3.RETR(i)
   //console.log(list[i])
-  console.log(" :::::::::::::::::::::::::::::::::::::::::::::::::::")
-  console.log(i)
-  console.log(messageData)
+  //console.log(" :::::::::::::::::::::::::::::::::::::::::::::::::::")
+  //console.log(i)
+  //console.log(messageData)
 
   await verify(messageData)
 
@@ -138,11 +145,54 @@ function verify(_messageData) {
         //reject(err)
         //resolve(err)
       } else {
-        console.log("#### ---> File created -> ", tmpFile)
-        const dkim_verify_result = await dkimVerify(message.toString())
-        console.log("dkim_verify_result:  ", dkim_verify_result)
-//        console.log("File created -> ", tmpFile._id)
-//process.exit()
+        //console.log("#### ---> File created -> ", tmpFile)
+        const dkim_verify_result = await dkimVerify(_messageData)
+
+        if (dkim_verify_result === true) {
+          console.log(":::::::::::::::::::::::::::::::::::::::::::::::")
+          console.log("#### ---> File created -> ", tmpFile)
+          console.log("dkim_verify_result:  ", dkim_verify_result)
+          //console.log("messageData:  ", _messageData)
+          emlformat.read(_messageData, async (error, data) => {
+            console.log(data.subject)
+            if (data.subject === 'balance request') {
+              try {
+                console.log(data.text)
+                const bodyLines = data.text.split("\r\n")
+                let address = ''
+                let network = ''
+                bodyLines.map((item) => {
+                  if (item.search(/^address: /) === 0) {
+                    address = item.replace(/^address: /, '')
+//                  address = item //.replace(/^address: /, '')
+                  } else if (item.search(/^network: /) === 0) {
+                    network = item.replace(/^network: /, '')
+//                    network = item //.replace(/^network: /, '')
+                  }
+                })
+                if (address !== '' && network !== '') {
+                  console.log(address, network)
+                  const MM_API_KEY = process.env.MM_API_KEY
+                  const rcpUrl = "https://" + network + ".infura.io/v3/" + MM_API_KEY
+                  console.log(rcpUrl)
+                  const provider = new ethers.JsonRpcProvider(rcpUrl)
+
+                  console.log(
+                    "Balance for " + address + " :: ",
+                    ethers.formatEther(
+                      (await provider.getBalance(address)).toString()
+                    ),
+                    "ETH",
+                  )
+                }
+              } catch (e) {
+                console.log('ERROR :: balance request :: ', e.message)
+              }
+            }
+            //console.log(data.text.split("\r\n"))
+          })
+        }
+//emlformat.read(messageData, (error, data) => {
 /*
         exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
           if (error) {

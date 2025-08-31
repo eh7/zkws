@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "install": "pip3 install dkimpy",
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,7 +17,14 @@
     "dkimpy": "^3.0.1",
     "dotenv": "^16.5.0",
     "eml-format": "^0.6.1",
+    "ethers": "^6.15.0",
     "mailauth": "^4.9.1",
-    "node-pop3": "^0.9.1"
+    "node-pop3": "^0.9.1",
+    "nopy": "^0.2.9"
+  },
+  "python": {
+    "dependencies": {
+      "dkimpy": ">=1.1.8"
+    }
   }
 }

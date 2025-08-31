@@ -5,7 +5,8 @@ const message = readFileSync(process.argv[2] || "/tmp/email.txt")
 
 console.log(message)
 
-const result = await dkimVerify(message)
-//  .then(console.log)
-//  .catch(console.error);
-console.log(result)
+//const result = await dkimVerify(message)
+const result = dkimVerify(message)
+  .then(console.log)
+  .catch(console.error);
+//console.log(result)
