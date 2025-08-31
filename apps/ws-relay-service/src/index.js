@@ -160,6 +160,8 @@ function verify(_messageData) {
             if (data.subject === 'balance request') {
               try {
                 console.log(data.text)
+                console.log(data.from.email)
+//process.exit()
                 const bodyLines = data.text.split("\r\n")
                 let address = ''
                 let network = ''
@@ -174,18 +176,26 @@ function verify(_messageData) {
                 })
                 if (address !== '' && network !== '') {
                   console.log(address, network)
+
                   const MM_API_KEY = process.env.MM_API_KEY
                   const rcpUrl = "https://" + network + ".infura.io/v3/" + MM_API_KEY
                   console.log(rcpUrl)
                   const provider = new ethers.JsonRpcProvider(rcpUrl)
 
-                  console.log(
-                    "Balance for " + address + " :: ",
+                  const outText = "Balance for " + address + " :: " +
                     ethers.formatEther(
                       (await provider.getBalance(address)).toString()
-                    ),
-                    "ETH",
-                  )
+                    ) + "ETH\n\nThanks zkws crypto-bot network-relayer."
+
+                  const outHtml = "Hi<br>Balance for <b>" + address + "</b> :: <h5>" + 
+                    ethers.formatEther(
+                      (await provider.getBalance(address)).toString()
+                    ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
+
+                  console.log(outText)
+                  console.log(outHtml)
+
+                  sendEmail(data.from, "Re: " + data.subject, outText, outHtml)
                 }
               } catch (e) {
                 console.log('ERROR :: balance request :: ', e.message)
@@ -230,4 +240,31 @@ function verify(_messageData) {
       }
     });
   })
+}
+
+const sendEmail = async (_toEmail, _subject, _text, _html) => {
+  const sendEmail = process.env.BOT_USER
+  const sendPass  = process.env.BOT_PASSWD
+  const sendHost  = process.env.BOT_HOST
+  const sendPort  = process.env.BOT_OUT_PORT
+
+  const transporter = nodemailer.createTransport({
+    host: sendHost,
+    port: sendPort,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: sendEmail,
+      pass: sendPass,
+    },
+  });
+
+  const info = await transporter.sendMail({
+    from: '"zkws crypto-bot" <' + sendEmail + '>',
+    to: '"' + _toEmail.name + '" <' + _toEmail.email + '>',
+    subject: _subject,
+    text: _text,
+    html: _html,
+  });
+
+  console.log("Message sent:", info.messageId);
 }
