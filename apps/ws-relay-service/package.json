@@ -20,6 +20,7 @@
     "ethers": "^6.15.0",
     "mailauth": "^4.9.1",
     "node-pop3": "^0.9.1",
+    "nodemailer": "^7.0.6",
     "nopy": "^0.2.9"
   },
   "python": {

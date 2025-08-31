@@ -14,6 +14,8 @@ import {
 ethers,
 } from "ethers"
 
+import nodemailer from 'nodemailer'
+
 import 'dotenv/config'
 
 const app = {}
