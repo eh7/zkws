@@ -187,7 +187,7 @@ function verify(_messageData) {
                       (await provider.getBalance(address)).toString()
                     ) + "ETH\n\nThanks zkws crypto-bot network-relayer."
 
-                  const outHtml = "Hi<br>Balance for <b>" + address + "</b> :: <h5>" + 
+                  const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + 
                     ethers.formatEther(
                       (await provider.getBalance(address)).toString()
                     ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
