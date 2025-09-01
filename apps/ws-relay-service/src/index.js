@@ -15,6 +15,7 @@ ethers,
 } from "ethers"
 
 import nodemailer from 'nodemailer'
+import { simpleParser } from 'mailparser'
 
 import 'dotenv/config'
 
@@ -61,6 +62,38 @@ const messageData = await pop3.RETR(6)
 //console.log('xx---------------------------------xx')
 //console.log(app)
 */
+
+const sendReturnEmail = async (_toEmail, _subject, _text, _html) => {
+  const sendEmail = process.env.BOT_USER
+  const sendPass  = process.env.BOT_PASSWD
+  const sendHost  = process.env.BOT_HOST
+  const sendPort  = process.env.BOT_OUT_PORT
+
+  const transporter = nodemailer.createTransport({
+    host: sendHost,
+    port: sendPort,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: sendEmail,
+      pass: sendPass,
+    },
+  });
+
+  console.log('sendEmail :: ', _toEmail, _subject, _text, _html)
+
+  const info = await transporter.sendMail({
+    from: '"zkws crypto-bot" <' + sendEmail + '>',
+//    to: '"' + _toEmail.name + '" <' + _toEmail.address + '>',
+    to: _toEmail.text,
+    subject: _subject,
+    text: _text,
+    html: _html,
+  });
+
+  console.log("Message sent:", info.messageId);
+/*
+*/
+}
 
 for(let i = 1; i <= list.length; i++) {
   const messageData = await pop3.RETR(i)
@@ -137,6 +170,8 @@ function verifyEmail() {
 }
 */
 
+
+
 function verify(_messageData) {
   return new Promise((resolve, reject) => {
     const tmpFile = '/tmp/data.txt'
@@ -154,8 +189,59 @@ function verify(_messageData) {
           console.log(":::::::::::::::::::::::::::::::::::::::::::::::")
           console.log("#### ---> File created -> ", tmpFile)
           console.log("dkim_verify_result:  ", dkim_verify_result)
-          //console.log("messageData:  ", _messageData)
+          console.log("messageData:  ", _messageData)
+
+          const options = {}
+          const mail = await simpleParser(_messageData, options)
+          console.log(mail.text)
+          const from = mail.headers.get('from')
+          const subject = mail.headers.get('subject')
+          if (subject === 'balance request') {
+            const mailBody = mail.text
+            const outText = 'text'
+            const outHtml = '<b>html</b>'
+
+            const bodyLines = mailBody.split("\n")
+            let address = ''
+            let network = ''
+            bodyLines.map((item) => {
+              if (item.search(/^address: /) === 0) {
+                address = item.replace(/^address: /, '')
+              } else if (item.search(/^network: /) === 0) {
+                network = item.replace(/^network: /, '')
+              }
+            })
+            if (address !== '' && network !== '') {
+              console.log(address, network)
+
+              const MM_API_KEY = process.env.MM_API_KEY
+              const rcpUrl = "https://" + network + ".infura.io/v3/" + MM_API_KEY
+              console.log(rcpUrl)
+              const provider = new ethers.JsonRpcProvider(rcpUrl)
+
+              const outText = "Balance for " + address + " :: " +
+                ethers.formatEther(
+                  (await provider.getBalance(address)).toString()
+                ) + "ETH\n\nThanks zkws crypto-bot network-relayer."
+
+              const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + 
+                ethers.formatEther(
+                  (await provider.getBalance(address)).toString()
+                ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
+
+              sendReturnEmail(from, "Re: " + subject, outText, outHtml)
+            }
+
+            //console.log('simpleParser :: ', mail.headers.get('subject')) 
+//            console.log('simpleParser :: subject :: ', subject) 
+//            console.log('simpleParser :: from :: ', from) 
+            //sendEmail(from, "Re: " + subject, outText, outHtml)
+          }
+console.log('------------------')
+
+/*
           emlformat.read(_messageData, async (error, data) => {
+            //console.log(error)
             console.log(data.subject)
             if (data.subject === 'balance request') {
               try {
@@ -195,7 +281,7 @@ function verify(_messageData) {
                   console.log(outText)
                   console.log(outHtml)
 
-                  sendEmail(data.from, "Re: " + data.subject, outText, outHtml)
+                  sendEmailOld(data.from, "Re: " + data.subject, outText, outHtml)
                 }
               } catch (e) {
                 console.log('ERROR :: balance request :: ', e.message)
@@ -203,6 +289,7 @@ function verify(_messageData) {
             }
             //console.log(data.text.split("\r\n"))
           })
+*/
         }
 //emlformat.read(messageData, (error, data) => {
 /*
@@ -242,29 +329,3 @@ function verify(_messageData) {
   })
 }
 
-const sendEmail = async (_toEmail, _subject, _text, _html) => {
-  const sendEmail = process.env.BOT_USER
-  const sendPass  = process.env.BOT_PASSWD
-  const sendHost  = process.env.BOT_HOST
-  const sendPort  = process.env.BOT_OUT_PORT
-
-  const transporter = nodemailer.createTransport({
-    host: sendHost,
-    port: sendPort,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: sendEmail,
-      pass: sendPass,
-    },
-  });
-
-  const info = await transporter.sendMail({
-    from: '"zkws crypto-bot" <' + sendEmail + '>',
-    to: '"' + _toEmail.name + '" <' + _toEmail.email + '>',
-    subject: _subject,
-    text: _text,
-    html: _html,
-  });
-
-  console.log("Message sent:", info.messageId);
-}
