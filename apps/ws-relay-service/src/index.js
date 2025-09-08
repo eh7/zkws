@@ -17,10 +17,21 @@ ethers,
 import nodemailer from 'nodemailer'
 import { simpleParser } from 'mailparser'
 
+import {
+  Writable,
+  Readable,
+} from 'constant-db64'
+
 import 'dotenv/config'
 
 const app = {}
 const exec = child_process.exec;
+
+const cdb_path = './db/cdbfile'
+const writer = new Writable(cdb_path)
+await writer.open()
+const reader = new Readable(cdb_path)
+await reader.open()
 
 //dns.resolveTxt('dkim99._domainkey.dmail0.zkws.org', (err, data, family) => {
 dns.resolveTxt(
@@ -35,6 +46,7 @@ const pop3 = new Pop3Command({
   user: process.env.BOT_USER,
   password: process.env.BOT_PASSWD,
   host: process.env.BOT_HOST,
+  port: process.env.BOT_PORT,
 })
 //await pop3.connect(),
 //
@@ -193,7 +205,13 @@ function verify(_messageData) {
 
           const options = {}
           const mail = await simpleParser(_messageData, options)
-          console.log(mail.text)
+          console.log(mail.messageId)
+/*
+          console.log(typeof mail.messageId)
+          console.log(await reader.get(mail.messageId))
+          writer.put(mail.messageId, 'done')
+          await writer.close()
+*/
           const from = mail.headers.get('from')
           const subject = mail.headers.get('subject')
           if (subject === 'balance request') {
@@ -219,6 +237,17 @@ function verify(_messageData) {
               console.log(rcpUrl)
               const provider = new ethers.JsonRpcProvider(rcpUrl)
 
+              const balance = ethers.formatEther(
+                (await provider.getBalance(address)).toString()
+              )
+
+              const outText = "Balance for " + address + " :: " + balance + "ETH\n\nThanks zkws crypto-bot network-relayer."
+              const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + balance + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
+
+              console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
+              sendReturnEmail(from, "Re: " + subject, outText, outHtml)
+
+/*
               const outText = "Balance for " + address + " :: " +
                 ethers.formatEther(
                   (await provider.getBalance(address)).toString()
@@ -229,7 +258,11 @@ function verify(_messageData) {
                   (await provider.getBalance(address)).toString()
                 ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
 
-              sendReturnEmail(from, "Re: " + subject, outText, outHtml)
+              console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
+              if (subject !== 'balance request') {
+                sendReturnEmail(from, "Re: " + subject, outText, outHtml)
+              }
+*/
             }
 
             //console.log('simpleParser :: ', mail.headers.get('subject')) 

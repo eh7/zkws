@@ -12,6 +12,7 @@
   "author": "Gavin Francis <gav@eh7.co.uk>",
   "license": "ISC",
   "dependencies": {
+    "constant-db64": "^3.0.0",
     "dkim": "^0.8.0",
     "dkim-signature": "^3.0.1",
     "dkimpy": "^3.0.1",
