@@ -56,6 +56,8 @@ console.log(
 
 const list = await pop3.UIDL()
 
+console.log(list)
+
 /*
 const uidl = await pop3.UIDL()
 
@@ -185,6 +187,56 @@ function verifyEmail() {
 
 
 function verify(_messageData) {
+  return new Promise(async (resolve, reject) => {
+    const dkim_verify_result = await dkimVerify(_messageData)
+    console.log(dkim_verify_result)
+    if (dkim_verify_result === true) {
+      const options = {}
+      const mail = await simpleParser(_messageData, options)
+      console.log(mail.messageId)
+      const from = mail.headers.get('from')
+      const subject = mail.headers.get('subject')
+      if (subject === 'balance request') {
+        const mailBody = mail.text
+        const outText = 'text'
+        const outHtml = '<b>html</b>'
+
+        const bodyLines = mailBody.split("\n")
+        let address = ''
+        let network = ''
+        bodyLines.map((item) => {
+          if (item.search(/^address: /) === 0) {
+            address = item.replace(/^address: /, '')
+          } else if (item.search(/^network: /) === 0) {
+            network = item.replace(/^network: /, '')
+          }
+        })
+        if (address !== '' && network !== '') {
+          console.log(address, network)
+
+          const MM_API_KEY = process.env.MM_API_KEY
+          const rcpUrl = "https://" + network + ".infura.io/v3/" + MM_API_KEY
+          console.log(rcpUrl)
+          const provider = new ethers.JsonRpcProvider(rcpUrl)
+
+          const balance = ethers.formatEther(
+            (await provider.getBalance(address)).toString()
+          )
+
+          const outText = "Balance for " + address + " :: " + balance + "ETH\n\nThanks zkws crypto-bot network-relayer."
+          const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + balance + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
+
+          //console.log(from, "Re: " + subject)
+          console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
+          sendReturnEmail(from, "Re: " + subject, outText, outHtml)
+        }
+      }
+    }
+    resolve('done')
+  })
+}
+
+function verifyOld(_messageData) {
   return new Promise((resolve, reject) => {
     const tmpFile = '/tmp/data.txt'
     //console.log('dkim veirfy: ', _messageData) 
@@ -199,9 +251,9 @@ function verify(_messageData) {
 
         if (dkim_verify_result === true) {
           console.log(":::::::::::::::::::::::::::::::::::::::::::::::")
-          console.log("#### ---> File created -> ", tmpFile)
-          console.log("dkim_verify_result:  ", dkim_verify_result)
-          console.log("messageData:  ", _messageData)
+//          console.log("#### ---> File created -> ", tmpFile)
+//          console.log("dkim_verify_result:  ", dkim_verify_result)
+//          console.log("messageData:  ", _messageData)
 
           const options = {}
           const mail = await simpleParser(_messageData, options)
@@ -244,119 +296,14 @@ function verify(_messageData) {
               const outText = "Balance for " + address + " :: " + balance + "ETH\n\nThanks zkws crypto-bot network-relayer."
               const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + balance + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
 
-              console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
-              sendReturnEmail(from, "Re: " + subject, outText, outHtml)
-
-/*
-              const outText = "Balance for " + address + " :: " +
-                ethers.formatEther(
-                  (await provider.getBalance(address)).toString()
-                ) + "ETH\n\nThanks zkws crypto-bot network-relayer."
-
-              const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + 
-                ethers.formatEther(
-                  (await provider.getBalance(address)).toString()
-                ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
-
-              console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
-              if (subject !== 'balance request') {
-                sendReturnEmail(from, "Re: " + subject, outText, outHtml)
-              }
-*/
+              console.log(from, "Re: " + subject)
+              //console.log('XXXXXXXXXXXXXXXX', from, "Re: " + subject, outText, outHtml)
+              //sendReturnEmail(from, "Re: " + subject, outText, outHtml)
             }
-
-            //console.log('simpleParser :: ', mail.headers.get('subject')) 
-//            console.log('simpleParser :: subject :: ', subject) 
-//            console.log('simpleParser :: from :: ', from) 
-            //sendEmail(from, "Re: " + subject, outText, outHtml)
           }
 console.log('------------------')
-
-/*
-          emlformat.read(_messageData, async (error, data) => {
-            //console.log(error)
-            console.log(data.subject)
-            if (data.subject === 'balance request') {
-              try {
-                console.log(data.text)
-                console.log(data.from.email)
-//process.exit()
-                const bodyLines = data.text.split("\r\n")
-                let address = ''
-                let network = ''
-                bodyLines.map((item) => {
-                  if (item.search(/^address: /) === 0) {
-                    address = item.replace(/^address: /, '')
-//                  address = item //.replace(/^address: /, '')
-                  } else if (item.search(/^network: /) === 0) {
-                    network = item.replace(/^network: /, '')
-//                    network = item //.replace(/^network: /, '')
-                  }
-                })
-                if (address !== '' && network !== '') {
-                  console.log(address, network)
-
-                  const MM_API_KEY = process.env.MM_API_KEY
-                  const rcpUrl = "https://" + network + ".infura.io/v3/" + MM_API_KEY
-                  console.log(rcpUrl)
-                  const provider = new ethers.JsonRpcProvider(rcpUrl)
-
-                  const outText = "Balance for " + address + " :: " +
-                    ethers.formatEther(
-                      (await provider.getBalance(address)).toString()
-                    ) + "ETH\n\nThanks zkws crypto-bot network-relayer."
-
-                  const outHtml = "Hi<br><br>Balance for <b>" + address + "</b><h5>" + 
-                    ethers.formatEther(
-                      (await provider.getBalance(address)).toString()
-                    ) + " ETH</h5><p>Thanks zkws crypto-bot network-relayer.</p>"
-
-                  console.log(outText)
-                  console.log(outHtml)
-
-                  sendEmailOld(data.from, "Re: " + data.subject, outText, outHtml)
-                }
-              } catch (e) {
-                console.log('ERROR :: balance request :: ', e.message)
-              }
-            }
-            //console.log(data.text.split("\r\n"))
-          })
-*/
         }
-//emlformat.read(messageData, (error, data) => {
-/*
-        exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
-          if (error) {
-            console.log(error.message)
-          }
-        })
-*/
         resolve('done')
-/*
-        exec("dkimverify < /tmp/data.txt", (error, stdout, stderr) => {
-          if (error) {
-            if (stdout === "signature verification failed") {
-              console.log('stdout :: ',stdout)
-              resolve('done')
-            } else {
-              //reject(error)
-              console.log(error.message)
-              resolve(error)
-            }
-          } else {
-            //console.log(error, stdout, stderr)
-            fs.unlink(tmpFile, (err) => {
-              if (err) {
-                reject(err)
-              } else {
-                console.log("File removed -> ", tmpFile)
-                resolve('done')
-              }
-            })
-          }
-        })
-*/
       }
     });
   })
