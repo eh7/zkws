@@ -2,41 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Email Viewer Example</title>
-  <!-- Optional: Some basic page styling -->
+  <title>Email Client Example</title>
   <style>
-    body { padding: 40px; background: #eef2f6; }
-    .email-wrapper { max-width: 800px; margin: 0 auto; }
+    body { padding: 40px; background: #eef2f6; font-family: sans-serif;}
+    .app-layout { max-width: 800px; margin: 0 auto; }
+    .toolbar { margin-bottom: 20px; display: flex; gap: 10px; }
+    .btn { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+    .btn:hover { background: #1d4ed8; }
   </style>
 </head>
 <body>
 
-  <div class="email-wrapper">
-    <!-- This is the container our library will mount to -->
+  <div class="app-layout">
+    <div class="toolbar">
+      <!-- App-level button to trigger a brand new email -->
+      <button class="btn" id="btn-compose-new">Compose New Email</button>
+      <button class="btn" id="btn-view-inbox" style="background: #475569;">Read Inbox Example</button>
+    </div>
+
+    <!-- The container for our library -->
     <div id="email-display"></div>
   </div>
 
-  <!-- Include the Library -->
   <script src="EmailViewer.js"></script>
   <script>
-    // 1. Create a fake email object
+    // Example Email Data
     const sampleEmail = {
-      subject: "Your Invoice #4920 is ready",
-      from: "billing@example.com",
-      to: "customer@company.com",
-      date: "2023-10-25T14:30:00Z",
+      subject: "Welcome to the Platform!",
+      from: "support@platform.com",
+      to: "user@domain.com",
+      date: "2023-11-01T09:15:00Z",
       isHtml: true,
       body: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <h1 style="color: #2563eb;">Thank you for your business!</h1>
-          <p>Hi Customer,</p>
-          <p>Your latest invoice is ready. You can pay it online by clicking the link below:</p>
-          <a href="https://example.com/pay" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 5px;">Pay Now</a>
-          <br><br>
-          <p>Best Regards,<br>Billing Team</p>
-          
-          <!-- This script will be blocked by the iframe sandbox! -->
-          <script>alert('You have been hacked!');<\/script>
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Hello there!</h2>
+          <p>We are so glad you joined. Let us know if you have any questions.</p>
+          <br>
+          <p>Best,<br>Support Team</p>
         </div>
       `,
       attachments:[
@@ -45,14 +47,42 @@
       ]
     };
 
-    // 2. Initialize the viewer
+    // Initialize the Viewer with our new callbacks
     const viewer = new EmailViewer('#email-display', {
       height: '600px',
-      themeColor: '#f1f5f9'
+      
+      // Fired when the user clicks "Send Message" inside the compose UI
+      onSend: function(emailPayload) {
+        console.log("Submitting via API:", emailPayload);
+        alert(`Email Sent to ${emailPayload.to}!\nSubject: ${emailPayload.subject}`);
+        
+        // Go back to the original email, or clear the view
+        if (viewer.currentEmail) {
+            viewer.render(viewer.currentEmail);
+        } else {
+            document.getElementById('email-display').innerHTML = '';
+        }
+      },
+
+      // Fired if the user cancels a brand new email
+      onCancel: function() {
+        console.log("User cancelled composition.");
+      }
     });
 
-    // 3. Render the email
+    // Render an email initially
     viewer.render(sampleEmail);
+
+    // Wire up the external "Compose New" button
+    document.getElementById('btn-compose-new').addEventListener('click', () => {
+      viewer.currentEmail = null; // Clear context so "Cancel" closes the window
+      viewer.compose({ type: 'New Message' });
+    });
+
+    // Wire up the "Read Inbox" button to go back to viewing
+    document.getElementById('btn-view-inbox').addEventListener('click', () => {
+      viewer.render(sampleEmail);
+    });
   </script>
 </body>
 </html>
