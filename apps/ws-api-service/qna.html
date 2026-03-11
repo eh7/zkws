@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question and Answer Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .options li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .correct {
+            background-color: lightgreen;
+        }
+    </style>
+</head>
+<body>
+    <h1>Question and Answer Game</h1>
+    <div id="question"></div>
+    <ul class="options"></ul>
+    <button id="submit">Submit</button>
+    <p id="result"></p>
+    <script src="qna.js"></script>
+</body>
+</html>
