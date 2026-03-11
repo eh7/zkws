@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Viewer Example</title>
+  <!-- Optional: Some basic page styling -->
+  <style>
+    body { padding: 40px; background: #eef2f6; }
+    .email-wrapper { max-width: 800px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+  <div class="email-wrapper">
+    <!-- This is the container our library will mount to -->
+    <div id="email-display"></div>
+  </div>
+
+  <!-- Include the Library -->
+  <script src="EmailViewer.js"></script>
+  <script>
+    // 1. Create a fake email object
+    const sampleEmail = {
+      subject: "Your Invoice #4920 is ready",
+      from: "billing@example.com",
+      to: "customer@company.com",
+      date: "2023-10-25T14:30:00Z",
+      isHtml: true,
+      body: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h1 style="color: #2563eb;">Thank you for your business!</h1>
+          <p>Hi Customer,</p>
+          <p>Your latest invoice is ready. You can pay it online by clicking the link below:</p>
+          <a href="https://example.com/pay" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 5px;">Pay Now</a>
+          <br><br>
+          <p>Best Regards,<br>Billing Team</p>
+          
+          <!-- This script will be blocked by the iframe sandbox! -->
+          <script>alert('You have been hacked!');<\/script>
+        </div>
+      `,
+      attachments:[
+        { filename: "invoice_4920.pdf", size: "124 KB", url: "#" },
+        { filename: "terms_and_conditions.docx", size: "45 KB", url: "#" }
+      ]
+    };
+
+    // 2. Initialize the viewer
+    const viewer = new EmailViewer('#email-display', {
+      height: '600px',
+      themeColor: '#f1f5f9'
+    });
+
+    // 3. Render the email
+    viewer.render(sampleEmail);
+  </script>
+</body>
+</html>
