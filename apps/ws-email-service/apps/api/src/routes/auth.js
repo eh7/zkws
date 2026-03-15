@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const JWT_SECRET = 'your_jwt_secret_key';
 
+const auth = require('../middleware/auth');
+
 // Register
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -32,6 +34,19 @@ router.post('/login', async (req, res) => {
 
   const token = jwt.sign({ user: { email } }, JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
+});
+
+// Update password
+router.post('/update-password', auth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const user = User.findByEmail(req.user.email);
+  if (!user) return res.status(404).json({ message: 'User not found' });
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  res.json({ message: 'Password updated successfully' });
 });
 
 module.exports = router;
