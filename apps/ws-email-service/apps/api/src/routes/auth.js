@@ -18,6 +18,10 @@ router.post('/register', async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = { email, password: hashedPassword };
   User.create(user);
+  User.createUser(email, password); 
+
+  // run authDb function in authDb lib debugging
+  User.authDb();
 
   const token = jwt.sign({ user: { email } }, JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
@@ -32,6 +36,9 @@ router.post('/login', async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
+  // run authDb function in authDb lib debugging
+  User.authDb();
+
   const token = jwt.sign({ user: { email } }, JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
 });
@@ -44,6 +51,9 @@ router.post('/update-password', auth, async (req, res) => {
 
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+
+  // run authDb function in authDb lib debugging
+  User.authDb();
 
   user.password = await bcrypt.hash(newPassword, 10);
   res.json({ message: 'Password updated successfully' });

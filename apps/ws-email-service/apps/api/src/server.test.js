@@ -51,6 +51,11 @@ describe('Test server endpoints', () => {
     expect(responseGetEmail1.body).toHaveProperty('subject');
     expect(responseGetEmail1.body).toHaveProperty('body');
 
+    const responseLogin = await request(server)
+      .post('/api/auth/login')
+      .set('Content-Type', 'application/json')
+      .send({"email": "user@example.com", "password": "password123"})
+
 /*
     const response = await request(server)
       .get('/api/mail/list')
