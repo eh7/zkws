@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = { email, password: hashedPassword };
   User.create(user);
-  User.createUser(email, password); 
+  //User.createUser(email, password); 
 
   // run authDb function in authDb lib debugging
   User.authDb();
