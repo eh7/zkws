@@ -10,6 +10,6 @@ module.exports = {
   create: (user) => users.push(user),
   authDb: () => console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', authDb),
   listUser: () => User.listUser(), 
-  createUser: () => User.createUser(email, password), 
+  createUser: (email, password) => User.createUser(email, password), 
 };
 
