@@ -1,40 +1,60 @@
+const path = require('path');
+
 const AuthDb = require('./authDb');
 
-const authDb = new AuthDb()
+const authDb = new AuthDb(path.join(__dirname, '../../data/authDb.test.json'));
 
 test('test listUsers', () => {
   authDb.resetDb()
   expect(authDb.listUsers().length).toBe(0);
 });
 
-test('testing WIP', async () => {
-  authDb.resetDb()
+describe('Testing authDb functionality', () => {
+  test('testing WIP', async () => {
 
-  expect(
-    authDb.listUsers().length
-  ).toBe(0)
+    authDb.resetDb()
 
-  expect(
-    (await authDb.createUser("_email", "password")).email
-  ).toBe('_email')
+    expect(
+      authDb.listUsers().length
+    ).toBe(0)
 
-  //await authDb.createUser("email1", "password1")
+    expect(
+      (await authDb.createUser("_email", "password")).email
+    ).toBe('_email')
 
-  const users = authDb.listUsers()
-  expect(
-    users.length
-  ).toBe(1)
-  expect(
-    users[0].email
-  ).toBe('_email')
+    const users = authDb.listUsers()
+    expect(
+      users.length
+    ).toBe(1)
+    expect(
+      users[0].email
+    ).toBe('_email')
 
-  expect(
-    await authDb.verifyPassword('_email', 'password')
-  ).toBe(true)
+    expect(
+      await authDb.verifyPassword('_email', 'password')
+    ).toBe(true)
 
-  try {
-    await authDb.verifyPassword('_email1', 'password')
-  } catch (e) {
-    expect(e.message).toBe("User not found")
-  }
+    try {
+      await authDb.verifyPassword('_email_no_match', 'password')
+    } catch (e) {
+      expect(e.message).toBe("User not found")
+    }
+
+    expect(
+      await authDb.verifyPassword('_email', 'password')
+    ).toBe(true)
+
+    expect(
+      (authDb.getUser('_email')).email
+    ).toBe('_email')
+
+    console.log(
+      await authDb.updatePassword('_email', 'newPassword')
+    )
+
+    await authDb.deleteUser('_email')
+    expect(
+      authDb.listUsers().length
+    ).toBe(0)
+  });
 });

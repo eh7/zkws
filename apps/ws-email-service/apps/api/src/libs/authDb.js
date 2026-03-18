@@ -3,7 +3,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 
 // Default path for the database file
-const DEFAULT_DB_PATH = path.join(__dirname, 'authDb.json');
+const DEFAULT_DB_PATH = path.join(__dirname, '../../data/authDb.json');
 
 // Initialize the database file if it doesn't exist
 function initDb(dbPath = DEFAULT_DB_PATH) {
@@ -83,6 +83,7 @@ class AuthDb {
     return { email, message: 'User deleted' };
   }
 
+  // clear all the authDb data
   resetDb() {
     writeDb({users:[]}, this.dbPath);
   }

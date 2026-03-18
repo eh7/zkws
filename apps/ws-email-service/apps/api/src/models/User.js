@@ -9,6 +9,7 @@ module.exports = {
   findByEmail: (email) => users.find(user => user.email === email),
   create: (user) => users.push(user),
   authDb: () => console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', authDb),
+  listUser: () => User.listUser(), 
   createUser: () => User.createUser(email, password), 
 };
 
