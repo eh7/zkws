@@ -8,8 +8,16 @@ const authDb = new AuthDb();
 module.exports = {
   findByEmail: (email) => users.find(user => user.email === email),
   create: (user) => users.push(user),
+
   authDb: () => console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', authDb),
-  listUser: () => User.listUser(), 
-  createUser: (email, password) => User.createUser(email, password), 
+  listUser: () => console.log('xxxxxxxxxxxxssssssssssssssss', authDb.listUsers()), 
+  createUser: async (email, password) => {
+    const newUser = await authDb.createUser(
+      email,
+      password,
+    )
+    return newUser
+  },
+//  createUser: (email, password) => User.createUser(email, password), 
 };
 
