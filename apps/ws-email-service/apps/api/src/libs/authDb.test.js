@@ -1,8 +1,9 @@
-const path = require('path');
+//const path = require('path');
 
 const AuthDb = require('./authDb');
 
-const authDb = new AuthDb(path.join(__dirname, '../../data/authDb.test.json'));
+//const authDb = new AuthDb(path.join(__dirname, '../../data/authDb.test.json'));
+const authDb = new AuthDb();
 
 test('test listUsers', () => {
   authDb.resetDb()
