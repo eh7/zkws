@@ -8,12 +8,12 @@ class Maildir extends EventEmitter {
   // Create a new Maildir object given a path to the root of the Maildir
   constructor(maildir) {
     super();
-    this.maildir = maildir;
+    this.maildir = maildir.path;
     this.files = new Array();
     this.watchers = {}
   }
 
-  get count() {
+  getCount() {
     return this.files.length;
   }
 
@@ -54,6 +54,7 @@ class Maildir extends EventEmitter {
     return new Promise(async (resolve, reject) => {
       try {
         let files = [];
+	console.log('xxxxxxxxxxxxxxxxxxxxxxxxx', this.maildir.path)
         let dir = await fs.opendir(`${this.maildir}/cur/`);
         for await (const file of dir) {
           files.push(`${this.maildir}/cur/${file.name}`);
@@ -61,6 +62,7 @@ class Maildir extends EventEmitter {
         this.files = files;
         resolve(files);
       } catch (err) {
+	      console.log('zzzzzzzzzzzzzzzzzzzzzzz')
         reject(err);
       }
     });

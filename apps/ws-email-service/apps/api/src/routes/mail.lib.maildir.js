@@ -1,21 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const Maildir = require('../libs/maildir');
+const Maildir = require('../libs/maildir.mjs').default;
 const simpleParser = require('mailparser').simpleParser;
 const path = require('path');
 
+require('dotenv').config({ quiet: true })
+
 // Path to your maildir (e.g., ~/Maildir or /var/mail/username)
-const MAILDIR_PATH = path.join(__dirname, '../maildir');
+//const MAILDIR_PATH = path.join(__dirname, process.env.MAILDIR);
+const MAILDIR_PATH = process.env.MAILDIR;
 
 // List all emails in the maildir
 router.get('/list', auth, async (req, res) => {
   try {
+    console.log('MAILDIR_PATH', MAILDIR_PATH)
     const maildir = new Maildir({
       path: MAILDIR_PATH,
       onNewMail: () => {}, // Optional: Handle new mail events
     });
 
+    //console.log(await maildir.loadMessage(MAILDIR_PATH))
+    console.log('zxc', maildir.monitor())
+    res.json({ messaage: 'WIP testing' });
+
+	  /*
     const emails = await new Promise((resolve, reject) => {
       maildir.on('end', () => resolve(maildir.list));
       maildir.on('error', reject);
@@ -29,6 +38,7 @@ router.get('/list', auth, async (req, res) => {
     }));
 
     res.json(emailList);
+  */
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to list emails' });
@@ -57,6 +67,9 @@ router.get('/:id', auth, async (req, res) => {
     console.error(err);
     res.status(404).json({ message: 'Email not found' });
   }
+});
+
+router.delete('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;

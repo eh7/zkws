@@ -1,14 +1,8 @@
 // In-memory "database" for demo purposes
 const users = [{email: 'test@mail.com', password: 'password123'}];
 
-//const isRunningInJest = typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined;
-
-//if (isRunningInJest) {
-//}
-
 // persitant filesystem json db
 const AuthDb = require('../libs/authDb');
-//const authDb = new AuthDb(isRunningInJest ? '/tmp/authDb.test.json' : '');
 const authDb = new AuthDb();
 
 module.exports = {
