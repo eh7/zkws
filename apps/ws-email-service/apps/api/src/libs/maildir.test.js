@@ -11,6 +11,17 @@ describe('Test maildir.js library functions', () => {
 
     const email = await maildir.readEmail(emails[0]);
     console.log('First email:', email);
+
+    const secondLastEmail = await maildir.readEmail(emails[emails.length - 2]);
+    console.log('Second Last email attachments:', secondLastEmail.attachments.length);
+
+    const lastEmail = await maildir.readEmail(emails[emails.length - 1]);
+    console.log('Last email attachments:', lastEmail.attachments.length);
+
+    const newEmails = await maildir.listNewEmails();
+    console.log(newEmails)
+
+//    const email = await maildir.readNewEmail(emails[0]);
   })
 })
 

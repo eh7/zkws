@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const Maildir = require('../libs/maildir.mjs').default;
+//const Maildir = require('../libs/maildir.mjs').default;
+const Maildir = require('../libs/maildir');
 const simpleParser = require('mailparser').simpleParser;
 const path = require('path');
 
@@ -15,14 +16,15 @@ const MAILDIR_PATH = process.env.MAILDIR;
 router.get('/list', auth, async (req, res) => {
   try {
     console.log('MAILDIR_PATH', MAILDIR_PATH)
-    const maildir = new Maildir({
-      path: MAILDIR_PATH,
-      onNewMail: () => {}, // Optional: Handle new mail events
-    });
+    res.json({ MAILDIR_PATH });
+//    const maildir = new Maildir({
+//      path: MAILDIR_PATH,
+//      onNewMail: () => {}, // Optional: Handle new mail events
+//    });
 
-    //console.log(await maildir.loadMessage(MAILDIR_PATH))
-    console.log('zxc', await maildir.monitor())
-    res.json({ messaage: 'WIP testing' });
+//    //console.log(await maildir.loadMessage(MAILDIR_PATH))
+//    console.log('zxc', await maildir.monitor())
+//    res.json({ messaage: 'WIP testing' });
 
 	  /*
     const emails = await new Promise((resolve, reject) => {

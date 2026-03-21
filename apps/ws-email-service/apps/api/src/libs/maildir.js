@@ -1,3 +1,4 @@
+require('dotenv').config({ quiet: true })
 const simpleParser = require('mailparser').simpleParser;
 const fs = require('fs');
 const path = require('path');
@@ -15,11 +16,16 @@ class Maildir {
     this.tmpPath = path.join(maildirPath, 'tmp');
   }
 
+  // List all new emails (only from 'new' directory)
+  async listNewEmails() {
+    return this._listDirectory(this.newPath);
+  }
+
   // List all emails (new + cur)
   async listEmails() {
     const [newEmails, curEmails] = await Promise.all([
-      this._listDirectory(this.newPath),
       this._listDirectory(this.curPath),
+      this._listDirectory(this.newPath),
     ]);
     return [...newEmails, ...curEmails];
   }
@@ -27,14 +33,29 @@ class Maildir {
   // Read email content
   async readEmail(filename) {
     const filePath = fs.existsSync(
-      path.join(this.newPath, filename)) ?
-        path.join(this.newPath, filename) :
-        path.join(this.curPath, filename);
-//	  simpleParser
+      this.newPath + '/' + filename
+    ) ?
+      (this.newPath + "/" + filename) :
+      (this.curPath + "/" + filename);
+    console.log(filePath)
     const content = await readFile(filePath, 'utf-8');
     const message = await simpleParser(content);
-    //return this._parseEmail(content);
-    return message;
+    return message
+  }
+
+  // Read a new email and move it to 'cur' directory
+  async readAndMoveNewEmail(filename) {
+    const filePath = path.join(this.newPath, filename);
+    const content = await readFile(filePath, 'utf-8');
+    const message = await simpleParser(content);
+    //const parsedEmail = this._parseEmail(content);
+
+    // Move the email to 'cur' directory
+    const newFilePath = path.join(this.curPath, filename);
+    await rename(filePath, newFilePath);
+
+    return message
+    //return parsedEmail;
   }
 
   // Delete email
