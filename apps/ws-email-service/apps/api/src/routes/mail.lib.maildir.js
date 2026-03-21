@@ -12,11 +12,20 @@ require('dotenv').config({ quiet: true })
 //const MAILDIR_PATH = path.join(__dirname, process.env.MAILDIR);
 const MAILDIR_PATH = process.env.MAILDIR;
 
+const maildir = new Maildir(MAILDIR_PATH);
+
+router.get('/listnew', auth, async (req, res) => {
+  const newEmails = await maildir.listNewEmails();
+  res.json({ newEmails });
+})
+
 // List all emails in the maildir
 router.get('/list', auth, async (req, res) => {
   try {
-    console.log('MAILDIR_PATH', MAILDIR_PATH)
-    res.json({ MAILDIR_PATH });
+    //console.log('MAILDIR_PATH', MAILDIR_PATH)
+    const emails = await maildir.listEmails();
+    res.json({ emails });
+
 //    const maildir = new Maildir({
 //      path: MAILDIR_PATH,
 //      onNewMail: () => {}, // Optional: Handle new mail events
@@ -50,6 +59,16 @@ router.get('/list', auth, async (req, res) => {
 // Get a specific email by filename
 router.get('/:id', auth, async (req, res) => {
   try {
+    const email = await maildir.readEmail(req.params.id);
+    res.json({ email });
+  } catch (err) {
+    console.error(err);
+    res.status(404).json({ message: 'Email not found' });
+  }
+});
+
+router.get('/old/:id', auth, async (req, res) => {
+  try {
     const maildir = new Maildir({
       path: MAILDIR_PATH,
     });
@@ -72,6 +91,8 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 router.delete('/:id', auth, async (req, res) => {
+  await maildir.deleteEmail(req.params.id)
+  res.json({ message: `Email '${req.params.id}' deleted` });
 });
 
 module.exports = router;

@@ -37,7 +37,7 @@ class Maildir {
     ) ?
       (this.newPath + "/" + filename) :
       (this.curPath + "/" + filename);
-    console.log(filePath)
+    //console.log(filePath)
     const content = await readFile(filePath, 'utf-8');
     const message = await simpleParser(content);
     return message
@@ -60,8 +60,13 @@ class Maildir {
 
   // Delete email
   async deleteEmail(filename) {
-    const filePath = path.join(this.newPath, filename)
-      || path.join(this.curPath, filename);
+    const filePath = fs.existsSync(
+      this.newPath + '/' + filename
+    ) ?
+      (this.newPath + "/" + filename) :
+      (this.curPath + "/" + filename);
+    //const filePath = path.join(this.newPath, filename)
+    //  || path.join(this.curPath, filename);
     await unlink(filePath);
   }
 
