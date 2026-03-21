@@ -1,0 +1,21 @@
+From: sender5@example.com
+To: recipient@example.com
+Subject: Test Email with PDF Attachment
+Date: Fri, 5 Jan 2023 12:00:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary456"
+
+--boundary456
+Content-Type: text/plain; charset="UTF-8"
+
+This email includes a PDF attachment.
+
+--boundary456
+Content-Type: application/pdf; name="sample.pdf"
+Content-Disposition: attachment; filename="sample.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJcOkw7zDtsOfCjQgMCBvYmoKPDwvTGVuZ3RoIDUgMCBSPj4Kc3RyZWFtCkJUCjEw
+MDU2CiUlRU9GDQo=
+
+--boundary456--
