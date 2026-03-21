@@ -21,7 +21,7 @@ router.get('/list', auth, async (req, res) => {
     });
 
     //console.log(await maildir.loadMessage(MAILDIR_PATH))
-    console.log('zxc', maildir.monitor())
+    console.log('zxc', await maildir.monitor())
     res.json({ messaage: 'WIP testing' });
 
 	  /*
