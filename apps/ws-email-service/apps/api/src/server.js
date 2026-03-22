@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const mailRoutes = require('./routes/mail');
@@ -8,6 +9,7 @@ const maildirRoutes = require('./routes/mail.lib.maildir');
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(morgan('combined'));
 
 // Routes
 app.use('/api/auth', authRoutes);

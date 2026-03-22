@@ -6,6 +6,9 @@ const Maildir = require('../libs/maildir');
 const simpleParser = require('mailparser').simpleParser;
 const path = require('path');
 
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
 require('dotenv').config({ quiet: true })
 
 // Path to your maildir (e.g., ~/Maildir or /var/mail/username)
@@ -93,6 +96,17 @@ router.get('/old/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   await maildir.deleteEmail(req.params.id)
   res.json({ message: `Email '${req.params.id}' deleted` });
+});
+
+
+router.post('/send', auth, upload.array('attachments'), (req, res) => {
+  const { to, subject, body } = req.body;
+  const attachments = req.files;
+
+  // Implement logic to send the email (e.g., using Nodemailer)
+  console.log('Sending email:', { to, subject, body, attachments });
+
+  res.json({ success: true });
 });
 
 module.exports = router;

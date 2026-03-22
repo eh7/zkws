@@ -17,6 +17,20 @@ const showLoginLink = document.getElementById('show-login');
 const logoutButton = document.getElementById('logout-button');
 const backToMessagesButton = document.getElementById('back-to-messages');
 
+// ----- start ----
+const sendMessagePage = document.getElementById('send-message-page');
+const sendMessageForm = document.getElementById('send-message-form');
+const sendToInput = document.getElementById('send-to');
+const sendSubjectInput = document.getElementById('send-subject');
+const sendBodyTextarea = document.getElementById('send-body');
+const emailQuoteDiv = document.getElementById('email-quote');
+const cancelSendButton = document.getElementById('cancel-send');
+const composeButton = document.getElementById('compose-button');
+
+const sendAttachmentsInput = document.getElementById('send-attachments');
+const sendMessageTitle = document.getElementById('send-message-title');
+// ----- end ----
+
 // Event Listeners
 showRegisterLink.addEventListener('click', (e) => {
     e.preventDefault();
@@ -54,6 +68,54 @@ backToMessagesButton.addEventListener('click', () => {
     messageDisplayPage.style.display = 'none';
     messageViewPage.style.display = 'block';
 });
+
+// ----- start ----
+// Compose new email
+composeButton.addEventListener('click', () => {
+	alert(22)
+  sendMessageTitle.textContent = 'New Message';
+  sendMessageForm.reset();
+  emailQuoteDiv.style.display = 'none';
+  messageViewPage.style.display = 'none';
+  sendMessagePage.style.display = 'block';
+});
+
+// Cancel sending
+cancelSendButton.addEventListener('click', () => {
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
+});
+
+// Compose new email
+composeButton.addEventListener('click', () => {
+  sendMessageTitle.textContent = 'New Message';
+  sendMessageForm.reset();
+  emailQuoteDiv.style.display = 'none';
+  messageViewPage.style.display = 'none';
+  sendMessagePage.style.display = 'block';
+});
+
+// Cancel sending
+cancelSendButton.addEventListener('click', () => {
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
+});
+
+// Compose new email
+composeButton.addEventListener('click', () => {
+  sendMessageTitle.textContent = 'New Message';
+  sendMessageForm.reset();
+  emailQuoteDiv.style.display = 'none';
+  messageViewPage.style.display = 'none';
+  sendMessagePage.style.display = 'block';
+});
+
+// Cancel sending
+cancelSendButton.addEventListener('click', () => {
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
+});
+// -----end ----
 
 // API Functions
 async function register(email, password) {
@@ -111,11 +173,12 @@ async function loadMessages() {
         const messages = await response.json();
         if (response.ok) {
             messageList.innerHTML = '';
-            messages.forEach(message => {
+            messages.emails.forEach(message => {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'message-item';
-                messageElement.textContent = message.filename;
-                messageElement.addEventListener('click', () => loadMessage(message.filename));
+                //messageElement.textContent = message.filename;
+                messageElement.textContent = message;
+                messageElement.addEventListener('click', () => loadMessage(message));
                 messageList.appendChild(messageElement);
             });
         } else {
@@ -126,7 +189,7 @@ async function loadMessages() {
     }
 }
 
-async function loadMessage(filename) {
+async function loadMessageOld(filename) {
     try {
         const response = await fetch(`http://localhost:3000/api/maildir/${filename}`, {
             headers: {
@@ -134,8 +197,9 @@ async function loadMessage(filename) {
             },
         });
         const message = await response.json();
+	    console.log('message',message)
         if (response.ok) {
-            messageContent.textContent = message.content;
+            messageContent.textContent = message.email;
             messageViewPage.style.display = 'none';
             messageDisplayPage.style.display = 'block';
         } else {
@@ -144,5 +208,66 @@ async function loadMessage(filename) {
     } catch (error) {
         alert('An error occurred while loading the message.');
     }
+}
+
+async function loadMessage(filename) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/maildir/${filename}`, {
+      headers: {
+        'x-auth-token': `${token}`,
+      },
+    });
+    const email = (await response.json()).email;
+
+    if (response.ok) {
+      // Display email headers
+      messageContent.innerHTML = `
+        <div class="email-header">
+          <h2>${email.subject}</h2>
+          <p><strong>From:</strong> ${email.from.text} &lt;${email.from.value[0].address}&gt;</p>
+          <p><strong>To:</strong> ${email.to.text}</p>
+          <p><strong>Date:</strong> ${new Date(email.date).toLocaleString()}</p>
+        </div>
+        <div class="email-body">
+          ${email.html || `<pre>${email.text}</pre>`}
+        </div>
+        <div class="email-actions">
+          <button id="reply-button">Reply</button>
+          <button id="forward-button">Forward</button>
+        </div>
+        <div class="email-attachments">
+          ${email.attachments.length > 0 ? '<h3>Attachments:</h3>' : ''}
+          <ul>
+            ${email.attachments.map(attachment => `
+              <li>
+                <a href="data:${attachment.contentType};base64,${attachment.content.toString('base64')}"
+                   download="${attachment.filename}">
+                  ${attachment.filename}
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+
+      // Show reply/forward modals (example)
+      document.getElementById('reply-button').addEventListener('click', () => {
+        alert(`Reply to: ${email.from.text}`);
+        // Implement reply logic (e.g., open a compose modal)
+      });
+
+      document.getElementById('forward-button').addEventListener('click', () => {
+        alert(`Forward email: ${email.subject}`);
+        // Implement forward logic (e.g., open a compose modal)
+      });
+
+      messageViewPage.style.display = 'none';
+      messageDisplayPage.style.display = 'block';
+    } else {
+      alert('Failed to load message');
+    }
+  } catch (error) {
+    alert('An error occurred while loading the message.');
+  }
 }
 

@@ -30,19 +30,64 @@
             <p>Already have an account? <a href="#" id="show-login">Login</a></p>
         </div>
 
-        <!-- Message View Page -->
+	<!-- Message View Page -->
         <div id="message-view-page" class="page" style="display: none;">
             <h1>Messages</h1>
+            <button id="compose-button">Compose</button>
             <div id="message-list"></div>
             <button id="logout-button">Logout</button>
         </div>
 
         <!-- Message Display Page -->
+	<!--
         <div id="message-display-page" class="page" style="display: none;">
             <h1>Message</h1>
             <div id="message-content"></div>
             <button id="back-to-messages">Back to Messages</button>
         </div>
+	//-->
+<!-- Message Display Page -->
+<div id="message-display-page" class="page" style="display: none;">
+  <h1>Message</h1>
+  <div id="message-content"></div>
+  <div class="email-actions">
+    <button id="reply-button">Reply</button>
+    <button id="forward-button">Forward</button>
+    <button id="back-to-messages">Back to Messages</button>
+  </div>
+</div>
+
+	<!-- Send Message Page -->
+	<!--
+        <div id="send-message-page" class="page" style="display: none;">
+            <h1 id="send-message-title">New Message</h1>
+            <form id="send-message-form">
+                <input type="email" id="send-to" placeholder="To" required>
+                <input type="text" id="send-subject" placeholder="Subject" required>
+                <textarea id="send-body" placeholder="Message body..." required></textarea>
+                <input type="file" id="send-attachments" multiple>
+                <div id="email-quote" style="display: none; border-left: 3px solid #ccc; padding-left: 10px; margin: 10px 0;"></div>
+                <button type="submit">Send</button>
+                <button type="button" id="cancel-send">Cancel</button>
+            </form>
+        </div>
+	//-->
+	<!-- Send Message Page -->
+<div id="send-message-page" class="page" style="display: none;">
+  <h1 id="send-message-title">New Message</h1>
+  <form id="send-message-form">
+    <input type="email" id="send-to" placeholder="To" required>
+    <input type="text" id="send-subject" placeholder="Subject" required>
+    <textarea id="send-body" placeholder="Message body..." required></textarea>
+    <input type="file" id="send-attachments" multiple>
+    <div id="email-quote" style="display: none; border-left: 3px solid #ccc; padding-left: 10px; margin: 10px 0;"></div>
+    <div class="email-actions">
+      <button type="submit">Send</button>
+      <button type="button" id="cancel-send">Cancel</button>
+    </div>
+  </form>
+</div>
+
     </div>
     <script src="script.js"></script>
 </body>

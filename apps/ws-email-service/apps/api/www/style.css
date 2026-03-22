@@ -14,7 +14,7 @@ body {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 100%
     text-align: center;
 }
 
@@ -53,3 +53,99 @@ button:hover {
     background-color: #f5f5f5;
 }
 
+.email-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.email-body {
+  margin: 20px 0;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.email-actions {
+  margin: 10px 0;
+}
+
+.email-actions button {
+  margin-right: 10px;
+}
+
+.email-attachments ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.email-attachments li {
+  margin: 5px 0;
+}
+/*
+#send-message-page {
+  width: 500px;
+}
+
+#send-message-form input,
+#send-message-form textarea,
+#send-message-form button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#send-message-form textarea {
+  height: 200px;
+  resize: vertical;
+}
+
+#email-quote {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  font-style: italic;
+  color: #555;
+}
+*/
+
+send-message-page {
+  width: 500px;
+}
+
+#send-message-form input,
+#send-message-form textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#send-message-form textarea {
+  height: 200px;
+  resize: vertical;
+}
+
+#email-quote {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  font-style: italic;
+  color: #555;
+  margin: 10px 0;
+}
+
+.email-actions {
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.email-actions button {
+  flex: 1;
+  padding: 10px;
+}
