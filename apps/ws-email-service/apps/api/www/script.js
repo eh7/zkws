@@ -12,6 +12,8 @@ const registerForm = document.getElementById('register-form');
 const messageList = document.getElementById('message-list');
 const messageContent = document.getElementById('message-content');
 
+const emailTable = document.getElementById('email-table');
+
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 const logoutButton = document.getElementById('logout-button');
@@ -239,15 +241,87 @@ async function loadMessages() {
         });
         const messages = await response.json();
         if (response.ok) {
+
+          let tableHTML = `
+            <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="text-align: left; padding: 8px;">Date</th>
+                  <th style="text-align: left; padding: 8px;">Subject</th>
+                </tr>
+              </thead>
+            <tbody>
+          `;
+          messages.emails.forEach((email, index) => {
+            const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
+            const subject = email.subject || 'No subject';
+            const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
+	     const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
+
+
+            //emailTableElement.addEventListener('click', () => loadMessage(message));
+            tableHTML += `
+              <tr
+	        style="${rowStyle}"
+		class="email-table-item"
+		onclick='loadMessage(${emailJSON})'
+		onmouseover="this.style.backgroundColor='#e6f2ff'"
+                onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
+              >
+                <td style="padding: 8px;" class="email-table-item">${date}</td>
+                <td style="padding: 8px;">${subject}</td>
+              </tr>
+            `;
+/*
+             tableHTML += `
+                <tr style="${rowStyle}" data-email='${JSON.stringify(email).replace(/'/g, "\\'")}'>
+                  <td style="padding: 8px;">${date}</td>
+            `     <td style="padding: 8px;">${subject}</td>
+                </tr>
+              `;
+*/
+          });
+          tableHTML += `
+              </tbody>
+            </table>
+          `;
+          emailTable.innerHTML = tableHTML;
+/*
+	    //const emailTableHTML = formatEmailsAsTable(messages.emails);
+	    //document.getElementById('email-table').innerHTML = emailTableHTML;
+            //emailTable.innerHTML = '<table>';
+            messages.emails.forEach((message, index) => {
+             // console.log('messages.emails :: ', messages.emails[index].subject)
+	      //document.getElementById('email-table').innerHTML += messages.emails[index].date + ' :: ' + messages.emails[index].subject + '<br/>';
+
+              const emailTableElement = document.createElement('div');
+              emailTableElement.className = 'email-table-item';
+              emailTableElement.textContent = index + " :: " + message.subject + ' :: ' + message.date;
+	      //emailTableElement.innerHTML = `<tr><td>${message.date}</td><td>${message.date}</td></tr>`;
+//    console.log(message.filename)
+              emailTableElement.addEventListener('click', () => loadMessage(message));
+              emailTable.appendChild(emailTableElement);
+	    });
+            //emailTable.innerHTML += '</table>';
+	    //console.log("ggggggggggggggggggggggggggg", emailTableHTML)
+            //messageList.innerHTML = emailTableHTML;
+            //messageList.innerHTML += 'testing <div style="width: 400px">' + emailTableHTML + '</div>';
+*/
+
+            /*
             messageList.innerHTML = '';
             messages.emails.forEach((message, index) => {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'message-item';
                 //messageElement.textContent = message.filename;
-                messageElement.textContent = index + " :: " + message;
+                //messageElement.textContent = index + " :: " + message;
+                //messageElement.addEventListener('click', () => loadMessage(message));
+                messageElement.textContent = index + " :: " + message.date + " :: " + message.subject + message.filename;
                 messageElement.addEventListener('click', () => loadMessage(message));
                 messageList.appendChild(messageElement);
             });
+	    */
+
         } else {
             alert('Failed to load messages');
         }
@@ -277,9 +351,10 @@ async function loadMessageOld(filename) {
     }
 }
 
-async function loadMessage(filename) {
+async function loadMessage(message) {
   try {
-    const response = await fetch(`http://localhost:3000/api/maildir/${filename}`, {
+    //const filename = message.filename;
+    const response = await fetch(`http://localhost:3000/api/maildir/${message.filename}`, {
       headers: {
         'x-auth-token': `${token}`,
       },
@@ -353,5 +428,50 @@ async function loadMessage(filename) {
   } catch (error) {
     alert('An error occurred while loading the message.');
   }
+}
+
+/**
+ * Formats an array of mailparser email objects into an HTML table.
+ * @param {Array} emails - Array of mailparser email objects.
+ * @returns {string} HTML table as a string.
+ */
+function formatEmailsAsTable(emails) {
+  if (!emails || !emails.length) {
+    return '<p>No emails to display.</p>';
+  }
+
+  // Create the table header
+  let tableHTML = `
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 8px;">Date</th>
+          <th style="text-align: left; padding: 8px;">Subject</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  // Add a row for each email
+  emails.forEach((email, index) => {
+    const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
+    const subject = email.subject || 'No subject';
+    const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
+
+    tableHTML += `
+      <tr style="${rowStyle}" data-email='${JSON.stringify(email).replace(/'/g, "\\'")}'>
+        <td style="padding: 8px;">${date}</td>
+        <td style="padding: 8px;">${subject}</td>
+      </tr>
+    `;
+  });
+
+  // Close the table
+  tableHTML += `
+      </tbody>
+    </table>
+  `;
+
+  return tableHTML;
 }
 

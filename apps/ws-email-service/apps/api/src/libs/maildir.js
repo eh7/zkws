@@ -73,7 +73,18 @@ class Maildir {
   // Helper: List files in a directory
   async _listDirectory(dirPath) {
     try {
-      return await readdir(dirPath);
+      //return await readdir(dirPath);
+      const emails = await readdir(dirPath);
+      const emailsParsed = await Promise.all(
+        emails.map(async (email, index) => {
+          const content = await readFile(dirPath + '/' + email, 'utf-8');
+          const emailJson = await simpleParser(content);
+	  emailJson.filename = emails[index];
+          return emailJson;
+        })
+      );
+      return emailsParsed;
+      //return emails;
     } catch (err) {
       if (err.code === 'ENOENT') return [];
       throw err;

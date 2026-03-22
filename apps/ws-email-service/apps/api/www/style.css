@@ -16,11 +16,11 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /*text-align: center;*/
+    text-align: center;
 }
 
 input, button {
-    width: 100%;
+    width: 90%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -42,6 +42,9 @@ button:hover {
     border: 0px sold black;
 }
 
+#message-view-page {
+}
+
 #message-content {
     display: block;
     max-width: 600px;
@@ -52,11 +55,12 @@ button:hover {
     */
     white-space: normal;
     overflow-wrap: break-word;
+    text-align: left;
 }
 
 #message-list {
     text-align: left;
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -67,6 +71,21 @@ button:hover {
 }
 
 .message-item:hover {
+    background-color: #f5f5f5;
+}
+
+#email-table {
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.email-table-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.email-table-item:hover {
     background-color: #f5f5f5;
 }
 
