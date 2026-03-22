@@ -16,15 +16,20 @@ const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 const logoutButton = document.getElementById('logout-button');
 const backToMessagesButton = document.getElementById('back-to-messages');
+const backToMessagesTopButton = document.getElementById('back-to-messages-top');
 
 // ----- start ----
 const sendMessagePage = document.getElementById('send-message-page');
+const replyMessagePage = document.getElementById('reply-message-page');
+const forwardMessagePage = document.getElementById('forward-message-page');
 const sendMessageForm = document.getElementById('send-message-form');
 const sendToInput = document.getElementById('send-to');
 const sendSubjectInput = document.getElementById('send-subject');
 const sendBodyTextarea = document.getElementById('send-body');
 const emailQuoteDiv = document.getElementById('email-quote');
 const cancelSendButton = document.getElementById('cancel-send');
+const cancelReplyButton = document.getElementById('cancel-reply');
+const cancelForwardButton = document.getElementById('cancel-forward');
 const composeButton = document.getElementById('compose-button');
 
 const sendAttachmentsInput = document.getElementById('send-attachments');
@@ -65,6 +70,13 @@ logoutButton.addEventListener('click', () => {
 });
 
 backToMessagesButton.addEventListener('click', () => {
+    window.scrollTo(0, 0);
+    messageDisplayPage.style.display = 'none';
+    messageViewPage.style.display = 'block';
+});
+
+backToMessagesTopButton.addEventListener('click', () => {
+    window.scrollTo(0, 0);
     messageDisplayPage.style.display = 'none';
     messageViewPage.style.display = 'block';
 });
@@ -72,18 +84,43 @@ backToMessagesButton.addEventListener('click', () => {
 // ----- start ----
 // Compose new email
 composeButton.addEventListener('click', () => {
-	alert(22)
   sendMessageTitle.textContent = 'New Message';
   sendMessageForm.reset();
   emailQuoteDiv.style.display = 'none';
   messageViewPage.style.display = 'none';
   sendMessagePage.style.display = 'block';
+  replyMessagePage.style.display = 'none';
+  forwardMessagePage.style.display = 'none';
 });
 
 // Cancel sending
 cancelSendButton.addEventListener('click', () => {
+  console.log("Cancel sending")
+  messageDisplayPage.style.display = 'none';
   sendMessagePage.style.display = 'none';
   messageViewPage.style.display = 'block';
+  replyMessagePage.style.display = 'none';
+  forwardMessagePage.style.display = 'none';
+});
+
+// Cancel reply 
+cancelReplyButton.addEventListener('click', () => {
+  console.log("Cancel reply")
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'none';
+  messageDisplayPage.style.display = 'block';
+  replyMessagePage.style.display = 'none';
+  forwardMessagePage.style.display = 'none';
+});
+
+// Cancel forward
+cancelForwardButton.addEventListener('click', () => {
+  console.log("Cancel forward")
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'none';
+  messageDisplayPage.style.display = 'block';
+  replyMessagePage.style.display = 'none';
+  forwardMessagePage.style.display = 'none';
 });
 
 // Compose new email
@@ -95,13 +132,14 @@ composeButton.addEventListener('click', () => {
   sendMessagePage.style.display = 'block';
 });
 
+/*
 // Cancel sending
 cancelSendButton.addEventListener('click', () => {
   sendMessagePage.style.display = 'none';
   messageViewPage.style.display = 'block';
 });
 
-// Compose new email
+// Reply to email
 composeButton.addEventListener('click', () => {
   sendMessageTitle.textContent = 'New Message';
   sendMessageForm.reset();
@@ -109,12 +147,41 @@ composeButton.addEventListener('click', () => {
   messageViewPage.style.display = 'none';
   sendMessagePage.style.display = 'block';
 });
+*/
 
+/*
 // Cancel sending
 cancelSendButton.addEventListener('click', () => {
   sendMessagePage.style.display = 'none';
   messageViewPage.style.display = 'block';
 });
+*/
+
+const replyButtonClicked = (email) => {
+    //alert(`Reply to: ${email.from.text}`);
+    // Implement reply logic (e.g., open a compose modal)
+    sendMessageTitle.textContent = 'Reply to Message';
+    sendMessageForm.reset();
+    emailQuoteDiv.style.display = 'none';
+    messageViewPage.style.display = 'none';
+    messageDisplayPage.style.display = 'none';
+    sendMessagePage.style.display = 'none';
+    replyMessagePage.style.display = 'block';
+    forwardMessagePage.style.display = 'none';
+}
+
+const forwardButtonClicked = (email) => {
+    //alert(`Forward email: ${email.subject}`);
+    // Implement forward logic (e.g., open a compose modal)
+    sendMessageTitle.textContent = 'Forward Message';
+    sendMessageForm.reset();
+    emailQuoteDiv.style.display = 'none';
+    messageViewPage.style.display = 'none';
+    messageDisplayPage.style.display = 'none';
+    sendMessagePage.style.display = 'none';
+    replyMessagePage.style.display = 'none';
+    forwardMessagePage.style.display = 'block';
+}
 // -----end ----
 
 // API Functions
@@ -173,11 +240,11 @@ async function loadMessages() {
         const messages = await response.json();
         if (response.ok) {
             messageList.innerHTML = '';
-            messages.emails.forEach(message => {
+            messages.emails.forEach((message, index) => {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'message-item';
                 //messageElement.textContent = message.filename;
-                messageElement.textContent = message;
+                messageElement.textContent = index + " :: " + message;
                 messageElement.addEventListener('click', () => loadMessage(message));
                 messageList.appendChild(messageElement);
             });
@@ -250,19 +317,36 @@ async function loadMessage(filename) {
         </div>
       `;
 
+      messageViewPage.style.display = 'none';
+      messageDisplayPage.style.display = 'block';
+
       // Show reply/forward modals (example)
       document.getElementById('reply-button').addEventListener('click', () => {
+	replyButtonClicked(email)
+        /*
         alert(`Reply to: ${email.from.text}`);
         // Implement reply logic (e.g., open a compose modal)
+        sendMessageTitle.textContent = 'Reply to Message';
+        sendMessageForm.reset();
+        emailQuoteDiv.style.display = 'none';
+        messageViewPage.style.display = 'none';
+        sendMessagePage.style.display = 'block';
+	*/
       });
 
       document.getElementById('forward-button').addEventListener('click', () => {
+	forwardButtonClicked(email)
+	/*
         alert(`Forward email: ${email.subject}`);
         // Implement forward logic (e.g., open a compose modal)
+        sendMessageTitle.textContent = 'Forward Message';
+        sendMessageForm.reset();
+        emailQuoteDiv.style.display = 'none';
+        messageViewPage.style.display = 'none';
+        sendMessagePage.style.display = 'block';
+        */
       });
 
-      messageViewPage.style.display = 'none';
-      messageDisplayPage.style.display = 'block';
     } else {
       alert('Failed to load message');
     }
