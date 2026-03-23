@@ -242,52 +242,18 @@ async function loadMessages() {
         const messages = await response.json();
         if (response.ok) {
 
-/*
           // Function to handle row clicks
           function onEmailSelected(email) {
-            console.log('Selected email:', email);
-            alert(`You selected: ${email.subject}`);
+            console.log('onEmailSelected Selected email:', email);
+            //alert(`You selected: ${email.subject}`);
+	    //loadMessage(email)'
           }
           // Render the email table
-          renderEmailTable(emails, onEmailSelected, 5);
-*/
-
-          let tableHTML = `
-            <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <th style="text-align: left; padding: 8px;">Date</th>
-                  <th style="text-align: left; padding: 8px;">Subject</th>
-                </tr>
-              </thead>
-            <tbody>
-          `;
-          messages.emails.forEach((email, index) => {
-            const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
-            const subject = email.subject || 'No subject';
-            const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
-	     const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
-
-
-            //emailTableElement.addEventListener('click', () => loadMessage(message));
-            tableHTML += `
-              <tr
-	        style="${rowStyle}"
-		class="email-table-item"
-		onclick='loadMessage(${emailJSON})'
-		onmouseover="this.style.backgroundColor='#e6f2ff'"
-                onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
-              >
-                <td style="padding: 8px;" class="email-table-item">${date}</td>
-                <td style="padding: 8px;">${subject}</td>
-              </tr>
-            `;
-          });
-          tableHTML += `
-              </tbody>
-            </table>
-          `;
+          renderEmailTable(messages.emails, onEmailSelected, 10);
+/*
+          let tableHTML = await getEmailsTable(messages)
           emailTable.innerHTML = tableHTML;
+*/
 
         } else {
             alert('Failed to load messages');
@@ -458,6 +424,7 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
   // DOM Elements
   const tableContainer = document.getElementById('email-table');
   const paginationContainer = document.getElementById('email-pagination');
+  const paginationTopContainer = document.getElementById('email-pagination-top');
   const filterInput = document.getElementById('email-filter');
 
   // Filter and sort emails
@@ -517,11 +484,13 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
       const subject = email.subject || 'No subject';
       const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
       const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
+      //const emailJSON = JSON.stringify(email.filename).replace(/'/g, "&apos;");
 
+          //onclick='onEmailSelected(${emailJSON})'
       tableHTML += `
         <tr
           style="${rowStyle}"
-          onclick='onEmailSelected(${emailJSON})'
+	  onclick='loadMessage(${emailJSON})'
           onmouseover="this.style.backgroundColor='#e6f2ff'"
           onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
         >
@@ -551,22 +520,33 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
   // Render pagination
   function renderPagination(totalEmails) {
     const totalPages = Math.ceil(totalEmails / rowsPerPage);
-    let paginationHTML = '';
+    let paginationHTML = '<div style="margin: 15px;">';
 
     if (totalPages > 1) {
-      paginationHTML += `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>`;
-      paginationHTML += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+      //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>`;
+      //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button><br/>`;
+
+      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</a>`;
+      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</a><br/><br/>`;
 
       for (let i = 1; i <= totalPages; i++) {
-        paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+        //paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+        paginationHTML += `|<a onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</a>`;
       }
+      paginationHTML += `|<br/><br/>`;
 
-      paginationHTML += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
-      paginationHTML += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>`;
+      //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+      //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button><br/><br/>`;
+
+      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</a>`;
+      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</a><br/>`;
+
       paginationHTML += `<span>Page ${currentPage} of ${totalPages}</span>`;
     }
+    paginationHTML += `</div>`;
 
     paginationContainer.innerHTML = paginationHTML;
+    //paginationTopContainer.innerHTML = paginationHTML;
   }
 
   // Toggle sort
@@ -598,5 +578,45 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
 
   // Initial render
   renderTable();
+/*
+*/
 }
 
+async function getEmailsTable(messages) {
+  let tableHTML = `
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 8px;">Date</th>
+          <th style="text-align: left; padding: 8px;">Subject</th>
+        </tr>
+      </thead>
+    <tbody>
+  `;
+  messages.emails.forEach((email, index) => {
+    const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
+    const subject = email.subject || 'No subject';
+    const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
+	     const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
+
+
+    //emailTableElement.addEventListener('click', () => loadMessage(message));
+    tableHTML += `
+      <tr
+	        style="${rowStyle}"
+		class="email-table-item"
+		onclick='loadMessage(${emailJSON})'
+		onmouseover="this.style.backgroundColor='#e6f2ff'"
+        onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
+      >
+        <td style="padding: 8px;" class="email-table-item">${date}</td>
+        <td style="padding: 8px;">${subject}</td>
+      </tr>
+    `;
+  });
+  tableHTML += `
+      </tbody>
+    </table>
+  `;
+  return tableHTML;
+}
