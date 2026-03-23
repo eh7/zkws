@@ -99,14 +99,27 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 
-router.post('/send', auth, upload.array('attachments'), (req, res) => {
-  const { to, subject, body } = req.body;
-  const attachments = req.files;
+router.post('/send', auth, upload.array('attachments'), async (req, res) => {
+  const { from, to, subject, text, html, attachments } = req.body;
+  //const attachments = req.files;
 
   // Implement logic to send the email (e.g., using Nodemailer)
-  console.log('Sending email:', { to, subject, body, attachments });
+  //console.log('Sending email:', { to, subject, body, attachments });
 
-  res.json({ success: true });
+  const response = await maildir.sendEmail({
+    from,
+    to,
+    subject,
+    text,
+    html,
+    attachments,
+  })
+
+  if (!response.success) {
+    res.json(response);
+  } else {
+    res.json({ success: true });
+  }
 });
 
 module.exports = router;

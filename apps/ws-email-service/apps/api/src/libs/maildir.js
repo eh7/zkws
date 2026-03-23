@@ -1,4 +1,5 @@
 require('dotenv').config({ quiet: true })
+const nodemailer = require('nodemailer');
 const simpleParser = require('mailparser').simpleParser;
 const fs = require('fs');
 const path = require('path');
@@ -68,6 +69,58 @@ class Maildir {
     //const filePath = path.join(this.newPath, filename)
     //  || path.join(this.curPath, filename);
     await unlink(filePath);
+  }
+
+  async sendEmail(email) {
+    console.log("sendEmail function")
+    try {
+      const { from, to, subject, text, html, attachments } = email;
+
+      if (
+        typeof from === 'undefined' ||
+        typeof to === 'undefined' ||
+        typeof subject === 'undefined' ||
+        typeof text === 'undefined'
+      ) {
+        return({ success: false, message: 'Email missing manditory fields!' });
+      }
+
+      // Create a Nodemailer transporter with TLS on port 587
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_SERVER,
+        port: process.env.SMTP_PORT,
+        secure: false, // true for 465, false for other ports (TLS)
+        auth: {
+          user: process.env.SMTP_AUTH_USER,
+          pass: process.env.SMTP_AUTH_PASS,
+        },
+        tls: {
+          // Do not fail on invalid certs
+          rejectUnauthorized: false,
+        },
+      });
+
+      // Prepare email attachments
+      //const emailAttachments = attachments
+      //  ? attachments.map((attachment) => ({
+      //      filename: attachment.originalname,
+      //      path: attachment.path,
+      //    }))
+      //  : [];
+
+      // Send email
+      await transporter.sendMail({
+        from,
+        to,
+        subject,
+        text: text,
+        html: html,
+        attachments: attachments,
+      });
+
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
   }
 
   // Helper: List files in a directory

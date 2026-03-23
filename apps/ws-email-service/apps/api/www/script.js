@@ -620,3 +620,66 @@ async function getEmailsTable(messages) {
   `;
   return tableHTML;
 }
+
+async function sendEmail() {
+  try {
+    const from = '"gav js web client" <gav@zkws.org>';
+    const to = document.getElementById('send-to').value;
+    const subject = document.getElementById('send-subject').value;
+    const body = document.getElementById('send-body').value;
+
+console.log('email data on form :: ', { from, to, subject, body })
+
+    //const filename = message.filename;
+    const attachments = [
+      {
+        filename: "hello.txt",
+        content: "Hello world!",
+      },
+    ]
+    const emailData = {
+      "from": from, //'"gavfrom" <gav@zkws.org>',
+      "to": to, //'"to gav" <gav@zkws.org>',
+      "subject": subject, //'Test Subject Take #2 with Attachment',
+      "text": body, //'this is the text part of email.\n\nThanks...',
+      //"html": '<h1>take #2</h1><h3>this is a html header</h3>Thanks...',
+      //attachments,
+    }
+    //console.log(JSON.stringify(emailData))
+    //console.log(token)
+    const response = await fetch(`http://localhost:3000/api/maildir/send`, {
+      method: 'POST',
+      headers: {
+        'x-auth-token': `${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+    console.log('send email response :: ', response)
+    console.log('response.ok??? send email response :: ', response.ok)
+/*
+    console.log('send email response :: ', response.json())
+    //const email = (await response.json()).email;
+    //
+*/
+  } catch (e) {
+    console.log('send email ERROR :: ', e)
+    alert('An error occurred while sending email.');
+  }
+
+//  const responseSendAttachment = await request(server)
+//    .post('/api/maildir/send')
+//    .set("x-auth-token", token)
+//    .set('Content-Type', 'application/json')
+//    .send(emailAttachment)
+}
+
+sendMessageForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const subject = document.getElementById('send-subject').value;
+
+  const response = await sendEmail()
+  console.log(response)
+  alert(`Email sent :: Subject: ${subject}`)
+});
