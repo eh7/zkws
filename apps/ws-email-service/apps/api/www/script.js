@@ -242,6 +242,16 @@ async function loadMessages() {
         const messages = await response.json();
         if (response.ok) {
 
+/*
+          // Function to handle row clicks
+          function onEmailSelected(email) {
+            console.log('Selected email:', email);
+            alert(`You selected: ${email.subject}`);
+          }
+          // Render the email table
+          renderEmailTable(emails, onEmailSelected, 5);
+*/
+
           let tableHTML = `
             <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
               <thead>
@@ -272,55 +282,12 @@ async function loadMessages() {
                 <td style="padding: 8px;">${subject}</td>
               </tr>
             `;
-/*
-             tableHTML += `
-                <tr style="${rowStyle}" data-email='${JSON.stringify(email).replace(/'/g, "\\'")}'>
-                  <td style="padding: 8px;">${date}</td>
-            `     <td style="padding: 8px;">${subject}</td>
-                </tr>
-              `;
-*/
           });
           tableHTML += `
               </tbody>
             </table>
           `;
           emailTable.innerHTML = tableHTML;
-/*
-	    //const emailTableHTML = formatEmailsAsTable(messages.emails);
-	    //document.getElementById('email-table').innerHTML = emailTableHTML;
-            //emailTable.innerHTML = '<table>';
-            messages.emails.forEach((message, index) => {
-             // console.log('messages.emails :: ', messages.emails[index].subject)
-	      //document.getElementById('email-table').innerHTML += messages.emails[index].date + ' :: ' + messages.emails[index].subject + '<br/>';
-
-              const emailTableElement = document.createElement('div');
-              emailTableElement.className = 'email-table-item';
-              emailTableElement.textContent = index + " :: " + message.subject + ' :: ' + message.date;
-	      //emailTableElement.innerHTML = `<tr><td>${message.date}</td><td>${message.date}</td></tr>`;
-//    console.log(message.filename)
-              emailTableElement.addEventListener('click', () => loadMessage(message));
-              emailTable.appendChild(emailTableElement);
-	    });
-            //emailTable.innerHTML += '</table>';
-	    //console.log("ggggggggggggggggggggggggggg", emailTableHTML)
-            //messageList.innerHTML = emailTableHTML;
-            //messageList.innerHTML += 'testing <div style="width: 400px">' + emailTableHTML + '</div>';
-*/
-
-            /*
-            messageList.innerHTML = '';
-            messages.emails.forEach((message, index) => {
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message-item';
-                //messageElement.textContent = message.filename;
-                //messageElement.textContent = index + " :: " + message;
-                //messageElement.addEventListener('click', () => loadMessage(message));
-                messageElement.textContent = index + " :: " + message.date + " :: " + message.subject + message.filename;
-                messageElement.addEventListener('click', () => loadMessage(message));
-                messageList.appendChild(messageElement);
-            });
-	    */
 
         } else {
             alert('Failed to load messages');
@@ -473,5 +440,163 @@ function formatEmailsAsTable(emails) {
   `;
 
   return tableHTML;
+}
+
+/**
+ * Renders a paginated, sortable, and filterable email table.
+ * @param {Array} emails - Array of mailparser email objects.
+ * @param {Function} onEmailSelected - Function to call when a row is clicked.
+ * @param {number} rowsPerPage - Number of rows to display per page.
+ */
+function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
+  // State
+  let currentPage = 1;
+  let sortField = 'date';
+  let sortDirection = 'desc';
+  let filterText = '';
+
+  // DOM Elements
+  const tableContainer = document.getElementById('email-table');
+  const paginationContainer = document.getElementById('email-pagination');
+  const filterInput = document.getElementById('email-filter');
+
+  // Filter and sort emails
+  function getProcessedEmails() {
+    let processed = [...emails];
+
+    // Filter
+    if (filterText) {
+      const lowerFilter = filterText.toLowerCase();
+      processed = processed.filter(email =>
+        email.subject.toLowerCase().includes(lowerFilter) ||
+        email.from.text.toLowerCase().includes(lowerFilter) ||
+        (email.text && email.text.toLowerCase().includes(lowerFilter))
+      );
+    }
+
+    // Sort
+    processed.sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      if (sortField === 'date') {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
+      } else {
+        aValue = aValue.toString().toLowerCase();
+        bValue = bValue.toString().toLowerCase();
+      }
+
+      return sortDirection === 'asc' ? aValue > bValue ? 1 : -1 : bValue > aValue ? 1 : -1;
+    });
+
+    return processed;
+  }
+
+  // Render table
+  function renderTable() {
+    const processedEmails = getProcessedEmails();
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const paginatedEmails = processedEmails.slice(startIndex, startIndex + rowsPerPage);
+
+    // Table header
+    let tableHTML = `
+      <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 8px; cursor: pointer;" onclick="toggleSort('date')">Date ${sortField === 'date' ? sortDirection === 'asc' ? '↑' : '↓' : ''}</th>
+            <th style="text-align: left; padding: 8px; cursor: pointer;" onclick="toggleSort('subject')">Subject ${sortField === 'subject' ? sortDirection === 'asc' ? '↑' : '↓' : ''}</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    // Table rows
+    paginatedEmails.forEach((email, index) => {
+      const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
+      const subject = email.subject || 'No subject';
+      const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
+      const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
+
+      tableHTML += `
+        <tr
+          style="${rowStyle}"
+          onclick='onEmailSelected(${emailJSON})'
+          onmouseover="this.style.backgroundColor='#e6f2ff'"
+          onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
+        >
+          <td style="padding: 8px;">${date}</td>
+          <td style="padding: 8px;">${subject}</td>
+        </tr>
+      `;
+    });
+
+    tableHTML += `
+        </tbody>
+      </table>
+      <style>
+        #email-table tbody tr:hover {
+          background-color: #e6f2ff !important;
+          cursor: pointer;
+        }
+      </style>
+    `;
+
+    tableContainer.innerHTML = tableHTML;
+
+    // Render pagination
+    renderPagination(processedEmails.length);
+  }
+
+  // Render pagination
+  function renderPagination(totalEmails) {
+    const totalPages = Math.ceil(totalEmails / rowsPerPage);
+    let paginationHTML = '';
+
+    if (totalPages > 1) {
+      paginationHTML += `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>`;
+      paginationHTML += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+      }
+
+      paginationHTML += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+      paginationHTML += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>`;
+      paginationHTML += `<span>Page ${currentPage} of ${totalPages}</span>`;
+    }
+
+    paginationContainer.innerHTML = paginationHTML;
+  }
+
+  // Toggle sort
+  window.toggleSort = (field) => {
+    if (sortField === field) {
+      sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortField = field;
+      sortDirection = 'asc';
+    }
+    currentPage = 1;
+    renderTable();
+  };
+
+  // Go to page
+  window.goToPage = (page) => {
+    const processedEmails = getProcessedEmails();
+    const totalPages = Math.ceil(processedEmails.length / rowsPerPage);
+    currentPage = Math.max(1, Math.min(page, totalPages));
+    renderTable();
+  };
+
+  // Filter emails
+  filterInput.addEventListener('input', (e) => {
+    filterText = e.target.value;
+    currentPage = 1;
+    renderTable();
+  });
+
+  // Initial render
+  renderTable();
 }
 

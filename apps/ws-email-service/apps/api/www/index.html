@@ -34,7 +34,14 @@
         <div id="message-view-page" class="page" style="display: none;">
             <h1>Messages</h1>
             <button id="compose-button">Compose</button>
-	    <div id="email-table"></div>
+	    <!--<div id="email-table"></div>//-->
+            <div id="email-controls">
+                <input type="text" id="email-filter" placeholder="Filter emails...">
+            </div>
+            <div id="email-table-container">
+              <div id="email-table"></div>
+              <div id="email-pagination"></div>
+            </div>
             <div id="message-list"></div>
             <button id="logout-button">Logout</button>
         </div>
