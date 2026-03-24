@@ -307,7 +307,6 @@ async function loadMessage(message) {
 
     if (response.ok) {
       // Display email headers
-      // WIP
       //currentEmailData.from = email.from.text;
       currentEmailData.from = email.from.value[0].address;
       //currentEmailData.to   = email.to.text;
@@ -645,7 +644,6 @@ async function getEmailsTable(messages) {
 
 async function sendEmail(email) {
   try {
-
     // this could be updated from external source or 
     // something????
     const from = '"gav js web client" <gav@zkws.org>';
@@ -654,7 +652,44 @@ async function sendEmail(email) {
     const subject = email.subject; //document.getElementById('send-subject').value;
     const body = email.body; //document.getElementById('send-body').value;
 
-console.log('email data on form :: ', { from, to, subject, body })
+    console.log('email data on form :: ', { from, to, subject, body })
+
+    const sendEmailAttachments = document.getElementById('send-attachments').files
+    const replyEmailAttachments = document.getElementById('reply-attachments').files
+    const forwardEmailAttachments = document.getElementById('forward-attachments').files
+
+    const formData = new FormData();
+
+    // Append email fields
+    formData.append('to', to);
+    formData.append("from", from);
+    formData.append("subject", subject);
+    formData.append('body', body);
+
+ formData.append('attachments', sendEmailAttachments[0])
+console.log('sendEmailAttachments', sendEmailAttachments)
+console.log('formData', formData)
+alert("WIP `SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+
+/*
+    // Append attachments if present
+    if (attachments && attachments.length > 0) {
+      Array.from(attachments).forEach((file) => {
+        formData.append('attachments', file);
+      });
+    }
+
+    // WIP :: checcking file upload works....
+    const uploadedFilesSend = document.getElementById("send-attachments")
+    const uploadedFilesReply = document.getElementById("reply-attachments")
+    const uploadedFilesForward = document.getElementById("forward-attachments")
+    emailData.append("uploadedFilesSend", uploadedFilesSend.files[0])
+    emailData.append("uploadedFilesReply", uploadedFilesReply.files[0])
+    emailData.append("uploadedFilesForward", uploadedFilesForward.files[0])
+console.log('checcking file upload works', )
+
+*/
+
 
     //const filename = message.filename;
     const attachments = [
@@ -663,6 +698,7 @@ console.log('email data on form :: ', { from, to, subject, body })
         content: "Hello world!",
       },
     ]
+
     const emailData = {
       "from": from, //'"gavfrom" <gav@zkws.org>',
       "to": to, //'"to gav" <gav@zkws.org>',
@@ -673,6 +709,7 @@ console.log('email data on form :: ', { from, to, subject, body })
     }
     //console.log(JSON.stringify(emailData))
     //console.log(token)
+
     const response = await fetch(`http://localhost:3000/api/maildir/send`, {
       method: 'POST',
       headers: {
@@ -680,6 +717,7 @@ console.log('email data on form :: ', { from, to, subject, body })
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(emailData),
+//      body: formData,
     });
     console.log('send email response :: ', response)
     console.log('response.ok??? send email response :: ', response.ok)

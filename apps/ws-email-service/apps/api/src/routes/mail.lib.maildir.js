@@ -105,6 +105,9 @@ router.post('/send', auth, upload.array('attachments'), async (req, res) => {
 
   // Implement logic to send the email (e.g., using Nodemailer)
   //console.log('Sending email:', { to, subject, body, attachments });
+ 
+  console.log('req.file:', req.file)
+  console.log('req.files:', req.files)
 
   const response = await maildir.sendEmail({
     from,
