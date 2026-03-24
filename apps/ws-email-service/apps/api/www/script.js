@@ -1,5 +1,6 @@
 // Global variable to store the authentication token
 let token = null;
+let currentEmailData = {}
 
 // DOM Elements
 const loginPage = document.getElementById('login-page');
@@ -173,15 +174,9 @@ const replyButtonClicked = (email) => {
     replyMessagePage.style.display = 'block';
     forwardMessagePage.style.display = 'none';
 
-alert("321 email-subject :: " + document.getElementById('email-subject').value)
-
-
-    document.getElementById('reply-subject').value = "Re: " + document.getElementById('email-subject').value;
-
-    document.getElementById('reply-subject').value = "Re: " + document.getElementById('email-subject').value;
-    document.getElementById('reply-to').value = document.getElementById('email-from').value;
-    document.getElementById('reply-from').value = document.getElementById('email-to').value;
-    document.getElementById('reply-body').value = document.getElementById('email-body').value;
+    document.getElementById('reply-subject').value = "Re: " + currentEmailData.subject;
+    document.getElementById('reply-to').value = currentEmailData.from;
+    document.getElementById('reply-body').value = "\n\n" + currentEmailData.body.replace(/^/gm, '> ');
 }
 
 const forwardButtonClicked = (email) => {
@@ -195,6 +190,10 @@ const forwardButtonClicked = (email) => {
     sendMessagePage.style.display = 'none';
     replyMessagePage.style.display = 'none';
     forwardMessagePage.style.display = 'block';
+
+    document.getElementById('forward-subject').value = "Fwd: " + currentEmailData.subject;
+    document.getElementById('forward-to').value = currentEmailData.from;
+    document.getElementById('forward-body').value = "\n\n" + currentEmailData.body.replace(/^/gm, '> ');;
 }
 // -----end ----
 
@@ -308,6 +307,16 @@ async function loadMessage(message) {
 
     if (response.ok) {
       // Display email headers
+      // WIP
+      //currentEmailData.from = email.from.text;
+      currentEmailData.from = email.from.value[0].address;
+      //currentEmailData.to   = email.to.text;
+      currentEmailData.to   = email.to.value[0].address;
+      currentEmailData.subject = email.subject;
+      currentEmailData.body = email.text;
+      //currentEmailData.body = email.html || email.text;
+console.log("currentEmailData ::", currentEmailData, email)
+
       messageContent.innerHTML = `
         <div class="email-header">
           <h2 id="email-subject">${email.subject}</h2>
