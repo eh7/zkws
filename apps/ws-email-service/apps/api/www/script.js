@@ -36,6 +36,7 @@ const cancelSendButton = document.getElementById('cancel-send');
 const cancelReplyButton = document.getElementById('cancel-reply');
 const cancelForwardButton = document.getElementById('cancel-forward');
 const composeButton = document.getElementById('compose-button');
+const checkMessagesButton = document.getElementById('check-messages-button');
 
 const sendAttachmentsInput = document.getElementById('send-attachments');
 const sendMessageTitle = document.getElementById('send-message-title');
@@ -87,6 +88,12 @@ backToMessagesTopButton.addEventListener('click', () => {
 });
 
 // ----- start ----
+checkMessagesButton.addEventListener('click', async () => {
+  window.scrollTo(0, 0);
+  await loadMessages();
+  alert('checked for new messages')
+});
+
 // Compose new email
 composeButton.addEventListener('click', () => {
   sendMessageTitle.textContent = 'New Message';
@@ -548,13 +555,13 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
       //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button><br/>`;
 
       paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</a>`;
-      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</a><br/><br/>`;
+      paginationHTML += `<a class="first_last_prev_next" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</a> `;
 
       for (let i = 1; i <= totalPages; i++) {
         //paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
         paginationHTML += `|<a onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</a>`;
       }
-      paginationHTML += `|<br/><br/>`;
+      paginationHTML += `|`;
 
       //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
       //paginationHTML += `<button class="first_last_prev_next" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button><br/><br/>`;
@@ -669,7 +676,7 @@ async function sendEmail(email) {
  formData.append('attachments', sendEmailAttachments[0])
 console.log('sendEmailAttachments', sendEmailAttachments)
 console.log('formData', formData)
-alert("WIP `SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+//alert("WIP `SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
 
 /*
     // Append attachments if present
@@ -745,6 +752,9 @@ forwardMessageForm.addEventListener('submit', async (e) => {
   const body = document.getElementById('forward-body').value;
   const response = await sendEmail({ subject, to, body })
   alert(`Email sent :: Subject: ${subject}`)
+  await loadMessages();
+  forwardMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
 });
 
 replyMessageForm.addEventListener('submit', async (e) => {
@@ -754,6 +764,9 @@ replyMessageForm.addEventListener('submit', async (e) => {
   const body = document.getElementById('reply-body').value;
   const response = await sendEmail({ subject, to, body })
   alert(`Email reply sent :: Subject: ${subject}`)
+  await loadMessages();
+  replyMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
 });
 
 sendMessageForm.addEventListener('submit', async (e) => {
@@ -764,4 +777,7 @@ sendMessageForm.addEventListener('submit', async (e) => {
   const response = await sendEmail({ subject, to, body })
   console.log(response)
   alert(`Email sent :: Subject: ${subject}`)
+  await loadMessages();
+  sendMessagePage.style.display = 'none';
+  messageViewPage.style.display = 'block';
 });

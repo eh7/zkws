@@ -1,13 +1,32 @@
+html {
+  //width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    margin-top: 30px;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /*height: 100vh;*/
-    background-color: #f0f0f0;
+  //width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 0px dotted #ff0000;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  margin-top: 30px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*height: 100vh;*/
+  background-color: #f0f0f0;
+}
+
+#app {
+  display: block;
+  width: 80vw;
+  padding: 20px;
+  box-sizing: border-box;
+//  width: 100%;
+  border: 0px dotted #000000;
 }
 
 .page {
@@ -38,27 +57,43 @@ button:hover {
     background-color: #0056b3;
 }
 
-#message-display-page {
-    border: 0px sold black;
+#back-to-messages-top {
+  width: 100%;
+  border: r01px solid black;
 }
 
-#message-view-page {
+#message-display-page,
+#send-message-page,
+#forward-message-page,
+#reply-message-page,
+#message-view-page,
+#login-page {
+  width: 100%;
+  border: 1px solid black;
 }
 
 #message-content {
-    display: block;
-    max-width: 600px;
-    /*
-    justify-content: center;
-    align-items: center;
-    max-width: 600px;
-    */
-    white-space: normal;
-    overflow-wrap: break-word;
-    text-align: left;
+  display: block;
+  max-width: 100%;
+  padding: 3px;
+  /*
+  max-width: 600px;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  */
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: left;
+  border: 0px solid black;
 }
 
-#message-list {
+div.email-body {
+  border: 1px solid black;
+  overflow: auto;
+}
+
+.message-list {
     text-align: left;
     max-height: 400px;
     overflow-y: auto;
@@ -146,17 +181,17 @@ button:hover {
   font-style: italic;
   color: #555;
 }
-*/
 
 send-message-page {
   width: 500px;
 }
+*/
 
 #send-message-form input,
 #send-message-form textarea,
 #reply-message-form textarea,
 #forward-message-form textarea {
-  width: 100%;
+  width: 90%;
   margin: 10px 0;
   padding: 10px;
   border: 1px solid #ccc;
