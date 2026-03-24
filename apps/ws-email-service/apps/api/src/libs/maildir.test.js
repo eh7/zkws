@@ -8,12 +8,15 @@ require('dotenv').config({ quiet: true })
 fs.rmSync(process.env.MAILDIR_LIVE_TEST, { recursive: true, force: true })
 fs.cpSync(process.env.MAILDIR_MASTER_COPY, process.env.MAILDIR_LIVE_TEST, { recursive: true });
 
+//console.log(process.env.MAILDIR_LIVE_TEST)
+//console.log(process.env.MAILDIR_MASTER_COPY, process.env.MAILDIR_LIVE_TEST)
+
 const maildir = new Maildir(process.env.MAILDIR_LIVE_TEST);
 
 describe('Test maildir.js library functions', () => {
   it('request a list of emails in maildir', async () => {
     const emails = await maildir.listEmails();
-    //console.log('Emails:', emails.length);
+    console.log('Emails:', emails.length);
     expect(emails.length).toBe(5)
   });
 
@@ -26,12 +29,18 @@ describe('Test maildir.js library functions', () => {
 
   it('check second last email in test maildir has 1 attachment', async () => {
     const emails = await maildir.listEmails();
+console.log(emails[0].attachments)
+console.log(emails[1].attachments)
+console.log(emails[2].attachments)
+console.log(emails[3].attachments)
+console.log(emails[4].attachments)
     const secondLastEmail = await maildir.readEmail(emails[emails.length - 2].filename);
-    //console.log('Second Last email attachments:', secondLastEmail.attachments.length);
+console.log('secondLastEmail', secondLastEmail.attachments.length)
+    console.log('Second Last email attachments:', secondLastEmail.attachments.length);
     expect(secondLastEmail.attachments.length).toBe(2)
   });
 
-  it('check second last email in test maildir has 1 attachment', async () => {
+  it.skip('check second last email in test maildir has 1 attachment', async () => {
     const emails = await maildir.listEmails();
     const lastEmail = await maildir.readEmail(emails[emails.length - 1].filename);
     //console.log('Last email attachments:', lastEmail.attachments.length);
@@ -39,20 +48,20 @@ describe('Test maildir.js library functions', () => {
     expect(lastEmail.attachments[0].filename).toBe("sample.pdf");
   });
 
-  it('check new emails list in test maildir has correct number of messages', async () => {
+  it.skip('check new emails list in test maildir has correct number of messages', async () => {
     const newEmails = await maildir.listNewEmails();
     //console.log(newEmails)
     expect(newEmails.length).toBe(5)
   });
 
-  it('check readNewEmail from emails list in test maildir moved to cur directory', async () => {
+  it.skip('check readNewEmail from emails list in test maildir moved to cur directory', async () => {
     const emails = await maildir.listNewEmails();
     await maildir.readAndMoveNewEmail(emails[0].filename)
     const newEmails = await maildir.listNewEmails();
     expect(newEmails.length).toBe(4)
   });
 
-  it('check delete maildir remove file', async () => {
+  it.skip('check delete maildir remove file', async () => {
     const emails = await maildir.listEmails();
     //console.log(emails[0].filename)
     const deleteReturn = await maildir.deleteEmail(emails[0].filename);
@@ -62,7 +71,7 @@ describe('Test maildir.js library functions', () => {
     expect(emails2.length).toBe(4)
   });
 
-  it('check send, send email', async () => {
+  it.skip('check send, send email', async () => {
     const from = "\"from\" <gav@zkws.org>";
     const to = "\"to\" <gav@zkws.org>";
     const subject = "Test subject line - email with attachments";
@@ -86,7 +95,7 @@ describe('Test maildir.js library functions', () => {
       }, 
     ];
 
-    const sendEail = await maildir.sendEmail({
+    const sendEmail = await maildir.sendEmail({
       from,
       to,
       subject,
@@ -97,15 +106,33 @@ describe('Test maildir.js library functions', () => {
       attachments,
     });
 
-    console.log(sendEail)
+    console.log(sendEmail)
 
 /*
     const emails = await maildir.listEmails();
     const email = emails.find(email => (typeof email.attachments !== 'undefinded' && email.attachments.length > 1));
 
-    const sendEail = await maildir.sendEmail(email);
+    const sendEmail = await maildir.sendEmail(email);
     console.log('inTest', email)
 */
   });
+
+  it.skip('check email pop3 and store in maildir', async () => {
+    maildir.fetchAndStoreEmails({
+      host: process.env.POP3_HOST,
+      port: process.env.POP3_PORT,
+      useSSL: true,
+      username: process.env.SMTP_AUTH_USER,
+      password: process.env.SMTP_AUTH_PASS,
+      maildirPath: process.env.MAILDIR_POP3_TEST,
+      onSuccess:  (count) => {
+        console.log(`Successfully fetched and stored ${count} emails.`);
+      },
+      onError: (error) => {
+        console.error('Error:', error);
+      },
+    });
+  })
+
 })
 

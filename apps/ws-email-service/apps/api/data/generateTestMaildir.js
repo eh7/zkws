@@ -53,7 +53,14 @@ This is the body of the email with an attachment.
 
 --boundary123
 Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: attachment; filename="example.txt"
+Content-Disposition: attachment; filename="example1.txt"
+Content-Transfer-Encoding: base64
+
+SGVsbG8sIHRoaXMgaXMgYSBzYW1wbGUgdGV4dCBhdHRhY2htZW50Lg==
+
+--boundary123
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: attachment; filename="example2.txt"
 Content-Transfer-Encoding: base64
 
 SGVsbG8sIHRoaXMgaXMgYSBzYW1wbGUgdGV4dCBhdHRhY2htZW50Lg==

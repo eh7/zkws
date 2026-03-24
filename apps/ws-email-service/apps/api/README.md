@@ -162,3 +162,12 @@ Retrieve messages using RETR.
 Parse each message with mailparser.simpleParser().
 Serialize the parsed email to MIME format using nodemailer’s createTransport() or manual MIME construction.
 Save the MIME string to a file in the maildir/new/ directory. 
+
+
+### TODOs;
+#### 1) add pop3 retrival and storage in maildir (see notes above)
+#### 2) Add settings db and associate functionality
+#### 3) CHECK if backend is down and warn client if down 
+#### 4) add/debug attachments in sent emails 
+
+TODO list is not in work or priority order.

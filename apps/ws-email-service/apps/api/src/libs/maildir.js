@@ -1,6 +1,7 @@
 require('dotenv').config({ quiet: true })
 const nodemailer = require('nodemailer');
 const simpleParser = require('mailparser').simpleParser;
+const POP3Client = require('node-pop3');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
@@ -183,6 +184,108 @@ console.log(messageString)
   // List all sent emails
   async listSentEmails() {
     return this._listDirectory(this.sentPath);
+  }
+
+  /**
+   * Fetches emails from a POP3 mailbox and stores them in a maildir.
+   * @param {string} host - POP3 server host.
+   * @param {number} port - POP3 server port (usually 995 for SSL/TLS).
+   * @param {boolean} useSSL - Whether to use SSL/TLS.
+   * @param {string} username - POP3 username.
+   * @param {string} password - POP3 password.
+   * @param {string} maildirPath - Path to the maildir directory.
+   * @param {Function} onSuccess - Callback for successful fetch.
+   * @param {Function} onError - Callback for errors.
+   */
+  async fetchAndStoreEmails({
+    host = process.env.POP3_HOST,
+    port = process.env.POP3_PORT,
+    useSSL = true,
+    username = process.env.SMTP_AUTH_USER,
+    password = process.env.SMTP_AUTH_PASS,
+    maildirPath = process.env.MAILDIR,
+    onSuccess,
+    onError,
+  }) {
+    try {
+      // Create maildir if it doesn't exist
+      if (!fs.existsSync(maildirPath)) {
+        fs.mkdirSync(maildirPath, { recursive: true });
+      }
+
+      // Connect to POP3 server
+      const client = new POP3Client(port, host, { tlserr: !useSSL });
+
+      await new Promise((resolve, reject) => {
+        client.on('error', (err) => {
+          console.error('POP3 error:', err);
+          reject(err);
+        });
+
+        client.on('connect', () => {
+          client.login(username, password, (err, status) => {
+            if (err) {
+              console.error('Login failed:', err);
+              reject(err);
+              return;
+            }
+            resolve();
+          });
+        });
+      });
+
+      // Get the list of emails
+      const list = await new Promise((resolve, reject) => {
+        client.list((err, list) => {
+          if (err) {
+            console.error('Failed to fetch email list:', err);
+            reject(err);
+            return;
+          }
+          resolve(list);
+        });
+      });
+
+      // Fetch and store each email
+      for (const item of list) {
+        const emailData = await new Promise((resolve, reject) => {
+          client.retr(item.number, (err, emailData) => {
+            if (err) {
+              console.error(`Failed to fetch email ${item.number}:`, err);
+              reject(err);
+              return;
+            }
+            resolve(emailData);
+          });
+        });
+
+        // Parse the email
+        const parsed = await simpleParser(emailData);
+
+        // Save to maildir
+        const filename = `email_${Date.now()}_${item.number}.eml`;
+        const filePath = path.join(maildirPath, filename);
+        fs.writeFileSync(filePath, emailData);
+
+        console.log(`Saved email ${item.number} to ${filePath}`);
+      }
+
+      // Quit the POP3 connection
+      await new Promise((resolve, reject) => {
+        client.quit((err) => {
+          if (err) {
+            console.error('Failed to quit POP3 connection:', err);
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      });
+
+      if (onSuccess) onSuccess(list.length);
+    } catch (error) {
+      if (onError) onError(error.message || 'Failed to fetch and store emails');
+    }
   }
 
   // Helper: List files in a directory
