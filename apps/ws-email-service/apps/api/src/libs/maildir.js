@@ -8,6 +8,7 @@ const readFile = promisify(fs.readFile);
 const readdir = promisify(fs.readdir);
 const unlink = promisify(fs.unlink);
 const rename = promisify(fs.rename);
+const writeFile = promisify(fs.writeFile);
 
 class Maildir {
   constructor(maildirPath) {
@@ -87,6 +88,10 @@ class Maildir {
       }
 
       // Create a Nodemailer transporter with TLS on port 587
+      const transporterStream = nodemailer.createTransport({
+        streamTransport: true,
+        buffer: true,
+      });
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_SERVER,
         port: process.env.SMTP_PORT,
@@ -110,7 +115,7 @@ class Maildir {
       //  : [];
 
       // Send email
-      await transporter.sendMail({
+      const sentEmail = await transporter.sendMail({
         from,
         to,
         subject,
@@ -118,6 +123,39 @@ class Maildir {
         html: html,
         attachments: attachments,
       });
+
+      const savedSentEmail = await transporterStream.sendMail({
+        from,
+        to,
+        subject,
+        text: text,
+        html: html,
+        attachments: attachments,
+      }, (err, info) => {
+        if (err) {
+          console.log("transporterSave.sendMail  ERROR :: ", err)
+        } else {
+          // info.message is a Readable stream of the raw RFC 822 content
+          const messageString = info.message.toString();
+          //info.message.pipe(process.stdout); // Outputs raw email to console
+console.log(messageString)
+          this.saveSentEmail(messageString)
+        }
+      });
+
+
+      console.log('sentEmail', sentEmail)
+      //alert('sentEmail check logs WIP saving sent emails')
+/*
+      const response = await maildir.saveSentEmail({
+        from,
+        to,
+        subject,
+        text: text,
+        html: html,
+        attachments: attachments,
+      });
+*/
 
     } catch (error) {
       console.error('Error sending email:', error);

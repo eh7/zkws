@@ -116,6 +116,16 @@ router.post('/send', auth, upload.array('attachments'), async (req, res) => {
   })
 
   if (!response.success) {
+    /*
+    const response = await maildir.saveSentEmail({
+      from,
+      to,
+      subject,
+      text,
+      html,
+      attachments,
+    })
+    */
     res.json(response);
   } else {
     res.json({ success: true });
