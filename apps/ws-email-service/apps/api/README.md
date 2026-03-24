@@ -148,3 +148,17 @@ curl -X DELETE http://localhost:3000/api/mail/1234567890.12345_1.example.com \
 ---
 
 Would you like to add more features, such as email search, folders, or attachments handling? Let me know how you’d like to proceed!
+
+## TODO add pop3 retrival and storage in maildir
+
+### Recommended Tools
+node-pop3: For connecting to a POP3 server and downloading emails. 
+mailparser: To parse raw email content into structured data. 
+Custom logic: To write parsed emails to maildir directories.
+
+### Example Workflow
+Connect to POP3 server using node-pop3.
+Retrieve messages using RETR.
+Parse each message with mailparser.simpleParser().
+Serialize the parsed email to MIME format using nodemailer’s createTransport() or manual MIME construction.
+Save the MIME string to a file in the maildir/new/ directory. 
