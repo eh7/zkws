@@ -153,7 +153,9 @@ send-message-page {
 }
 
 #send-message-form input,
-#send-message-form textarea {
+#send-message-form textarea,
+#reply-message-form textarea,
+#forward-message-form textarea {
   width: 100%;
   margin: 10px 0;
   padding: 10px;
@@ -161,7 +163,9 @@ send-message-page {
   border-radius: 5px;
 }
 
-#send-message-form textarea {
+#send-message-form textarea,
+#reply-message-form textarea,
+#forward-message-form textarea {
   height: 200px;
   resize: vertical;
 }

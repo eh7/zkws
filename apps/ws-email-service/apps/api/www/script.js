@@ -25,6 +25,8 @@ const sendMessagePage = document.getElementById('send-message-page');
 const replyMessagePage = document.getElementById('reply-message-page');
 const forwardMessagePage = document.getElementById('forward-message-page');
 const sendMessageForm = document.getElementById('send-message-form');
+const replyMessageForm = document.getElementById('reply-message-form');
+const forwardMessageForm = document.getElementById('forward-message-form');
 const sendToInput = document.getElementById('send-to');
 const sendSubjectInput = document.getElementById('send-subject');
 const sendBodyTextarea = document.getElementById('send-body');
@@ -170,6 +172,16 @@ const replyButtonClicked = (email) => {
     sendMessagePage.style.display = 'none';
     replyMessagePage.style.display = 'block';
     forwardMessagePage.style.display = 'none';
+
+alert("321 email-subject :: " + document.getElementById('email-subject').value)
+
+
+    document.getElementById('reply-subject').value = "Re: " + document.getElementById('email-subject').value;
+
+    document.getElementById('reply-subject').value = "Re: " + document.getElementById('email-subject').value;
+    document.getElementById('reply-to').value = document.getElementById('email-from').value;
+    document.getElementById('reply-from').value = document.getElementById('email-to').value;
+    document.getElementById('reply-body').value = document.getElementById('email-body').value;
 }
 
 const forwardButtonClicked = (email) => {
@@ -298,9 +310,9 @@ async function loadMessage(message) {
       // Display email headers
       messageContent.innerHTML = `
         <div class="email-header">
-          <h2>${email.subject}</h2>
-          <p><strong>From:</strong> ${email.from.text} &lt;${email.from.value[0].address}&gt;</p>
-          <p><strong>To:</strong> ${email.to.text}</p>
+          <h2 id="email-subject">${email.subject}</h2>
+          <p><strong>From:</strong> <span id="email-from">${email.from.text} &lt;${email.from.value[0].address}&gt;</span></p>
+          <p><strong>To:</strong> <span id="email-to">${email.to.text}</span></p>
           <p><strong>Date:</strong> ${new Date(email.date).toLocaleString()}</p>
         </div>
         <div class="email-body">
@@ -330,6 +342,7 @@ async function loadMessage(message) {
 
       // Show reply/forward modals (example)
       document.getElementById('reply-button').addEventListener('click', () => {
+//alert(123)
 	replyButtonClicked(email)
         /*
         alert(`Reply to: ${email.from.text}`);
@@ -621,12 +634,16 @@ async function getEmailsTable(messages) {
   return tableHTML;
 }
 
-async function sendEmail() {
+async function sendEmail(email) {
   try {
+
+    // this could be updated from external source or 
+    // something????
     const from = '"gav js web client" <gav@zkws.org>';
-    const to = document.getElementById('send-to').value;
-    const subject = document.getElementById('send-subject').value;
-    const body = document.getElementById('send-body').value;
+
+    const to = email.to; //document.getElementById('send-to').value;
+    const subject = email.subject; //document.getElementById('send-subject').value;
+    const body = email.body; //document.getElementById('send-body').value;
 
 console.log('email data on form :: ', { from, to, subject, body })
 
@@ -674,12 +691,30 @@ console.log('email data on form :: ', { from, to, subject, body })
 //    .send(emailAttachment)
 }
 
+forwardMessageForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const subject = document.getElementById('forward-subject').value;
+  const to = document.getElementById('forward-to').value;
+  const body = document.getElementById('forward-body').value;
+  const response = await sendEmail({ subject, to, body })
+  alert(`Email sent :: Subject: ${subject}`)
+});
+
+replyMessageForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const subject = document.getElementById('reply-subject').value;
+  const to = document.getElementById('reply-to').value;
+  const body = document.getElementById('reply-body').value;
+  const response = await sendEmail({ subject, to, body })
+  alert(`Email reply sent :: Subject: ${subject}`)
+});
+
 sendMessageForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
   const subject = document.getElementById('send-subject').value;
-
-  const response = await sendEmail()
+  const to = document.getElementById('send-to').value;
+  const body = document.getElementById('send-body').value;
+  const response = await sendEmail({ subject, to, body })
   console.log(response)
   alert(`Email sent :: Subject: ${subject}`)
 });
