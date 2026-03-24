@@ -15,6 +15,7 @@ class Maildir {
     this.newPath = path.join(maildirPath, 'new');
     this.curPath = path.join(maildirPath, 'cur');
     this.tmpPath = path.join(maildirPath, 'tmp');
+    this.sentPath = path.join(maildirPath, 'sent');
   }
 
   // List all new emails (only from 'new' directory)
@@ -123,6 +124,29 @@ class Maildir {
     }
   }
 
+  async saveSentEmail(emailContent) {
+    // Ensure the sent directory exists
+    if (!fs.existsSync(this.sentPath)) {
+      fs.mkdirSync(this.sentPath, { recursive: true });
+    }
+
+    // Generate a unique filename for the sent email
+    const timestamp = Date.now();
+    const uniqueId = Math.random().toString(36).substring(2, 15);
+    const filename = `${timestamp}.M${uniqueId}P${uniqueId}.server.com,S=${emailContent.length}:2,`;
+
+    // Write the email to the sent directory
+    const filePath = path.join(this.sentPath, filename);
+    await writeFile(filePath, emailContent);
+
+    return filename;
+  }
+
+  // List all sent emails
+  async listSentEmails() {
+    return this._listDirectory(this.sentPath);
+  }
+
   // Helper: List files in a directory
   async _listDirectory(dirPath) {
     try {
@@ -144,11 +168,13 @@ class Maildir {
     }
   }
 
+  // Save a sent email to the 'sent' directory
   // Helper: Parse email content (simplified)
   _parseEmail(content) {
     const [headers, body] = content.split('\n\n');
     return { headers, body };
   }
+
 }
 
 module.exports = Maildir;
