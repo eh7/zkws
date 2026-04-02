@@ -139,7 +139,7 @@ class Maildir {
           // info.message is a Readable stream of the raw RFC 822 content
           const messageString = info.message.toString();
           //info.message.pipe(process.stdout); // Outputs raw email to console
-console.log(messageString)
+          console.log(messageString)
           this.saveSentEmail(messageString)
         }
       });
@@ -198,12 +198,12 @@ console.log(messageString)
    * @param {Function} onError - Callback for errors.
    */
   async fetchAndStoreEmails({
-    host = process.env.POP3_HOST,
+    host = process.env.POP3_SERVER,
     port = process.env.POP3_PORT,
     useSSL = true,
     username = process.env.SMTP_AUTH_USER,
     password = process.env.SMTP_AUTH_PASS,
-    maildirPath = process.env.MAILDIR,
+    maildirPath = process.env.MAILDIR_POP3_TEST,
     onSuccess,
     onError,
   }) {
@@ -211,76 +211,63 @@ console.log(messageString)
       // Create maildir if it doesn't exist
       if (!fs.existsSync(maildirPath)) {
         fs.mkdirSync(maildirPath, { recursive: true });
+        fs.mkdirSync(maildirPath +  '/new' , { recursive: true });
+        fs.mkdirSync(maildirPath + '/cur' , { recursive: true });
+        fs.mkdirSync(maildirPath + '/tmp' , { recursive: true });
       }
 
-      // Connect to POP3 server
-      const client = new POP3Client(port, host, { tlserr: !useSSL });
-
-      await new Promise((resolve, reject) => {
-        client.on('error', (err) => {
-          console.error('POP3 error:', err);
-          reject(err);
-        });
-
-        client.on('connect', () => {
-          client.login(username, password, (err, status) => {
-            if (err) {
-              console.error('Login failed:', err);
-              reject(err);
-              return;
-            }
-            resolve();
-          });
-        });
+      const pop3 = new POP3Client({
+        user: process.env.SMTP_AUTH_USER,
+        password: process.env.SMTP_AUTH_PASS,
+        host: process.env.POP3_SERVER,
+        port: process.env.POP3_PORT,
+        tls: true,
+        tlsOptions: {
+          //ca: [fs.readFileSync('/tmp/ca.pem')],
+          rejectUnauthorized: false,
+          //servername: 'zkws.org'
+        }
       });
 
-      // Get the list of emails
-      const list = await new Promise((resolve, reject) => {
-        client.list((err, list) => {
-          if (err) {
-            console.error('Failed to fetch email list:', err);
-            reject(err);
-            return;
-          }
-          resolve(list);
-        });
-      });
+      await pop3.connect();
+      await pop3.command('USER', process.env.SMTP_AUTH_USER);
+      await pop3.command('PASS', process.env.SMTP_AUTH_PASS);
 
-      // Fetch and store each email
-      for (const item of list) {
-        const emailData = await new Promise((resolve, reject) => {
-          client.retr(item.number, (err, emailData) => {
-            if (err) {
-              console.error(`Failed to fetch email ${item.number}:`, err);
-              reject(err);
-              return;
-            }
-            resolve(emailData);
-          });
-        });
+      const [statInfo] = await pop3.command('STAT');
+      console.log('Messages:', statInfo); // Output: [ '100', '123456' ]
 
-        // Parse the email
-        const parsed = await simpleParser(emailData);
-
-        // Save to maildir
-        const filename = `email_${Date.now()}_${item.number}.eml`;
-        const filePath = path.join(maildirPath, filename);
-        fs.writeFileSync(filePath, emailData);
-
-        console.log(`Saved email ${item.number} to ${filePath}`);
+      const list = await pop3.UIDL();
+      //console.log(list)
+      //
+      const retrieved = [];
+ 
+      for (const [number, item] of list) {
+        const filename = `email_${item}.eml`;
+        const filePath = path.join(maildirPath, 'new' , filename);
+//console.log(filePath)
+        retrieved.push(fs.existsSync(filePath))
       }
+console.log(retrieved)
 
-      // Quit the POP3 connection
-      await new Promise((resolve, reject) => {
-        client.quit((err) => {
-          if (err) {
-            console.error('Failed to quit POP3 connection:', err);
-            reject(err);
-            return;
-          }
-          resolve();
-        });
-      });
+      let downloaded = 0;
+      for (const [number, item] of list) {
+        if (!retrieved[number]) {
+          const [retrInfo2, retrStream2] = await pop3.command('RETR', number);
+          const rawEmail2 = await POP3Client.stream2String(retrStream2);
+          const filename = `email_${item}.eml`;
+          const filePath = path.join(maildirPath, 'new' , filename);
+          fs.writeFileSync(filePath, rawEmail2);
+          // WIP :: following line deletes email from pop server
+          // WIP :: need to add setting to trigger this or not 
+          //await pop3.command('DELE', 1);
+          downloaded++;
+        }
+      }
+      console.log('message downloaded :: ', downloaded)
+
+      //await pop3.command('DELE', 1);
+
+      const [quitInfo2] = await pop3.command('QUIT');
 
       if (onSuccess) onSuccess(list.length);
     } catch (error) {
