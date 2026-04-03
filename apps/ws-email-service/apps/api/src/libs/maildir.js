@@ -144,19 +144,7 @@ class Maildir {
         }
       });
 
-
       console.log('sentEmail', sentEmail)
-      //alert('sentEmail check logs WIP saving sent emails')
-/*
-      const response = await maildir.saveSentEmail({
-        from,
-        to,
-        subject,
-        text: text,
-        html: html,
-        attachments: attachments,
-      });
-*/
 
     } catch (error) {
       console.error('Error sending email:', error);
@@ -208,12 +196,14 @@ class Maildir {
     onError,
   }) {
     try {
+      const thisMaildirPath = maildirPath +  '/' + username;
+
       // Create maildir if it doesn't exist
       if (!fs.existsSync(maildirPath)) {
-        fs.mkdirSync(maildirPath, { recursive: true });
-        fs.mkdirSync(maildirPath +  '/new' , { recursive: true });
-        fs.mkdirSync(maildirPath + '/cur' , { recursive: true });
-        fs.mkdirSync(maildirPath + '/tmp' , { recursive: true });
+        fs.mkdirSync(thisMaildirPath, { recursive: true });
+        fs.mkdirSync(thisMaildirPath +  '/new' , { recursive: true });
+        fs.mkdirSync(thisMaildirPath + '/cur' , { recursive: true });
+        fs.mkdirSync(thisMaildirPath + '/tmp' , { recursive: true });
       }
 
       const pop3 = new POP3Client({
@@ -223,9 +213,7 @@ class Maildir {
         port: process.env.POP3_PORT,
         tls: true,
         tlsOptions: {
-          //ca: [fs.readFileSync('/tmp/ca.pem')],
           rejectUnauthorized: false,
-          //servername: 'zkws.org'
         }
       });
 
@@ -237,17 +225,13 @@ class Maildir {
       console.log('Messages:', statInfo); // Output: [ '100', '123456' ]
 
       const list = await pop3.UIDL();
-      //console.log(list)
-      //
       const retrieved = [];
  
       for (const [number, item] of list) {
         const filename = `email_${item}.eml`;
-        const filePath = path.join(maildirPath, 'new' , filename);
-//console.log(filePath)
+        const filePath = path.join(thisMaildirPath, 'new' , filename);
         retrieved[item] = fs.existsSync(filePath)
       }
-//console.log(retrieved)
 
       let downloaded = 0;
       for (const [number, item] of list) {
@@ -255,7 +239,7 @@ class Maildir {
           const [retrInfo2, retrStream2] = await pop3.command('RETR', number);
           const rawEmail2 = await POP3Client.stream2String(retrStream2);
           const filename = `email_${item}.eml`;
-          const filePath = path.join(maildirPath, 'new' , filename);
+          const filePath = path.join(thisMaildirPath, 'new' , filename);
           fs.writeFileSync(filePath, rawEmail2);
           // WIP :: following line deletes email from pop server
           // WIP :: need to add setting to trigger this or not 
