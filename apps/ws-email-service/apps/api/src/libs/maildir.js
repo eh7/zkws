@@ -245,13 +245,13 @@ class Maildir {
         const filename = `email_${item}.eml`;
         const filePath = path.join(maildirPath, 'new' , filename);
 //console.log(filePath)
-        retrieved.push(fs.existsSync(filePath))
+        retrieved[item] = fs.existsSync(filePath)
       }
 console.log(retrieved)
 
       let downloaded = 0;
       for (const [number, item] of list) {
-        if (!retrieved[number]) {
+        if (!retrieved[item]) {
           const [retrInfo2, retrStream2] = await pop3.command('RETR', number);
           const rawEmail2 = await POP3Client.stream2String(retrStream2);
           const filename = `email_${item}.eml`;
