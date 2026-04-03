@@ -247,7 +247,7 @@ class Maildir {
 //console.log(filePath)
         retrieved[item] = fs.existsSync(filePath)
       }
-console.log(retrieved)
+//console.log(retrieved)
 
       let downloaded = 0;
       for (const [number, item] of list) {
@@ -271,6 +271,7 @@ console.log(retrieved)
 
       if (onSuccess) onSuccess(list.length);
     } catch (error) {
+      //console.log(error.message);
       if (onError) onError(error.message || 'Failed to fetch and store emails');
     }
   }
