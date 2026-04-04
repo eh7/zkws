@@ -29,6 +29,11 @@ describe('Test maildir.js library functions', () => {
 
   it('check second last email in test maildir has 1 attachment', async () => {
     const emails = await maildir.listEmails();
+//console.log('1', emails[0].attachments)
+//console.log('2', emails[1].attachments)
+//console.log('3', emails[2].attachments)
+//console.log('4', emails[3].attachments)
+//console.log('5', emails[4].attachments)
     const secondLastEmail = await maildir.readEmail(emails[emails.length - 2].filename);
     //console.log('secondLastEmail', secondLastEmail.attachments.length)
     //console.log('Second Last email attachments:', secondLastEmail.attachments.length);
