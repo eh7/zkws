@@ -263,7 +263,7 @@ console.log(retrieved)
           downloaded++;
         }
       }
-      console.log('message downloaded :: ', downloaded)
+      console.log('message downloaded :: ', downloaded, Object.keys(retrieved).length)
 
       //await pop3.command('DELE', 1);
 
