@@ -77,9 +77,8 @@ console.log(response.body)
     //expect(response.body).toHaveProperty('users');
 */
   });
-});
 
-it('test send and email through the api endpoint', async () => {
+  it('test send and email through the api endpoint', async () => {
     const response = await request(server)
       .post('/api/auth/login')
       .set('Content-Type', 'application/json')
@@ -136,7 +135,19 @@ it('test send and email through the api endpoint', async () => {
       .set('Content-Type', 'application/json')
       .send(emailError)
     console.log('responseError', responseError.body)
-}, 30000);
+
+    const pop3Settings = await request(server)
+      .get('/api/maildir/pop3/settings')
+      .set("x-auth-token", token)
+      .set('Content-Type', 'application/json')
+    console.log('ssssssssssssssssssssssssssss', pop3Settings.body)
+
+    //const setPop3Settings = await request(server)
+    //  .post('/api/maildir/pop3/settings')
+    //  .set("x-auth-token", token)
+    //  .set('Content-Type', 'application/json')
+
+  }, 30000);
 
 /*
 it('test login on default user data :: user@test.com and password', () => {
@@ -149,3 +160,5 @@ afterAll(() => {
   console.log("111111111111111111111111111111111")
 });
 */
+
+});

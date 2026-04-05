@@ -135,5 +135,44 @@ router.post('/send', auth, upload.array('attachments'), async (req, res) => {
   }
 });
 
+router.get('/pop3/settings', auth, async (req, res) => {
+  const token = req.header('x-auth-token');
+  console.log('routes :: maildir :: getPop3Settings', token) 
+  const settings = await maildir.getPop3Settings(token)
+  if (settings === {})
+    res.json({settings, status: false});
+  res.json({settings, status: true});
+});
+
+router.post('/pop3/settings', auth, async (req, res) => {
+  const settings = req.body;
+  const token = req.header('x-auth-token');
+  console.log('routes :: maildir :: setPop3Settings', token) 
+  try {
+    const status = await maildir.setPop3Settings(token, settings)
+    res.json({settings, status: true});
+  } catch (e) {
+    res.json({settings, status: false});
+  }
+});
+
+router.get('/pop3/retrieve', auth, async (req, res) => {
+  /*
+  async fetchAndStoreEmails({
+    host = process.env.POP3_SERVER,
+    port = process.env.POP3_PORT,
+    useSSL = true,
+    username = process.env.SMTP_AUTH_USER,
+    password = process.env.SMTP_AUTH_PASS,
+    maildirPath = process.env.MAILDIR_POP3_TEST,
+    onSuccess,
+    onError,
+  }) {
+  */
+  //const response = await maildir.fetchAndStoreEmails({
+  //});
+  res.json({retrieve: false});
+});
+
 module.exports = router;
 

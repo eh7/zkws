@@ -11,6 +11,10 @@ const unlink = promisify(fs.unlink);
 const rename = promisify(fs.rename);
 const writeFile = promisify(fs.writeFile);
 
+const EncryptedFileStore = require('./encryptedFileStore');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
+
 class Maildir {
   constructor(maildirPath) {
     this.path = maildirPath;
@@ -18,6 +22,11 @@ class Maildir {
     this.curPath = path.join(maildirPath, 'cur');
     this.tmpPath = path.join(maildirPath, 'tmp');
     this.sentPath = path.join(maildirPath, 'sent');
+
+    this.encryptedFileStore = new EncryptedFileStore(
+      process.env.ENCRYPTION_DATA_DIR,
+      process.env.ENCRYPTION_KEY, 
+    );
   }
 
   // List all new emails (only from 'new' directory)
@@ -132,12 +141,12 @@ class Maildir {
         text: text,
         html: html,
         attachments: attachments,
-      }, (err, info) => {
+      }, async (err, info) => {
         if (err) {
           console.log("transporterSave.sendMail  ERROR :: ", err)
         } else {
           // info.message is a Readable stream of the raw RFC 822 content
-          const messageString = info.message.toString();
+          const messageString = await info.message.toString();
           //info.message.pipe(process.stdout); // Outputs raw email to console
           console.log(messageString)
           this.saveSentEmail(messageString)
@@ -172,6 +181,34 @@ class Maildir {
   // List all sent emails
   async listSentEmails() {
     return this._listDirectory(this.sentPath);
+  }
+
+  async getPop3Settings (token) {
+    const username = process.env.SMTP_AUTH_USER;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const authUser = decoded.user.email;
+    const data = await this.encryptedFileStore.retrieve(
+      authUser,
+      'pop3Settings',
+    );
+    return data;
+  }
+
+  async setPop3Settings (token, settings) {
+    const username = process.env.SMTP_AUTH_USER;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const authUser = decoded.user.email;
+    try {
+      const data = await this.encryptedFileStore.store(
+        authUser,
+        'pop3Settings',
+        JSON.stringify(settings),
+      );
+      console.log("data", data)
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   /**

@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="app">
+
         <!-- Login Page -->
         <div id="login-page" class="page">
             <h1>Login</h1>
@@ -30,9 +31,49 @@
             <p>Already have an account? <a href="#" id="show-login">Login</a></p>
         </div>
 
+        <!-- Settings Page -->
+        <div id="settings-page" class="page" style="display: none;">
+            <h1>POP3 Settings</h1>
+            <form id="settings-form">
+
+                <label for="smtp-server">smtp server</label>
+                <br/>
+                <input type="text" id="smtp-server" placeholder="mail0.example-domain.org" required>
+                <br/>
+
+                <label for="smtp-port">smtp port</label>
+                <br/>
+                <input type="text" id="smtp-port" placeholder="587" required>
+                <br/>
+
+                <label for="smtp-auth-user">smtp auth user</label>
+                <br/>
+                <input type="email" id="smtp-auth-user" placeholder="Email" required>
+                <br/>
+                <label for="smtp-auth-password">smtp auth password</label>
+                <br/>
+                <input type="password" id="smtp-auth-password" placeholder="Password" required>
+                <br/>
+
+                <label for="pop3-server">pop3 server</label>
+                <br/>
+                <input type="text" id="pop3-server" placeholder="mail0.example-domain.org" required>
+                <br/>
+
+                <label for="pop3-port">pop3 port</label>
+                <br/>
+                <input type="text" id="pop3-port" placeholder="17998" required>
+                <br/>
+
+                <button type="submit">Update Settings</button>
+                <button type="button" id="cancel-settings">Cancel</button>
+            </form>
+        </div>
+
 	<!-- Message View Page -->
         <div id="message-view-page" class="page" style="display: none;">
             <h1>Messages</h1>
+            <button id="pop3-settings-button">Pop3 settings</button>
             <button id="compose-button">Compose</button>
             <button id="check-messages-button">check messages</button>
 	    <!--<div id="email-table"></div>//-->

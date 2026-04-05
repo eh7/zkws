@@ -134,5 +134,10 @@ describe('Test maildir.js library functions', () => {
     });
   }, 30000)
 
+  it('check email pop3 settings retrieve, and store', async () => {
+    const settings = await maildir.pop3Settings('user123')
+    expect(settings.message).toBe("Data not found")
+  })
+
 })
 

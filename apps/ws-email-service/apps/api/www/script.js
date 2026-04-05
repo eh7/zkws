@@ -2,6 +2,8 @@
 let token = null;
 let currentEmailData = {}
 
+let currentPop3Settings = {}
+
 // DOM Elements
 const loginPage = document.getElementById('login-page');
 const registerPage = document.getElementById('register-page');
@@ -36,7 +38,13 @@ const cancelSendButton = document.getElementById('cancel-send');
 const cancelReplyButton = document.getElementById('cancel-reply');
 const cancelForwardButton = document.getElementById('cancel-forward');
 const composeButton = document.getElementById('compose-button');
+
 const checkMessagesButton = document.getElementById('check-messages-button');
+
+const pop3SettingsForm = document.getElementById('settings-form');
+const pop3SettingsButton = document.getElementById('pop3-settings-button');
+const settingsPage = document.getElementById('settings-page');
+const cancelSettingsButton = document.getElementById('cancel-settings');
 
 const sendAttachmentsInput = document.getElementById('send-attachments');
 const sendMessageTitle = document.getElementById('send-message-title');
@@ -69,6 +77,37 @@ registerForm.addEventListener('submit', async (e) => {
     await register(email, password);
 });
 
+pop3SettingsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const smtpServer       = document.getElementById('smtp-server').value 
+    const smtpPort         = document.getElementById('smtp-port').value 
+    const smtpAuthUser     = document.getElementById('smtp-auth-user').value 
+    const smtpAuthPassword = document.getElementById('smtp-auth-password').value 
+    const pop3Server       = document.getElementById('pop3-server').value 
+    const pop3Port         = document.getElementById('pop3-port').value 
+
+    alert(
+      'smtp-server :: ' + smtpServer +
+      '\nsmtp-port :: ' + smtpPort +
+      '\nsmtp-auth-user :: ' + smtpAuthUser +
+      '\nsmtp-auth-password :: ' + smtpAuthPassword +
+      '\npop3-server :: ' + pop3Server +
+      '\npop3-port :: ' + pop3Port 
+    );
+
+    const status = await settingsSave({
+      smtpServer,
+      smtpPort,
+      smtpAuthUser,
+      smtpAuthPassword,
+      pop3Server,
+      pop3Port,
+    })
+
+    //await register(email, password);
+});
+
+
 logoutButton.addEventListener('click', () => {
     token = null;
     messageViewPage.style.display = 'none';
@@ -88,6 +127,19 @@ backToMessagesTopButton.addEventListener('click', () => {
 });
 
 // ----- start ----
+cancelSettingsButton.addEventListener('click', async () => {
+  window.scrollTo(0, 0);
+  settingsPage.style.display = 'none';
+  messageViewPage.style.display = 'block';
+});
+
+pop3SettingsButton.addEventListener('click', async () => {
+  window.scrollTo(0, 0);
+  //await loadMessages();
+  messageViewPage.style.display = 'none';
+  settingsPage.style.display = 'block';
+});
+
 checkMessagesButton.addEventListener('click', async () => {
   window.scrollTo(0, 0);
   await loadMessages();
@@ -240,13 +292,79 @@ async function login(email, password) {
         if (response.ok) {
             token = data.token;
             loginPage.style.display = 'none';
-            await loadMessages();
-            messageViewPage.style.display = 'block';
+
+            const status = await settings()
+
+            currentPop3Settings = JSON.parse(status[1])
+
+            alert(
+              "--> settings status\n" +
+              JSON.stringify(status, 0, 4),
+            );
+            
+            if (!status[0]) {
+              settingsPage.style.display = 'block';
+            } else {
+              setPop3SettingFormData(currentPop3Settings)
+              await loadMessages();
+              messageViewPage.style.display = 'block';
+            }
         } else {
             alert(data.message || 'Login failed');
         }
     } catch (error) {
-        alert('An error occurred during login.');
+        alert('An error occurred during login.\n\n' + error.message);
+    }
+}
+
+async function settingsSave(settingsData) {
+console.log(settingsData)
+    try {
+        const response = await fetch('http://localhost:3000/api/maildir/pop3/settings', {
+            method: 'POST',
+            headers: {
+                'x-auth-token': `${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(settingsData),
+        });
+        alert('WIP TEST settingsSave' + JSON.stringify(settingsData))
+/*
+        const response = await response.json();
+        alert("settingsSave response :: \n" + JSON.stringify(response))
+*/
+    } catch (error) {
+        alert('An error occurred while saving settings.');
+        return false;
+    }
+/*
+*/
+}
+
+async function settings() {
+    try {
+        const response = await fetch('http://localhost:3000/api/maildir/pop3/settings', {
+            headers: {
+                'x-auth-token': `${token}`,
+            },
+        });
+        const settings = (await response.json()).settings;
+        //alert('settings' + JSON.stringify(settings, 0, 2));
+        if (response.ok) {
+          alert('Settings retrieved.' + JSON.stringify(settings));
+          const isEmpty = (Object.keys(settings).length === 0);
+//alert('sssssssssss\n' + JSON.stringify(settings) + "\n" + isEmpty)
+          if (isEmpty) {
+            return [false, settings];
+          }
+          return [true, settings];
+        } else {
+          alert('An error occurred while getting settings.');
+          return false;
+        }
+    } catch (error) {
+        alert('An error occurred while getting settings.');
+        return false;
     }
 }
 
@@ -745,6 +863,59 @@ console.log('checcking file upload works', )
 //    .send(emailAttachment)
 }
 
+async function setPop3SettingFormData (settings) {
+    document.getElementById("smtp-server").value = currentPop3Settings.smtpServer
+    document.getElementById("smtp-port").value = currentPop3Settings.smtpPort
+    document.getElementById("smtp-auth-user").value = currentPop3Settings.smtpAuthUser
+    document.getElementById("smtp-auth-password").value = currentPop3Settings.smtpAuthPassword
+    document.getElementById("pop3-server").value = currentPop3Settings.pop3Server
+    document.getElementById("pop3-port").value = currentPop3Settings.pop3Port
+console.log(currentPop3Settings)
+              alert(1234456)
+/*
+    alert('setPop3SettingFormData' + JSON.stringify(settings))
+              currentPop3Settigs = settings;
+        <!-- Settings Page -->
+        <div id="settings-page" class="page" style="display: none;">
+            <h1>POP3 Settings</h1>
+            <form id="settings-form">
+
+                <label for="smtp-server">smtp server</label>
+                <br/>
+                <input type="text" id="smtp-server" placeholder="mail0.example-domain.org" required>
+                <br/>
+
+                <label for="smtp-port">smtp port</label>
+                <br/>
+                <input type="text" id="smtp-port" placeholder="587" required>
+                <br/>
+
+                <label for="smtp-auth-user">smtp auth user</label>
+                <br/>
+                <input type="email" id="smtp-auth-user" placeholder="Email" required>
+                <br/>
+                <label for="smtp-auth-password">smtp auth password</label>
+                <br/>
+                <input type="password" id="smtp-auth-password" placeholder="Password" required>
+                <br/>
+
+                <label for="pop3-server">pop3 server</label>
+                <br/>
+                <input type="text" id="pop3-server" placeholder="mail0.example-domain.org" required>
+                <br/>
+
+                <label for="pop3-port">pop3 port</label>
+                <br/>
+                <input type="text" id="pop3-port" placeholder="17998" required>
+                <br/>
+
+                <button type="submit">Update Settings</button>
+                <button type="button" id="cancel-settings">Cancel</button>
+            </form>
+        </div>
+*/
+}
+
 forwardMessageForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const subject = document.getElementById('forward-subject').value;
@@ -781,3 +952,4 @@ sendMessageForm.addEventListener('submit', async (e) => {
   sendMessagePage.style.display = 'none';
   messageViewPage.style.display = 'block';
 });
+
