@@ -142,7 +142,8 @@ pop3SettingsButton.addEventListener('click', async () => {
 
 checkMessagesButton.addEventListener('click', async () => {
   window.scrollTo(0, 0);
-  await loadMessages();
+  //await loadMessages();
+  checkForNewPop3Messages()
   alert('checked for new messages')
 });
 
@@ -314,6 +315,26 @@ async function login(email, password) {
         }
     } catch (error) {
         alert('An error occurred during login.\n\n' + error.message);
+    }
+}
+
+async function checkForNewPop3Messages() {
+    try {
+        const response = await fetch('http://localhost:3000/api/maildir/pop3/retrieve', {
+            method: 'POST',
+            headers: {
+                'x-auth-token': `${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(currentPop3Settings)
+        });
+/*
+*/
+        alert('checkForNewPop3Messages :: \n\n' + JSON.stringify(response))
+        return true;
+    } catch (e) {
+        alert('An error occurred while checkForNewPop3Messages :: ' + e.message);
+        return false;
     }
 }
 
