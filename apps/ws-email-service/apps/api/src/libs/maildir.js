@@ -236,7 +236,7 @@ class Maildir {
       const thisMaildirPath = maildirPath +  '/' + username;
 
       // Create maildir if it doesn't exist
-      if (!fs.existsSync(maildirPath)) {
+      if (!fs.existsSync(thisMaildirPath)) {
         fs.mkdirSync(thisMaildirPath, { recursive: true });
         fs.mkdirSync(thisMaildirPath +  '/new' , { recursive: true });
         fs.mkdirSync(thisMaildirPath + '/cur' , { recursive: true });

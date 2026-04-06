@@ -165,7 +165,7 @@ router.post('/pop3/retrieve', auth, async (req, res) => {
   const useSSL = true
   const username = settings.smtpAuthUser
   const password = settings.smtpAuthPassword
-  const maildirPath = process.env.MAILDIRS_PATH + '/' + username
+  const maildirPath = process.env.MAILDIRS_PATH
 
   await maildir.fetchAndStoreEmails({
     host,
