@@ -296,7 +296,9 @@ async function login(email, password) {
 
             const status = await settings()
 
-            currentPop3Settings = JSON.parse(status[1])
+            if (Object.keys(status[1]).length > 0) {
+              currentPop3Settings = JSON.parse(status[1])
+            }
 
             alert(
               "--> settings status\n" +
@@ -339,7 +341,6 @@ async function checkForNewPop3Messages() {
 }
 
 async function settingsSave(settingsData) {
-console.log(settingsData)
     try {
         const response = await fetch('http://localhost:3000/api/maildir/pop3/settings', {
             method: 'POST',
@@ -355,7 +356,7 @@ console.log(settingsData)
         alert("settingsSave response :: \n" + JSON.stringify(response))
 */
     } catch (error) {
-        alert('An error occurred while saving settings.');
+        alert('An error occurred while saving settings.' + error.message);
         return false;
     }
 /*
@@ -369,22 +370,26 @@ async function settings() {
                 'x-auth-token': `${token}`,
             },
         });
-        const settings = (await response.json()).settings;
-        //alert('settings' + JSON.stringify(settings, 0, 2));
+        //const settings = (await response.json()).settings;
+        const responseJson = await response.json();
+        const settings = responseJson.settings;
+        alert('settings' + JSON.stringify(settings, 0, 2));
         if (response.ok) {
           alert('Settings retrieved.' + JSON.stringify(settings));
           const isEmpty = (Object.keys(settings).length === 0);
 //alert('sssssssssss\n' + JSON.stringify(settings) + "\n" + isEmpty)
           if (isEmpty) {
+//alert('sssssssssss\n' + [false, settings])
             return [false, settings];
           }
+//alert('xxxxxssssss\n' + [true, settings])
           return [true, settings];
         } else {
-          alert('An error occurred while getting settings.');
+          alert('An error occurred while getting response for settings.');
           return false;
         }
     } catch (error) {
-        alert('An error occurred while getting settings.');
+        alert('An error occurred while getting settings.' + error.message);
         return false;
     }
 }

@@ -187,11 +187,18 @@ class Maildir {
     const username = process.env.SMTP_AUTH_USER;
     const decoded = jwt.verify(token, JWT_SECRET);
     const authUser = decoded.user.email;
-    const data = await this.encryptedFileStore.retrieve(
-      authUser,
-      'pop3Settings',
-    );
-    return data;
+    try {
+      const data = await this.encryptedFileStore.retrieve(
+        authUser,
+        'pop3Settings',
+      );
+      if (data.message === 'Data not found') {
+        return {};
+      }
+      return data;
+    } catch (e) {
+      return {};
+    }
   }
 
   async setPop3Settings (token, settings) {
