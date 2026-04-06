@@ -248,6 +248,7 @@ class Maildir {
         fs.mkdirSync(thisMaildirPath +  '/new' , { recursive: true });
         fs.mkdirSync(thisMaildirPath + '/cur' , { recursive: true });
         fs.mkdirSync(thisMaildirPath + '/tmp' , { recursive: true });
+        fs.mkdirSync(thisMaildirPath + '/sent' , { recursive: true });
       }
 
       const pop3 = new POP3Client({
@@ -292,6 +293,13 @@ class Maildir {
         }
       }
       console.log('message downloaded :: ', downloaded, Object.keys(retrieved).length)
+
+      // set the path to  pop3 settings maildirs
+      this.path = thisMaildirPath;
+      this.newPath = path.join(thisMaildirPath, 'new');
+      this.curPath = path.join(thisMaildirPath, 'cur');
+      this.tmpPath = path.join(thisMaildirPath, 'tmp');
+      this.sentPath = path.join(thisMaildirPath, 'sent');
 
       //await pop3.command('DELE', 1);
 
