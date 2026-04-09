@@ -65,7 +65,6 @@ class EncryptedFileStore {
     const encrypted = this.encrypt(data);
     const userDir = path.join(this.baseDir, userId);
     const filePath = path.join(userDir, `${key}.enc`);
-//console.log('filePath', filePath)
 
     // Create user directory if it doesn't exist
     if (!fs.existsSync(userDir)) {
@@ -84,7 +83,6 @@ class EncryptedFileStore {
    */
   async retrieve(userId, key) {
     const filePath = path.join(this.baseDir, userId, `${key}.enc`);
-console.log(filePath)
     if (!fs.existsSync(filePath)) {
       return new Error('Data not found');
     }

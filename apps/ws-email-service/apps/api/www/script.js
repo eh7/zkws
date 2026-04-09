@@ -86,6 +86,7 @@ pop3SettingsForm.addEventListener('submit', async (e) => {
     const pop3Server       = document.getElementById('pop3-server').value 
     const pop3Port         = document.getElementById('pop3-port').value 
 
+    /*
     alert(
       'smtp-server :: ' + smtpServer +
       '\nsmtp-port :: ' + smtpPort +
@@ -94,6 +95,7 @@ pop3SettingsForm.addEventListener('submit', async (e) => {
       '\npop3-server :: ' + pop3Server +
       '\npop3-port :: ' + pop3Port 
     );
+    */
 
     const status = await settingsSave({
       smtpServer,
@@ -142,7 +144,6 @@ pop3SettingsButton.addEventListener('click', async () => {
 
 checkMessagesButton.addEventListener('click', async () => {
   window.scrollTo(0, 0);
-  //await loadMessages();
   await checkForNewPop3Messages()
   await loadMessages();
   alert('checked for new messages')
@@ -297,12 +298,14 @@ async function login(email, password) {
 
             const status = await settings()
 
-            currentPop3Settings = JSON.parse(status[1])
+            if (Object.keys(status[1]).length > 0) {
+              currentPop3Settings = JSON.parse(status[1])
+            }
 
-            alert(
+            /*alert(
               "--> settings status\n" +
               JSON.stringify(status, 0, 4),
-            );
+            );*/
             
             if (!status[0]) {
               settingsPage.style.display = 'block';
@@ -340,7 +343,6 @@ async function checkForNewPop3Messages() {
 }
 
 async function settingsSave(settingsData) {
-console.log(settingsData)
     try {
         const response = await fetch('http://localhost:3000/api/maildir/pop3/settings', {
             method: 'POST',
@@ -356,7 +358,7 @@ console.log(settingsData)
         alert("settingsSave response :: \n" + JSON.stringify(response))
 */
     } catch (error) {
-        alert('An error occurred while saving settings.');
+        alert('An error occurred while saving settings.' + error.message);
         return false;
     }
 /*
@@ -370,22 +372,26 @@ async function settings() {
                 'x-auth-token': `${token}`,
             },
         });
-        const settings = (await response.json()).settings;
+        //const settings = (await response.json()).settings;
+        const responseJson = await response.json();
+        const settings = responseJson.settings;
         //alert('settings' + JSON.stringify(settings, 0, 2));
         if (response.ok) {
-          alert('Settings retrieved.' + JSON.stringify(settings));
+          //alert('Settings retrieved.' + JSON.stringify(settings));
           const isEmpty = (Object.keys(settings).length === 0);
 //alert('sssssssssss\n' + JSON.stringify(settings) + "\n" + isEmpty)
           if (isEmpty) {
+//alert('sssssssssss\n' + [false, settings])
             return [false, settings];
           }
+//alert('xxxxxssssss\n' + [true, settings])
           return [true, settings];
         } else {
-          alert('An error occurred while getting settings.');
+          alert('An error occurred while getting response for settings.');
           return false;
         }
     } catch (error) {
-        alert('An error occurred while getting settings.');
+        alert('An error occurred while getting settings.' + error.message);
         return false;
     }
 }
@@ -700,6 +706,9 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
       for (let i = 1; i <= totalPages; i++) {
         //paginationHTML += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
         paginationHTML += `|<a onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</a>`;
+        if (i > 0 && (i % 10) === 0) {
+          paginationHTML += '\n';
+        }
       }
       paginationHTML += `|`;
 
@@ -892,8 +901,7 @@ async function setPop3SettingFormData (settings) {
     document.getElementById("smtp-auth-password").value = currentPop3Settings.smtpAuthPassword
     document.getElementById("pop3-server").value = currentPop3Settings.pop3Server
     document.getElementById("pop3-port").value = currentPop3Settings.pop3Port
-console.log(currentPop3Settings)
-    alert("setPop3SettingFormData")
+    //alert("setPop3SettingFormData")
 /*
     alert('setPop3SettingFormData' + JSON.stringify(settings))
               currentPop3Settigs = settings;
