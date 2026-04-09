@@ -143,7 +143,8 @@ pop3SettingsButton.addEventListener('click', async () => {
 checkMessagesButton.addEventListener('click', async () => {
   window.scrollTo(0, 0);
   //await loadMessages();
-  checkForNewPop3Messages()
+  await checkForNewPop3Messages()
+  await loadMessages();
   alert('checked for new messages')
 });
 
@@ -892,7 +893,7 @@ async function setPop3SettingFormData (settings) {
     document.getElementById("pop3-server").value = currentPop3Settings.pop3Server
     document.getElementById("pop3-port").value = currentPop3Settings.pop3Port
 console.log(currentPop3Settings)
-              alert(1234456)
+    alert("setPop3SettingFormData")
 /*
     alert('setPop3SettingFormData' + JSON.stringify(settings))
               currentPop3Settigs = settings;

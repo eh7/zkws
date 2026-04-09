@@ -25,7 +25,7 @@ router.get('/listnew', auth, async (req, res) => {
 // List all emails in the maildir
 router.get('/list', auth, async (req, res) => {
   try {
-    //console.log('MAILDIR_PATH', MAILDIR_PATH)
+    //console.log('\n\nMAILDIR_PATH ---------------------->', MAILDIR_PATH, "\n\n")
     const emails = await maildir.listEmails();
     res.json({ emails });
 
@@ -158,14 +158,15 @@ router.post('/pop3/settings', auth, async (req, res) => {
 
 router.post('/pop3/retrieve', auth, async (req, res) => {
   const settings = req.body;
-  console.log('------------------> POST /pop3/retrieve', settings)
+  //console.log('------------------> POST /pop3/retrieve', settings)
 
   const host = settings.pop3Server
   const port = settings.pop3Port
   const useSSL = true
   const username = settings.smtpAuthUser
   const password = settings.smtpAuthPassword
-  const maildirPath = process.env.MAILDIRS_PATH
+  //const maildirPath = process.env.MAILDIRS_PATH
+  const maildirPath = process.env.MAILDIRS_PATH + '/' + settings.smtpAuthUser
 
   await maildir.fetchAndStoreEmails({
     host,

@@ -36,6 +36,16 @@ class Maildir {
 
   // List all emails (new + cur)
   async listEmails() {
+    const testCurEmails = (await this._listDirectory(this.curPath)).length;
+    console.log("\n\nlib/maildir/listEmails ::\n",
+      this.curPath,
+      "\n",
+      this.newPath,
+      "\n",
+      testCurEmails,
+      "\n\n",
+    )
+
     const [newEmails, curEmails] = await Promise.all([
       this._listDirectory(this.curPath),
       this._listDirectory(this.newPath),
@@ -281,6 +291,7 @@ class Maildir {
           // WIP :: following line deletes email from pop server
           // WIP :: need to add setting to trigger this or not 
           //await pop3.command('DELE', 1);
+          //await pop3.command('DELE', number);
           downloaded++;
         }
       }
@@ -289,6 +300,14 @@ class Maildir {
       //await pop3.command('DELE', 1);
 
       const [quitInfo2] = await pop3.command('QUIT');
+
+      // set maildir to latest one
+      this.path = maildirPath;
+      this.newPath = path.join(maildirPath, 'new');
+      this.curPath = path.join(maildirPath, 'cur');
+      this.tmpPath = path.join(maildirPath, 'tmp');
+      this.sentPath = path.join(maildirPath, 'sent');
+console.log("\n\nfetch ::\n", this.newPath, "\n\n")
 
       if (onSuccess) onSuccess(list.length);
     } catch (error) {
