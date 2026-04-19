@@ -802,7 +802,8 @@ async function sendEmail(email) {
   try {
     // this could be updated from external source or 
     // something????
-    const from = '"gav js web client" <gav@zkws.org>';
+    // console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh', currentPop3Settings)
+    const from = currentPop3Settings.smtpAuthUser || '"gav js web client" <gav@zkws.org>';
 
     const to = email.to; //document.getElementById('send-to').value;
     const subject = email.subject; //document.getElementById('send-subject').value;

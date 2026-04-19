@@ -250,7 +250,8 @@ class Maildir {
     onError,
   }) {
     try {
-      const thisMaildirPath = maildirPath +  '/' + username;
+      const thisMaildirPath = maildirPath;// +  '/' + username;
+console.log('zzzzzzzzzzzzzzzzzzzzzzzzzz', thisMaildirPath)
 
       // Create maildir if it doesn't exist
       if (!fs.existsSync(thisMaildirPath)) {
