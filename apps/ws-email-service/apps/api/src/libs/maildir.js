@@ -68,6 +68,17 @@ class Maildir {
     //console.log(filePath)
     const content = await readFile(filePath, 'utf-8');
     const message = await simpleParser(content);
+
+    //if (filePath.search(this.newPath)) {
+    if (filePath.search(this.newPath) === 0) {
+      // Move the email to 'cur' directory
+      const newFilePath = path.join(this.curPath, filename);
+      await rename(filePath, newFilePath);
+console.log('zzzzzzzz', filePath.search(this.newPath))
+console.log('zzzzzzzz', filePath.search(this.curPath))
+console.log('ZZZZZZZ -- update deliveryStatus and move message to cur maildir, do I need to update email messages for display')
+    }
+
     return message
   }
 

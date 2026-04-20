@@ -116,16 +116,20 @@ logoutButton.addEventListener('click', () => {
     loginPage.style.display = 'block';
 });
 
-backToMessagesButton.addEventListener('click', () => {
+backToMessagesButton.addEventListener('click', async () => {
     window.scrollTo(0, 0);
     messageDisplayPage.style.display = 'none';
     messageViewPage.style.display = 'block';
+
+    await loadMessages();
 });
 
-backToMessagesTopButton.addEventListener('click', () => {
+backToMessagesTopButton.addEventListener('click', async () => {
     window.scrollTo(0, 0);
     messageDisplayPage.style.display = 'none';
     messageViewPage.style.display = 'block';
+
+    await loadMessages();
 });
 
 // ----- start ----
@@ -679,7 +683,7 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
           _onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
           onmouseout="this.style.backgroundColor='${onmouseoutStyle}'"
         >
-          <td style="padding: 8px;">${email.deliveryStatus}</td>
+          <td style="padding: 8px;">${(email.deliveryStatus === 'new') ? email.deliveryStatus : 'read'}</td>
           <td style="padding: 8px;">${date}</td>
           <td style="padding: 8px;">${subject}</td>
         </tr>
