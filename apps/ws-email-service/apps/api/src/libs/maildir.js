@@ -46,10 +46,15 @@ class Maildir {
       "\n\n",
     )
 
-    const [newEmails, curEmails] = await Promise.all([
+    const [curEmails, newEmails] = await Promise.all([
       this._listDirectory(this.curPath),
       this._listDirectory(this.newPath),
     ]);
+
+    //console.log('ZZZZZZZ', (typeof newEmails !== 'undefined') ? newEmails[0].deliveryStatus : '')
+    //console.log('ZZZZZZZ', typeof newEmails)
+    //console.log('ZZZZZZZ', curEmails)
+
     return [...newEmails, ...curEmails];
   }
 
@@ -251,7 +256,7 @@ class Maildir {
   }) {
     try {
       const thisMaildirPath = maildirPath;// +  '/' + username;
-console.log('zzzzzzzzzzzzzzzzzzzzzzzzzz', thisMaildirPath)
+//console.log('zzzzzzzzzzzzzzzzzzzzzzzzzz', thisMaildirPath)
 
       // Create maildir if it doesn't exist
       if (!fs.existsSync(thisMaildirPath)) {
@@ -337,11 +342,13 @@ console.log("\n\nfetch ::\n", this.newPath, "\n\n")
     try {
       //return await readdir(dirPath);
       const emails = await readdir(dirPath);
+//console.log('ZZZZZZZZZZZ', emails, dirPath, this.newPath, (dirPath === this.newPath))
       const emailsParsed = await Promise.all(
         emails.map(async (email, index) => {
           const content = await readFile(dirPath + '/' + email, 'utf-8');
           const emailJson = await simpleParser(content);
 	  emailJson.filename = emails[index];
+	  emailJson.deliveryStatus = (dirPath === this.newPath) ? 'new' : 'cur';
           return emailJson;
         })
       );

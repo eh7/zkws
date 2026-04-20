@@ -645,6 +645,7 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
       <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
+            <th style="text-align: left; padding: 8px; cursor: pointer;">Status </th>
             <th style="text-align: left; padding: 8px; cursor: pointer;" onclick="toggleSort('date')">Date ${sortField === 'date' ? sortDirection === 'asc' ? '↑' : '↓' : ''}</th>
             <th style="text-align: left; padding: 8px; cursor: pointer;" onclick="toggleSort('subject')">Subject ${sortField === 'subject' ? sortDirection === 'asc' ? '↑' : '↓' : ''}</th>
           </tr>
@@ -668,6 +669,7 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
           onmouseover="this.style.backgroundColor='#e6f2ff'"
           onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
         >
+          <td style="padding: 8px;">${email.deliveryStatus}</td>
           <td style="padding: 8px;">${date}</td>
           <td style="padding: 8px;">${subject}</td>
         </tr>
