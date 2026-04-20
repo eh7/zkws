@@ -657,7 +657,16 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
     paginatedEmails.forEach((email, index) => {
       const date = email.date ? new Date(email.date).toLocaleString() : 'No date';
       const subject = email.subject || 'No subject';
-      const rowStyle = index % 2 === 0 ? 'background-color: #f9f9f9;' : 'background-color: #ffffff;';
+
+      let colour0 = '#f9f9f9'
+      let colour1 = '#ffffff'
+      if (email.deliveryStatus === 'new') {
+        colour0 = '#f9f900'
+        colour1 = '#ffff00'
+      }
+      const rowStyle = index % 2 === 0 ? `background-color: ${colour0};` : `background-color: ${colour1};`;
+      const onmouseoutStyle = (index % 2 === 0) ? colour0 : colour1;
+
       const emailJSON = JSON.stringify(email).replace(/'/g, "&apos;");
       //const emailJSON = JSON.stringify(email.filename).replace(/'/g, "&apos;");
 
@@ -667,7 +676,8 @@ function renderEmailTable(emails, onEmailSelected, rowsPerPage = 10) {
           style="${rowStyle}"
 	  onclick='loadMessage(${emailJSON})'
           onmouseover="this.style.backgroundColor='#e6f2ff'"
-          onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
+          _onmouseout="this.style.backgroundColor='${index % 2 === 0 ? '#f9f9f9' : '#ffffff'}'"
+          onmouseout="this.style.backgroundColor='${onmouseoutStyle}'"
         >
           <td style="padding: 8px;">${email.deliveryStatus}</td>
           <td style="padding: 8px;">${date}</td>
