@@ -71,12 +71,12 @@ class Maildir {
 
     //if (filePath.search(this.newPath)) {
     if (filePath.search(this.newPath) === 0) {
-      // Move the email to 'cur' directory
+      // Move the 'new' email to 'cur' directory
       const newFilePath = path.join(this.curPath, filename);
       await rename(filePath, newFilePath);
-console.log('zzzzzzzz', filePath.search(this.newPath))
-console.log('zzzzzzzz', filePath.search(this.curPath))
-console.log('ZZZZZZZ -- update deliveryStatus and move message to cur maildir, do I need to update email messages for display')
+//console.log('zzzzzzzz', filePath.search(this.newPath))
+//console.log('zzzzzzzz', filePath.search(this.curPath))
+//console.log('ZZZZZZZ -- update deliveryStatus and move message to cur maildir, do I need to update email messages for display')
     }
 
     return message
@@ -303,6 +303,15 @@ console.log('ZZZZZZZ -- update deliveryStatus and move message to cur maildir, d
         const filename = `email_${item}.eml`;
         const filePath = path.join(thisMaildirPath, 'new' , filename);
         retrieved[item] = fs.existsSync(filePath)
+
+        console.log('ZZZZZZZ :: retrieved :: ', filename, retrieved[item])
+
+        // WIP: add a check if already retrieved in 'cur' maildir if not in 'new' maildir
+        if (!retrieved[item]) {
+          const filePath1 = path.join(thisMaildirPath, 'cur' , filename);
+          retrieved[item] = fs.existsSync(filePath1)
+          console.log('ZZZZZZZ :: retrieved cur :: ', filename, retrieved[item])
+        }
       }
 
       let downloaded = 0;
