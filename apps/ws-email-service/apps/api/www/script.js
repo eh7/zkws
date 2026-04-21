@@ -150,7 +150,7 @@ checkMessagesButton.addEventListener('click', async () => {
   window.scrollTo(0, 0);
   await checkForNewPop3Messages()
   await loadMessages();
-  alert('checked for new messages')
+  //alert('checked for new messages')
 });
 
 // Compose new email
@@ -338,7 +338,7 @@ async function checkForNewPop3Messages() {
         });
 /*
 */
-        alert('checkForNewPop3Messages :: \n\n' + JSON.stringify(response))
+        //alert('checkForNewPop3Messages :: \n\n' + JSON.stringify(response))
         return true;
     } catch (e) {
         alert('An error occurred while checkForNewPop3Messages :: ' + e.message);
