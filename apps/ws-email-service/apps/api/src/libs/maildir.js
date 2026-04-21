@@ -325,7 +325,7 @@ class Maildir {
           // WIP :: following line deletes email from pop server
           // WIP :: need to add setting to trigger this or not 
           //await pop3.command('DELE', 1);
-          //await pop3.command('DELE', number);
+          await pop3.command('DELE', number);
           downloaded++;
         }
       }
